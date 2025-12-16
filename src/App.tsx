@@ -9,8 +9,11 @@ import Register from "./pages/Register";
 import PropertyDetail from "./pages/PropertyDetail";
 import Dashboard from "./pages/dashboard/Dashboard";
 import PropertiesList from "./pages/dashboard/PropertiesList";
+import PropertyForm from "./pages/dashboard/PropertyForm";
 import TenantsList from "./pages/dashboard/TenantsList";
+import TenantForm from "./pages/dashboard/TenantForm";
 import ReceiptsList from "./pages/dashboard/ReceiptsList";
+import ReceiptForm from "./pages/dashboard/ReceiptForm";
 import Settings from "./pages/dashboard/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -29,8 +32,13 @@ const App = () => (
           <Route path="/imovel/:id" element={<PropertyDetail />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/imoveis" element={<PropertiesList />} />
+          <Route path="/dashboard/imoveis/novo" element={<PropertyForm />} />
+          <Route path="/dashboard/imoveis/:id/editar" element={<PropertyForm />} />
+          <Route path="/dashboard/imoveis/:propertyId/inquilino" element={<TenantForm />} />
           <Route path="/dashboard/inquilinos" element={<TenantsList />} />
+          <Route path="/dashboard/inquilinos/novo" element={<TenantForm />} />
           <Route path="/dashboard/comprovantes" element={<ReceiptsList />} />
+          <Route path="/dashboard/comprovantes/novo" element={<ReceiptForm />} />
           <Route path="/dashboard/configuracoes" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
