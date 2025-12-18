@@ -27,7 +27,9 @@ import {
   DollarSign,
   Settings2,
   FileText,
+  HousePlusIcon,
   Check,
+  Minus,
   Loader2
 } from "lucide-react";
 import { toast } from "sonner";
@@ -79,7 +81,7 @@ const initialFormData: PropertyFormData = {
   state: "",
   title: "",
   type: "apartamento",
-  rooms: ["Sala", "Cozinha", "Banheiro", "Quarto"],
+  rooms: [],
   maxPeople: "",
   acceptsPets: false,
   hasGarage: false,
@@ -116,6 +118,7 @@ export default function PropertyForm() {
   const [photosPreviews, setPhotosPreviews] = useState<string[]>([]);
   const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
   const [newRoom, setNewRoom] = useState("");
+  const [roomQuantity, setRoomQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCep, setIsLoadingCep] = useState(false);
@@ -148,7 +151,7 @@ export default function PropertyForm() {
         state: data.endereco_estado || "",
         title: data.titulo || "",
         type: data.tipo || "apartamento",
-        rooms: data.comodos || ["Sala", "Cozinha", "Banheiro", "Quarto"],
+        rooms: data.comodos || [],
         maxPeople: data.max_pessoas?.toString() || "",
         acceptsPets: data.aceita_pets || false,
         hasGarage: data.tem_garagem || false,
@@ -246,9 +249,13 @@ export default function PropertyForm() {
   };
 
   const addRoom = () => {
-    if (newRoom.trim() && !formData.rooms.includes(newRoom.trim())) {
-      handleInputChange("rooms", [...formData.rooms, newRoom.trim()]);
-      setNewRoom("");
+    if (newRoom.trim()) {
+      const roomText = roomQuantity > 1 ? `${roomQuantity} ${newRoom.trim()}` : newRoom.trim();
+      if (!formData.rooms.includes(roomText)) {
+        handleInputChange("rooms", [...formData.rooms, roomText]);
+        setNewRoom("");
+        setRoomQuantity(1);
+      }
     }
   };
 
@@ -683,16 +690,47 @@ export default function PropertyForm() {
                   </span>
                 ))}
               </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Adicionar cômodo"
-                  value={newRoom}
-                  onChange={(e) => setNewRoom(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addRoom())}
-                  className="max-w-xs"
-                />
-                <Button type="button" variant="outline" size="icon" onClick={addRoom} aria-label="Adicionar cômodo">
-                  <Plus className="h-4 w-4" />
+              <div className="flex flex-col md:flex-row gap-2">
+                {/* Contador de quantidade */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center border rounded-md">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 rounded-r-none"
+                      onClick={() => setRoomQuantity(Math.max(1, roomQuantity - 1))}
+                      aria-label="Diminuir quantidade"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <div className="flex h-10 w-12 items-center justify-center border-x text-sm font-medium">
+                      {roomQuantity}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 rounded-l-none"
+                      onClick={() => setRoomQuantity(Math.min(99, roomQuantity + 1))}
+                      aria-label="Aumentar quantidade"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {/* Input de texto */}
+                  <Input
+                    placeholder="Ex: Quartos, Salas..."
+                    value={newRoom}
+                    onChange={(e) => setNewRoom(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addRoom())}
+                    className="max-w-xs"
+                  />
+                </div>
+
+                <Button type="button" className="w-full md:w-fit px-4 bg-blue-500 hover:bg-blue-400" variant="default" size="icon" onClick={addRoom} aria-label="Adicionar cômodo">
+                  {/* <HousePlusIcon className="h-4 w-4" /> */}
+                  <span>Adicionar</span>
                 </Button>
               </div>
             </div>
