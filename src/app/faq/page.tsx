@@ -13,8 +13,8 @@ import { HelpCircle } from "lucide-react";
 export default function FAQPage() {
     const faqs = [
         {
-            question: "O Aluga Fácil é uma imobiliária?",
-            answer: "Não. O Aluga Fácil é uma plataforma de tecnologia que fornece ferramentas para locadores diretos gerenciarem seus próprios imóveis e inquilinos, sem a necessidade de intermediários ou taxas de administração imobiliária."
+            question: "O Alugue Fácil é uma imobiliária?",
+            answer: "Não. O Alugue Fácil é uma plataforma de tecnologia que fornece ferramentas para locadores diretos gerenciarem seus próprios imóveis e inquilinos, sem a necessidade de intermediários ou taxas de administração imobiliária."
         },
         {
             question: "Como os interessados entram em contato?",
@@ -29,16 +29,16 @@ export default function FAQPage() {
             answer: "Após vincular um inquilino a um imóvel, você pode acessar a seção de Comprovantes. Basta selecionar o inquilino, o mês de referência e os valores. O sistema gera um PDF profissional que você pode baixar ou enviar direto pelo WhatsApp."
         },
         {
-            question: "Posso cadastrar quantos imóveis ou quartos eu quiser?",
-            answer: "Sim! Durante nossa fase beta, oferecemos cadastro ilimitado. Você pode organizar todo o seu portfólio de imóveis e quartos sem nenhuma restrição ou custo adicional."
+            question: "Posso testar antes de assinar?",
+            answer: "Sim! Ao criar sua conta, você ganha 7 dias de acesso total e gratuito ao plano Profissional para testar todas as funcionalidades e ver como o Alugue Fácil simplifica sua gestão."
         },
         {
-            question: "O Aluga Fácil cobra comissão sobre o aluguel?",
-            answer: "Absolutamente não. Acreditamos no aluguel direto. Não cobramos nenhuma taxa ou porcentagem sobre suas locações. A plataforma funciona através de uma assinatura simples, garantindo que 100% do valor do aluguel fique com você."
+            question: "Como funciona o pagamento?",
+            answer: "A plataforma funciona com uma assinatura mensal simples de R$ 29,90. Cobramos apenas pelo uso das ferramentas de gestão, sem nenhuma taxa ou comissão sobre o valor do seu aluguel."
         },
         {
             question: "Preciso baixar algum aplicativo?",
-            answer: "Não. O Aluga Fácil é um Progressive Web App (PWA) que funciona direto no seu navegador, tanto no computador quanto no celular, sem ocupar espaço na memória do seu aparelho."
+            answer: "Não. O Alugue Fácil é um Progressive Web App (PWA) que funciona direto no seu navegador, tanto no computador quanto no celular, sem ocupar espaço na memória do seu aparelho."
         }
     ];
 
@@ -54,7 +54,7 @@ export default function FAQPage() {
                             </div>
                             <h1 className="font-display text-4xl font-bold tracking-tight mb-4">Perguntas Frequentes</h1>
                             <p className="text-xl text-muted-foreground">
-                                Encontre respostas rápidas e descubra como o Aluga Fácil pode simplificar a gestão do seu patrimônio.
+                                Encontre respostas rápidas e descubra como o Alugue Fácil pode simplificar a gestão do seu patrimônio.
                             </p>
                         </div>
 

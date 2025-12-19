@@ -17,43 +17,43 @@ import {
 const features = [
   {
     icon: Building2,
-    title: "Cadastre seus imóveis",
-    description: "Registre todos os detalhes: fotos, cômodos, valores, regras e muito mais."
+    title: "Organize seu Portfólio",
+    description: "Registre fotos, cômodos, valores e regras. Mantenha seus imóveis centralizados e profissionais."
   },
   {
     icon: Share2,
-    title: "Compartilhe facilmente",
-    description: "Gere links únicos para cada imóvel e compartilhe com potenciais inquilinos."
+    title: "Divulgação com Autonomia",
+    description: "Gere links exclusivos para compartilhar em redes sociais e receba contatos direto no WhatsApp."
   },
   {
     icon: Users,
-    title: "Gerencie inquilinos",
-    description: "Cadastre inquilinos, controle contratos e acompanhe pagamentos."
+    title: "Gestão de Locações",
+    description: "Monitore inquilinos, contratos e o histórico de pagamentos de forma simples e segura."
   },
   {
     icon: Receipt,
-    title: "Comprovantes digitais",
-    description: "Gere comprovantes de pagamento profissionais para cada aluguel recebido."
+    title: "Comprovantes Digitais",
+    description: "Emita documentos profissionais em PDF em segundos para cada aluguel recebido."
   },
   {
     icon: Shield,
-    title: "Seguro e confiável",
-    description: "Seus dados protegidos com a mais alta tecnologia de segurança."
+    title: "Segurança de Dados",
+    description: "Suas informações protegidas com infraestrutura de ponta e políticas rigorosas de acesso."
   },
   {
     icon: Smartphone,
-    title: "100% responsivo",
-    description: "Acesse de qualquer dispositivo: computador, tablet ou celular."
+    title: "Acesso de Qualquer Lugar",
+    description: "Interface otimizada para computadores e dispositivos móveis, sem precisar baixar nada."
   }
 ];
 
 const benefits = [
-  "Sem intermediários ou taxas sobre aluguéis",
-  "Gestão completa dos seus imóveis",
-  "Contato direto via WhatsApp",
-  "Controle de pagamentos simplificado",
-  "Comprovantes profissionais",
-  "Suporte dedicado"
+  "Sem comissões ou taxas intermediárias",
+  "Autonomia total na gestão do patrimônio",
+  "Teste gratuito por 7 dias",
+  "Histórico de pagamentos organizado",
+  "Emissão de comprovantes em segundos",
+  "Suporte prioritário"
 ];
 
 export default function Landing() {
@@ -67,28 +67,26 @@ export default function Landing() {
           <div className="container px-6">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="animate-fade-in font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Aluguel direto com o{" "}
-                <span className="text-primary">proprietário</span>
+                Sua gestão de aluguéis, <span className="text-blue-500">simples e direta</span>
               </h1>
               <p className="mt-6 animate-fade-in text-lg text-muted-foreground [animation-delay:100ms] sm:text-xl">
-                Gerencie seus imóveis, inquilinos e pagamentos em um só lugar.
-                Sem intermediários, sem complicação.
+                O Alugue Fácil oferece autonomia total para proprietários, eliminando intermediários e automatizando a rotina de gestão.
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-4 animate-fade-in [animation-delay:200ms] sm:flex-row">
                 <Link href="/registro">
                   <Button size="lg" className="w-full gap-2 text-base sm:w-auto bg-blue-500 hover:bg-blue-400">
-                    Começar agora
+                    Começar 7 dias grátis
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </Link>
                 <Link href="/login">
                   <Button size="lg" variant="outline" className="w-full text-base sm:w-auto">
-                    Já tenho conta
+                    Entrar na plataforma
                   </Button>
                 </Link>
               </div>
               <p className="mt-4 text-sm text-muted-foreground animate-fade-in [animation-delay:300ms]">
-                Apenas <span className="font-semibold text-primary">R$ 30,00/mês</span> • Cancele quando quiser
+                Plano Profissional • <span className="font-semibold text-primary">R$ 29,90/mês</span>
               </p>
             </div>
           </div>
@@ -103,10 +101,10 @@ export default function Landing() {
           <div className="container px-4">
             <div className="mx-auto max-w-2xl text-center">
               <h2 id="features-heading" className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                Tudo que você precisa para gerenciar seus aluguéis
+                Simplicidade e controle para o seu patrimônio
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Uma plataforma completa para proprietários que querem simplicidade e controle.
+                Tudo o que você precisa para transformar a gestão manual em um processo profissional e eficiente.
               </p>
             </div>
 
@@ -137,10 +135,10 @@ export default function Landing() {
               <div className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
                 <div>
                   <h2 id="pricing-heading" className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                    Simples e transparente
+                    Invista na sua Gestão
                   </h2>
                   <p className="mt-4 text-lg text-muted-foreground">
-                    Um único plano com tudo incluso. Sem surpresas, sem taxas escondidas.
+                    Escolha a autonomia. Experimente o plano profissional gratuitamente por uma semana.
                   </p>
                   <ul className="mt-8 space-y-3" role="list">
                     {benefits.map((benefit) => (
@@ -155,22 +153,22 @@ export default function Landing() {
                 <Card className="border-blue-500/20 bg-gradient-to-t from-blue-500 to-blue-500/90 shadow-xl">
                   <CardContent className="p-8">
                     <div className="text-center">
-                      <p className="text-sm font-medium text-muted/80">Plano mensal</p>
+                      <p className="text-sm font-medium text-muted/80 uppercase tracking-wider">Acesso Profissional</p>
                       <div className="mt-2 flex items-baseline justify-center gap-1">
                         <span className="text-sm text-muted/80">R$</span>
-                        <span className="font-display text-5xl font-bold text-background">30</span>
+                        <span className="font-display text-5xl font-bold text-background">29,90</span>
                         <span className="text-muted/80">/mês</span>
                       </div>
-                      <p className="mt-2 text-sm text-muted/80">
-                        Imóveis ilimitados • Inquilinos ilimitados
+                      <p className="mt-4 text-sm text-muted/80">
+                        7 Dias de Teste Grátis • Cancele quando quiser
                       </p>
                       <Link href="/registro" className="mt-6 block">
-                        <Button size="lg" className="w-full text-blue-500 bg-background hover:bg-background/90">
-                          Começar agora
+                        <Button size="lg" className="w-full text-blue-500 bg-background hover:bg-blue-50">
+                          Assinar com 7 dias grátis
                         </Button>
                       </Link>
                       <p className="mt-3 text-xs text-muted/60">
-                        Cancele quando quiser, sem multa
+                        Imóveis e Quartos Ilimitados
                       </p>
                     </div>
                   </CardContent>
@@ -185,10 +183,10 @@ export default function Landing() {
           <div className="container px-4">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                Pronto para simplificar seus aluguéis?
+                Pronto para profissionalizar seus aluguéis?
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Junte-se a centenas de proprietários que já usam o AlugaFácil.
+                Junte-se a proprietários que já estão transformando sua rotina com o Alugue Fácil.
               </p>
               <Link href="/registro" className="mt-8 inline-block">
                 <Button size="lg" className="gap-2 text-base bg-blue-500 hover:bg-blue-400">

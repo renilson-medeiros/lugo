@@ -11,7 +11,7 @@ export function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500">
                 <Building2 className="h-4 w-4 text-primary-foreground" aria-hidden="true" />
               </div>
-              <span className="font-display text-lg font-semibold">Aluga Fácil</span>
+              <span className="font-display text-lg font-semibold">Alugue Fácil</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Plataforma de aluguel direto com o proprietário. Simples, seguro e sem intermediários.
@@ -46,7 +46,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t border-border/40 pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Aluga Fácil. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Alugue Fácil. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

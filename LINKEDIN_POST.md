@@ -1,79 +1,59 @@
-# 🏠 Alugue Fácil - Sistema Profissional de Gestão de Imóveis
+# 🏠 Alugue Fácil - Sua Gestão de Aluguéis, Simples e Direta
 
-Acabei de lançar meu mais novo projeto: **Alugue Fácil** - um sistema completo de gestão de imóveis para aluguel! 🚀
+Acabei de lançar o **Alugue Fácil** - uma plataforma completa projetada para dar autonomia total aos proprietários na gestão de seus imóveis e locações! 🚀
 
 ## 🎯 O Projeto
 
-Uma aplicação full-stack que resolve problemas reais de proprietários, oferecendo:
-- ✅ Gestão completa de imóveis e inquilinos
-- ✅ Geração automática de comprovantes
-- ✅ Upload de fotos otimizado
-- ✅ Dashboard com métricas em tempo real
+O Alugue Fácil é uma solução Full-Stack que elimina intermediários e profissionaliza o aluguel direto. Proprietários podem:
+- ✅ **Organizar seu Portfólio**: Centralize todos os seus imóveis e quartos em um só lugar.
+- ✅ **Divulgação com Autonomia**: Gere links exclusivos para compartilhar via WhatsApp e Redes Sociais.
+- ✅ **Gestão de Locações**: Vincule inquilinos, monitore vencimentos e histórico de pagamentos.
+- ✅ **Comprovantes Instantâneos**: Emita documentos profissionais em PDF em segundos.
 
 ## 💻 Stack Tecnológica
 
 **Frontend:**
-- Next.js 14 (App Router)
-- TypeScript 5.0
-- Tailwind CSS + shadcn/ui
-- React Hooks otimizados
+- **Next.js 14** (App Router & Server Actions)
+- **TypeScript 5.0** (Strict Mode)
+- **Tailwind CSS** + **shadcn/ui**
+- **Lucide React** para iconografia
 
 **Backend:**
-- Supabase (PostgreSQL)
-- Supabase Auth
-- Supabase Storage
-- Row Level Security (RLS)
+- **Supabase** (PostgreSQL)
+- **Supabase Auth** (Gestão de Acesso)
+- **Supabase Storage** (Armazenamento de Fotos e Contratos)
+- **Row Level Security (RLS)** para proteção de dados granular
 
 ## 🚀 Destaques Técnicos
 
-### Performance
-- **90% menos re-renders** com React.memo e useMemo
-- **90% menor tamanho de imagens** com Next.js Image
-- **80% menos tráfego** com queries otimizadas
-- **Lighthouse Score: 90+**
+### Performance & UX
+- ⚡ **Otimização de Imagens**: Next.js Image para carregamento ultra-rápido.
+- 📱 **Design Responsivo**: Experiência premium em qualquer dispositivo.
+- 🔄 **State Management**: React Hooks customizados e otimizações contra re-renders desnecessários.
+- 🏗️ **Arquitetura Modular**: Componentes reutilizáveis e separação clara de responsabilidades.
 
-### Segurança
-- ✅ Autenticação completa com Supabase
-- ✅ Validação de senha forte com feedback visual
-- ✅ Row Level Security no banco
-- ✅ Validação de CPF e sanitização de dados
-- ✅ Middleware de proteção de rotas
-
-### UX/UI
-- ✅ Design responsivo (Mobile First)
-- ✅ Máscaras automáticas (CPF, telefone, CEP)
-- ✅ DatePicker customizado
-- ✅ Loading states e empty states
-- ✅ Navegação intuitiva
-
-## 📊 Arquitetura
-
-```
-- Componentes modulares e reutilizáveis
-- Separação clara de responsabilidades
-- Validações centralizadas
-- Clientes Supabase separados (SSR)
-- TypeScript strict mode
-```
+### Segurança & Robustez
+- 🛡️ **Proteção de Dados**: Segurança em nível de banco de dados com RLS.
+- 📋 **Validações Rigorosas**: Sanitização de dados e máscaras automáticas (CPF, telefone, CEP).
+- 🔐 **Navegação Segura**: Proteção de rotas via Middleware.
 
 ## 🎓 Competências Demonstradas
 
-- Next.js 14 (SSR, Image Optimization, App Router)
-- TypeScript avançado
-- React Performance Optimization
-- Supabase (PostgreSQL, Auth, Storage, RLS)
-- UI/UX Design
-- Clean Code & Best Practices
+- Desenvolvimento Full-Stack moderno.
+- UI/UX focado em conversão e usabilidade.
+- Solução de problemas reais do mercado imobiliário.
 
-## 🔗 Links
+## 🔗 Link
 
-- **Repositório**: [github.com/seu-usuario/aluguefacil](https://github.com/seu-usuario/aluguefacil)
-- **Demo**: [em breve]
+- **Demo**: Acessar [Alugue Fácil](https://aluguefacil.vercel.app)
 
 ---
 
-**Tecnologias**: #NextJS #TypeScript #Supabase #React #TailwindCSS #PostgreSQL #WebDevelopment #FullStack
+**Tecnologias**: #NextJS #TypeScript #Supabase #React #TailwindCSS #PostgreSQL #WebDevelopment #FullStack #SaaS #PropTech
+
+🎯 **Acesse agora**: Experimente o Alugue Fácil gratuitamente por 7 dias!
 
 Feedback e sugestões são muito bem-vindos! 💬
 
-#DesenvolvimentoWeb #Frontend #Backend #OpenToWork #TechCareer
+#DesenvolvimentoWeb #Frontend #Backend #ProductDesign #SoftwareArchitecture
+

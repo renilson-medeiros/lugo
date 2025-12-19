@@ -66,7 +66,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500">
               <Building2 className="h-5 w-5 text-primary-foreground" aria-hidden="true" />
             </div>
-            <span className="font-display text-xl font-semibold">Aluga Fácil</span>
+            <span className="font-display text-xl font-semibold">Alugue Fácil</span>
           </div>
 
           <nav className="flex-1 space-y-1 p-4" aria-label="Menu do painel">
@@ -99,7 +99,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500">
               <Building2 className="h-4 w-4 text-primary-foreground" aria-hidden="true" />
             </div>
-            <span className="font-display text-lg font-semibold">Aluga Fácil</span>
+            <span className="font-display text-lg font-semibold">Alugue Fácil</span>
           </div>
 
           <Sheet open={isOpen} onOpenChange={setIsOpen}>

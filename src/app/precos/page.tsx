@@ -15,7 +15,7 @@ export default function PricingPage() {
                             Invista na sua Gestão
                         </h1>
                         <p className="text-xl text-muted-foreground">
-                            Escolha o plano que melhor se adapta ao seu portfólio. Durante nossa fase beta, oferecemos acesso total para você transformar sua rotina.
+                            Escolha o plano que melhor se adapta ao seu portfólio. Comece agora com 7 dias de teste gratuito em qualquer plano.
                         </p>
                     </div>
 
@@ -87,16 +87,7 @@ export default function PricingPage() {
                         </div>
                     </div>
 
-                    {/* Beta Notice */}
-                    <div className="mt-16 max-w-2xl mx-auto bg-accent/50 p-6 rounded-2xl flex gap-4 items-start border border-border/50">
-                        <Info className="h-6 w-6 text-blue-500 shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="font-bold mb-1">Aproveite nossa Fase Beta!</h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Estamos construindo o futuro da gestão de aluguéis junto com você. Por tempo limitado, todas as ferramentas do plano Profissional estão disponíveis de forma totalmente gratuita para novos usuários.
-                            </p>
-                        </div>
-                    </div>
+
                 </section>
             </main>
             <Footer />

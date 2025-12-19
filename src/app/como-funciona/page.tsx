@@ -23,7 +23,7 @@ export default function HowItWorksPage() {
                         Sua gestão de aluguéis, <span className="text-blue-500">simples e direta</span>
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-                        O Aluga Fácil oferece autonomia total para proprietários, eliminando intermediários e automatizando a gestão do dia a dia.
+                        O Alugue Fácil oferece autonomia total para proprietários, eliminando intermediários e automatizando a gestão do dia a dia.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link href="/registro">
@@ -123,7 +123,7 @@ export default function HowItWorksPage() {
                     <div className="bg-blue-500 rounded-2xl p-12 text-white">
                         <h2 className="text-3xl font-bold mb-6">Pronto para simplificar seus aluguéis?</h2>
                         <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto">
-                            Junte-se a proprietários que já estão usando o Aluga Fácil para organizar sua gestão.
+                            Junte-se a proprietários que já estão usando o Alugue Fácil para organizar sua gestão.
                         </p>
                         <Link href="/registro">
                             <Button size="lg" variant="secondary" className="text-blue-500">

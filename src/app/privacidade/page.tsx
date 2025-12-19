@@ -43,9 +43,9 @@ export default function PrivacyPage() {
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-bold text-foreground font-display">1. Introdução</h2>
                                 <p>
-                                    O Aluga Fácil valoriza a sua privacidade. Esta Política de Privacidade explica como coletamos, usamos,
+                                    O Alugue Fácil valoriza a sua privacidade. Esta Política de Privacidade explica como coletamos, usamos,
                                     protegemos e compartilhamos suas informações pessoais ao utilizar nossa plataforma.
-                                    Ao acessar o Aluga Fácil, você concorda com as práticas descritas nesta política.
+                                    Ao acessar o Alugue Fácil, você concorda com as práticas descritas nesta política.
                                 </p>
                             </section>
 

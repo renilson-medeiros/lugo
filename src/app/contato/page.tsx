@@ -69,7 +69,7 @@ export default function ContactPage() {
                                     <span className="font-bold">Sede Virtual</span>
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    O Aluga Fácil é uma plataforma 100% digital, focada em eficiência e comodidade para proprietários de todo o Brasil.
+                                    O Alugue Fácil é uma plataforma 100% digital, focada em eficiência e comodidade para proprietários de todo o Brasil.
                                 </p>
                             </div>
                         </div>

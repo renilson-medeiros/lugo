@@ -220,7 +220,7 @@ export default function Register() {
                     </PopoverTrigger>
                     <PopoverContent side="right" className="w-80 p-3 text-xs leading-relaxed">
                       <p>
-                        Use seu número de contato principal para 
+                        Use seu número de contato principal para
                         que os interessados possam falar com você diretamente.
                       </p>
                     </PopoverContent>
@@ -354,8 +354,8 @@ export default function Register() {
                 <div className="flex items-center gap-3">
                   <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" />
                   <div>
-                    <p className="text-sm font-medium">Plano mensal: R$ 30,00</p>
-                    <p className="text-xs text-muted-foreground">Cobrança recorrente • Cancele quando quiser</p>
+                    <p className="text-sm font-medium">Plano Profissional: R$ 29,90/mês</p>
+                    <p className="text-xs text-muted-foreground">7 dias de teste grátis • Cancele quando quiser</p>
                   </div>
                 </div>
               </div>
