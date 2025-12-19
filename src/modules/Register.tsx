@@ -8,7 +8,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Header } from "@/components/layout/Header";
 import { useState } from "react";
-import { Eye, EyeOff, CreditCard, Building2, AlertCircle, Check, X } from "lucide-react";
+import { Eye, EyeOff, CreditCard, Building2, AlertCircle, Check, X, Info } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { validarSenha } from "@/lib/validators";
 
@@ -205,9 +210,22 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">
-                  WhatsApp
-                </Label>
+                <div className="flex items-center gap-1.5">
+                  <Label htmlFor="phone">WhatsApp</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button type="button" className="inline-flex cursor-pointer items-center">
+                        <Info className="h-3.5 w-3.5 text-blue-500" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="right" className="w-80 p-3 text-xs leading-relaxed">
+                      <p>
+                        Use seu número de contato principal para 
+                        que os interessados possam falar com você diretamente.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <Input
                   id="phone"
                   type="tel"

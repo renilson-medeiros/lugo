@@ -5,12 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { User, Phone, Mail, CreditCard, Calendar, Bell, Loader2, AlertCircle } from "lucide-react";
+import { User, Phone, Mail, CreditCard, Calendar, Bell, Loader2, AlertCircle, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { validarTelefone, formatarTelefone, formatarCPF } from "@/lib/validators";
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 
 export default function Settings() {
   const { user, profile } = useAuth();
@@ -149,7 +150,22 @@ export default function Settings() {
                 <p className="text-xs text-muted-foreground">O email não pode ser alterado</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefone</Label>
+                <div className="flex items-center gap-1.5">
+                  <Label htmlFor="phone">WhatsApp</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button type="button" className="inline-flex cursor-pointer items-center">
+                        <Info className="h-3.5 w-3.5 text-blue-500" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="right" className="w-80 p-3 text-xs leading-relaxed">
+                      <p>
+                        Use seu número de contato principal para 
+                        que os interessados possam falar com você diretamente.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <Input
                   id="phone"
                   value={userData.telefone}
