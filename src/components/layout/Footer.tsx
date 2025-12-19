@@ -21,26 +21,26 @@ export function Footer() {
           <div>
             <h3 className="mb-4 font-display font-semibold">Plataforma</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/registro" className="transition-colors hover:text-blue-500">Como funciona</Link></li>
-              <li><Link href="/registro" className="transition-colors hover:text-blue-500">Preços</Link></li>
-              <li><Link href="/registro" className="transition-colors hover:text-blue-500">Para proprietários</Link></li>
+              <li><Link href="/como-funciona" className="transition-colors hover:text-blue-500">Como funciona</Link></li>
+              <li><Link href="/precos" className="transition-colors hover:text-blue-500">Preços</Link></li>
+              <li><Link href="/como-funciona" className="transition-colors hover:text-blue-500">Para proprietários</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="mb-4 font-display font-semibold">Suporte</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="#" className="transition-colors hover:text-blue-500">Central de ajuda</Link></li>
-              <li><Link href="#" className="transition-colors hover:text-blue-500">Contato</Link></li>
-              <li><Link href="#" className="transition-colors hover:text-blue-500">FAQ</Link></li>
+              <li><Link href="/faq" className="transition-colors hover:text-blue-500">Central de ajuda</Link></li>
+              <li><Link href="/contato" className="transition-colors hover:text-blue-500">Contato</Link></li>
+              <li><Link href="/faq" className="transition-colors hover:text-blue-500">FAQ</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="mb-4 font-display font-semibold">Legal</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="#" className="transition-colors hover:text-blue-500">Termos de uso</Link></li>
-              <li><Link href="#" className="transition-colors hover:text-blue-500">Privacidade</Link></li>
+              <li><Link href="/termos" className="transition-colors hover:text-blue-500">Termos de uso</Link></li>
+              <li><Link href="/privacidade" className="transition-colors hover:text-blue-500">Privacidade</Link></li>
             </ul>
           </div>
         </div>
