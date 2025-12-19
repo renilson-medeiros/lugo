@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { DatePicker } from "@/components/ui/date-picker";
+import { YearPicker } from "@/components/ui/year-picker";
 import {
   Select,
   SelectContent,
@@ -280,14 +281,9 @@ export default function ReceiptForm() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="referenceYear">Ano</Label>
-                    <Input
-                      id="referenceYear"
-                      type="number"
+                    <YearPicker
                       value={formData.referenceYear}
-                      onChange={(e) => handleInputChange("referenceYear", e.target.value)}
-                      min="2020"
-                      max="2030"
-                      required
+                      onChange={(year) => handleInputChange("referenceYear", year)}
                     />
                   </div>
                   <div className="space-y-2">

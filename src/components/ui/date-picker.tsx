@@ -37,14 +37,14 @@ export function DatePicker({
                 <Button
                     variant={"outline"}
                     className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full justify-start overflow-hidden text-left font-normal",
                         !date && "text-muted-foreground",
                         className
                     )}
                     disabled={disabled}
                 >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP", { locale: ptBR }) : <span>{placeholder}</span>}
+                    <CalendarIcon className="text-blue-500 h-4 w-4" />
+                    {date ? format(date, "PP", { locale: ptBR }) : <span>{placeholder}</span>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -53,7 +53,7 @@ export function DatePicker({
                     selected={date}
                     onSelect={(selectedDate) => {
                         onSelect(selectedDate)
-                        setOpen(false) // Fecha o popover ao selecionar
+                        setOpen(false) 
                     }}
                     initialFocus
                     locale={ptBR}
