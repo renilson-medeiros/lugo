@@ -173,7 +173,10 @@ export default function PropertyDetail() {
   const handleWhatsAppContact = () => {
     if (!property) return;
 
-    const message = encodeURIComponent(`Olá! Vi o imóvel "${property.title}" e gostaria de mais informações.`);
+    const propertyLink = window.location.href;
+    const message = encodeURIComponent(
+      `Olá! Vi o imóvel\n\n*${property.title}*\n${propertyLink}\n\nE gostaria de mais informações.`
+    );
     window.open(`https://wa.me/55${property.owner.whatsapp}?text=${message}`, "_blank");
   };
 
