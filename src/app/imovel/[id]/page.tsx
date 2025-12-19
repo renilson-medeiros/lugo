@@ -30,26 +30,50 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const title = imovel.titulo || `${imovel.endereco_rua}, ${imovel.endereco_numero} - ${imovel.endereco_bairro}`;
     const price = imovel.valor_aluguel.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const description = `Confira este imóvel: ${imovel.tipo} com ${imovel.quartos} quartos em ${imovel.endereco_cidade}. Aluguel por apenas ${price}. Veja mais detalhes e fotos no Alugue Fácil!`;
+    const description = `🏠 ${imovel.tipo === 'apartamento' ? 'Apartamento' : 'Casa'} incrível em ${imovel.endereco_cidade}. Com ${imovel.quartos || 'vários'} quartos, por apenas ${price}/mês. Confira fotos e agende uma visita no Alugue Fácil!`;
 
-    const firstImage = imovel.fotos?.[0] || '/frame-preview.png';
+    const firstImage = imovel.fotos?.[0] || 'https://aluguefacil.vercel.app/og-image.png';
+    const baseUrl = 'https://aluguefacil.vercel.app';
+    const canonicalUrl = `${baseUrl}/imovel/${id}`;
 
     return {
         title: {
-            absolute: `Alugue Fácil | ${title}`
+            absolute: `${title} | Alugue Fácil`
         },
         description,
+        keywords: [
+            imovel.tipo,
+            `aluguel em ${imovel.endereco_cidade}`,
+            `imóvel em ${imovel.endereco_bairro}`,
+            imovel.endereco_cidade,
+            'alugue fácil',
+            'aluguel direto com proprietário'
+        ],
+        alternates: {
+            canonical: canonicalUrl,
+        },
         openGraph: {
-            title: `Alugue Fácil | ${title}`,
+            title: `${title} | Alugue Fácil`,
             description,
-            images: [firstImage],
+            url: canonicalUrl,
+            siteName: 'Alugue Fácil',
+            locale: 'pt_BR',
             type: 'website',
+            images: [
+                {
+                    url: firstImage,
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                },
+            ],
         },
         twitter: {
             card: 'summary_large_image',
-            title: `Alugue Fácil | ${title}`,
+            title: `${title} | Alugue Fácil`,
             description,
             images: [firstImage],
+            creator: '@aluguefacil',
         },
     };
 }
