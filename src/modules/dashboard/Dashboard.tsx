@@ -2,11 +2,16 @@ import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, Receipt, Plus, ArrowRight, TrendingUp, Home, ChevronLeft, ChevronRight as ChevronRightIcon, AlertCircle, Clock, Calendar } from "lucide-react";
+import { Building2, Info, Users, Receipt, Plus, ArrowRight, TrendingUp, Home, ChevronLeft, ChevronRight as ChevronRightIcon, AlertCircle, Clock, Calendar } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   BarChart,
   Bar,
@@ -535,7 +540,7 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-6 text-center">
-                    <div className="h-10 w-10 rounded-full bg-green-50 flex items-center justify-center mb-2">
+                    <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center mb-2">
                       <TrendingUp className="h-5 w-5 text-green-600" />
                     </div>
                     <p className="text-sm font-medium text-green-700">Tudo em dia!</p>
@@ -607,35 +612,62 @@ export default function Dashboard() {
                 {recentProperties.map((property) => (
                   <div
                     key={property.id}
-                    className="group flex items-center justify-between rounded-lg border border-border/50 p-4 transition-all hover:bg-accent/50 hover:border-blue-500/20"
+                    className="flex items-center justify-between rounded-lg border border-border/50 p-3 sm:p-4 bg-card"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent group-hover:bg-blue-50 transition-colors">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent">
                         <Building2 className="h-5 w-5 text-blue-500" aria-hidden="true" />
                       </div>
-                      <div>
-                        <p className="font-medium">
+                      <div className="min-w-0">
+                        <p className="font-medium truncate text-sm sm:text-base">
                           {property.endereco_rua}, {property.endereco_numero}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground truncate">
                           {property.inquilino_nome || "Sem inquilino"}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4 shrink-0 px-1">
+                      {/* Desktop Badge */}
                       <span
-                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${property.status === "alugado"
-                          ? "bg-green-50 text-green-700 border border-green-200"
-                          : "bg-orange-50 text-orange-700 border border-orange-200"
-                          }`}
+                        className={cn(
+                          "hidden sm:inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                          property.status === "alugado"
+                            ? "bg-red-50 text-red-700 border border-red-200"
+                            : "bg-green-50 text-green-700 border border-green-200"
+                        )}
                       >
                         {property.status === "alugado" ? "Ocupado" : "Disponível"}
                       </span>
-                      <Link href={`/dashboard/imoveis/${property.id}`}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
+
+                      {/* Mobile Popover Badge with Info Icon */}
+                      <div className="sm:hidden">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button
+                              className="p-1 transition-transform active:scale-90"
+                              aria-label={property.status === "alugado" ? "Ocupado" : "Disponível"}
+                            >
+                              <Info
+                                className={cn(
+                                  "h-4 w-4",
+                                  property.status === "alugado"
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                )}
+                              />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent side="left" className="w-auto p-2 bg-popover shadow-lg border-border/50">
+                            <p className={cn(
+                              "text-[10px] font-bold uppercase tracking-wider",
+                              property.status === "alugado" ? "text-red-700" : "text-green-700"
+                            )}>
+                              {property.status === "alugado" ? "Ocupado" : "Disponível"}
+                            </p>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                     </div>
                   </div>
                 ))}
