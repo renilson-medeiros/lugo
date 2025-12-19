@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TenantFormData {
   name: string;
@@ -78,8 +79,10 @@ export default function TenantForm() {
 
   const [contractPhotos, setContractPhotos] = useState<File[]>([]);
   const [contractPreviews, setContractPreviews] = useState<string[]>([]);
+  const [existingContractPhotos, setExistingContractPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (isEditMode && id) {
@@ -201,8 +204,16 @@ export default function TenantForm() {
   };
 
   const removeContractPhoto = (index: number) => {
-    setContractPhotos(prev => prev.filter((_, i) => i !== index));
-    setContractPreviews(prev => prev.filter((_, i) => i !== index));
+    // Se for uma foto nova
+    if (index < contractPhotos.length) {
+      setContractPhotos(prev => prev.filter((_, i) => i !== index));
+      setContractPreviews(prev => prev.filter((_, i) => i !== index));
+    } else {
+      // Se for uma foto existente
+      const existingIndex = index - contractPhotos.length;
+      setExistingContractPhotos(prev => prev.filter((_, i) => i !== existingIndex));
+      setContractPreviews(prev => prev.filter((_, i) => i !== index));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -227,8 +238,35 @@ export default function TenantForm() {
         valor_aluguel: rentAmount,
         rg: formData.rg,
         observacoes: formData.observations,
-        status: 'ativo'
+        status: 'ativo',
+        fotos_contrato: [] as string[]
       };
+
+      // Upload de fotos do contrato
+      const uploadedContractUrls: string[] = [];
+      if (user && propertyId) {
+        // Se estiver trocando de inquilino ou editando e adicionando novas fotos, 
+        // o ideal seria limpar o que existe se o usuário pediu, mas por agora vamos focar no upload estruturado.
+
+        for (const photo of contractPhotos) {
+          const fileExt = photo.name.split('.').pop();
+          const fileName = `${user.id}/${propertyId}/contracts/${Date.now()}-${Math.random()}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('imoveis-fotos') // Reutilizando o bucket, mas em pasta diferente
+            .upload(fileName, photo);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('imoveis-fotos')
+            .getPublicUrl(fileName);
+
+          uploadedContractUrls.push(publicUrl);
+        }
+      }
+
+      tenantData.fotos_contrato = [...existingContractPhotos, ...uploadedContractUrls];
 
       if (isEditMode && tenantId) {
         // Atualizar inquilino existente

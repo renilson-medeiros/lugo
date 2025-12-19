@@ -274,12 +274,55 @@ export default function PropertyForm() {
     setIsSubmitting(true);
 
     try {
+      let propertyId = id;
+
+      // Se não for edição, precisamos criar o registro primeiro para ter o ID
+      if (!isEditMode) {
+        const initialPropertyData = {
+          proprietario_id: user.id,
+          endereco_cep: formData.cep,
+          endereco_rua: formData.street,
+          endereco_numero: formData.number,
+          endereco_complemento: formData.complement || null,
+          endereco_bairro: formData.neighborhood,
+          endereco_cidade: formData.city,
+          endereco_estado: formData.state,
+          titulo: formData.title,
+          tipo: formData.type as 'casa' | 'apartamento' | 'comercial' | 'terreno',
+          comodos: formData.rooms,
+          max_pessoas: formData.maxPeople ? parseInt(formData.maxPeople) : null,
+          aceita_pets: formData.acceptsPets,
+          tem_garagem: formData.hasGarage,
+          aceita_criancas: formData.acceptsChildren,
+          valor_aluguel: parseCurrencyToNumber(formData.rentValue),
+          valor_condominio: formData.condoValue ? parseCurrencyToNumber(formData.condoValue) : null,
+          valor_iptu: formData.iptuValue ? parseCurrencyToNumber(formData.iptuValue) : null,
+          valor_taxa_servico: formData.serviceValue ? parseCurrencyToNumber(formData.serviceValue) : null,
+          inclui_agua: formData.includesWater,
+          inclui_luz: formData.includesElectricity,
+          inclui_internet: formData.includesInternet,
+          inclui_gas: formData.includesGas,
+          descricao: formData.observations || null,
+          status: 'disponivel' as 'disponivel' | 'alugado' | 'manutencao',
+          fotos: [], // Temporário
+        };
+
+        const { data: newProperty, error: insertError } = await supabase
+          .from('imoveis')
+          .insert([initialPropertyData])
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+        propertyId = newProperty.id;
+      }
+
       // Upload de novas fotos
       const uploadedPhotosUrls: string[] = [];
 
       for (const photo of photos) {
         const fileExt = photo.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}-${Math.random()}.${fileExt}`;
+        const fileName = `${user.id}/${propertyId}/photos/${Date.now()}-${Math.random()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('imoveis-fotos')
@@ -300,20 +343,14 @@ export default function PropertyForm() {
       // Validar quantidade de fotos
       if (allPhotos.length < 3) {
         toast.error('Mínimo de 3 fotos necessárias');
+        // Se criou o registro agora mas deu erro nas fotos, poderíamos deletar, 
+        // mas é melhor apenas avisar o usuário que precisa adicionar mais fotos.
         setIsSubmitting(false);
         return;
       }
 
-      if (allPhotos.length > 8) {
-        toast.error('Máximo de 8 fotos permitidas');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Preparar dados para salvar
-      const propertyData = {
+      const finalPropertyData = {
         proprietario_id: user.id,
-        // Endereço
         endereco_cep: formData.cep,
         endereco_rua: formData.street,
         endereco_numero: formData.number,
@@ -321,7 +358,6 @@ export default function PropertyForm() {
         endereco_bairro: formData.neighborhood,
         endereco_cidade: formData.city,
         endereco_estado: formData.state,
-        // Informações
         titulo: formData.title,
         tipo: formData.type as 'casa' | 'apartamento' | 'comercial' | 'terreno',
         comodos: formData.rooms,
@@ -329,45 +365,29 @@ export default function PropertyForm() {
         aceita_pets: formData.acceptsPets,
         tem_garagem: formData.hasGarage,
         aceita_criancas: formData.acceptsChildren,
-        // Valores
         valor_aluguel: parseCurrencyToNumber(formData.rentValue),
         valor_condominio: formData.condoValue ? parseCurrencyToNumber(formData.condoValue) : null,
         valor_iptu: formData.iptuValue ? parseCurrencyToNumber(formData.iptuValue) : null,
         valor_taxa_servico: formData.serviceValue ? parseCurrencyToNumber(formData.serviceValue) : null,
-        // Inclusões
         inclui_agua: formData.includesWater,
         inclui_luz: formData.includesElectricity,
         inclui_internet: formData.includesInternet,
         inclui_gas: formData.includesGas,
-        // Observações
         descricao: formData.observations || null,
-        // Fotos
-        fotos: allPhotos.length > 0 ? allPhotos : null,
-        status: 'disponivel' as 'disponivel' | 'alugado' | 'manutencao',
-        // Campos default (pode ajustar depois)
-        quartos: null,
-        banheiros: null,
-        area_m2: null,
+        fotos: allPhotos,
       };
 
-      if (isEditing) {
-        // Atualizar imóvel existente
-        const { error } = await supabase
-          .from('imoveis')
-          .update(propertyData)
-          .eq('id', id);
+      // Atualizar o registro (seja o que acabamos de criar ou o existente)
+      const { error: updateError } = await supabase
+        .from('imoveis')
+        .update(finalPropertyData)
+        .eq('id', propertyId);
 
-        if (error) throw error;
+      if (updateError) throw updateError;
 
+      if (isEditMode) {
         toast.success("Imóvel atualizado com sucesso!");
       } else {
-        // Criar novo imóvel
-        const { error } = await supabase
-          .from('imoveis')
-          .insert([propertyData]);
-
-        if (error) throw error;
-
         toast.success("Imóvel cadastrado com sucesso!", {
           description: "Você pode compartilhar o link do imóvel.",
         });
