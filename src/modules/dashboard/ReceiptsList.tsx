@@ -15,8 +15,17 @@ import {
   User,
   Building2,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Filter,
+  XCircle
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -46,6 +55,9 @@ export default function ReceiptsList() {
   const [receipts, setReceipts] = useState<ReceiptData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [tipoFilter, setTipoFilter] = useState("todos");
+  const [mesFilter, setMesFilter] = useState("todos");
+  const [anoFilter, setAnoFilter] = useState("todos");
 
   useEffect(() => {
     if (user) {
@@ -107,12 +119,40 @@ export default function ReceiptsList() {
 
   const filteredReceipts = useMemo(() => {
     return receipts.filter(
-      (receipt) =>
-        (receipt.inquilinos?.nome_completo || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (receipt.imoveis?.titulo || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        receipt.mes_referencia.toLowerCase().includes(searchQuery.toLowerCase())
+      (receipt) => {
+        const matchesSearch = (receipt.inquilinos?.nome_completo || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (receipt.imoveis?.titulo || '').toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesTipo = tipoFilter === "todos" || receipt.tipo === tipoFilter;
+
+        const date = new Date(receipt.mes_referencia);
+        const matchesMes = mesFilter === "todos" || (date.getMonth() + 1).toString() === mesFilter;
+        const matchesAno = anoFilter === "todos" || date.getFullYear().toString() === anoFilter;
+
+        return matchesSearch && matchesTipo && matchesMes && matchesAno;
+      }
     );
-  }, [receipts, searchQuery]);
+  }, [receipts, searchQuery, tipoFilter, mesFilter, anoFilter]);
+
+  const years = useMemo(() => {
+    const unique = new Set(receipts.map(r => new Date(r.mes_referencia).getFullYear().toString()));
+    return Array.from(unique).sort((a, b) => b.localeCompare(a));
+  }, [receipts]);
+
+  const months = [
+    { label: "Janeiro", value: "1" },
+    { label: "Fevereiro", value: "2" },
+    { label: "Março", value: "3" },
+    { label: "Abril", value: "4" },
+    { label: "Maio", value: "5" },
+    { label: "Junho", value: "6" },
+    { label: "Julho", value: "7" },
+    { label: "Agosto", value: "8" },
+    { label: "Setembro", value: "9" },
+    { label: "Outubro", value: "10" },
+    { label: "Novembro", value: "11" },
+    { label: "Dezembro", value: "12" },
+  ];
 
   const handleDownload = useCallback(async (pdfUrl: string | null) => {
     if (!pdfUrl) {
@@ -182,9 +222,9 @@ export default function ReceiptsList() {
           </Link>
         </div>
 
-        {/* Search */}
-        {receipts.length > 0 && (
-          <div className="relative max-w-md">
+        {/* Search and Filters */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
               type="search"
@@ -195,7 +235,74 @@ export default function ReceiptsList() {
               aria-label="Buscar comprovante"
             />
           </div>
-        )}
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
+            <Select value={tipoFilter} onValueChange={setTipoFilter}>
+              <SelectTrigger className="w-full lg:w-[140px]">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Tipo" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Tipos</SelectItem>
+                <SelectItem value="pagamento">Pagamento</SelectItem>
+                <SelectItem value="residencia">Residência</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={mesFilter} onValueChange={setMesFilter}>
+              <SelectTrigger className="w-full lg:w-[140px]">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Mês" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Meses</SelectItem>
+                {months.map(month => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={anoFilter} onValueChange={setAnoFilter}>
+              <SelectTrigger className="w-full lg:w-[100px] col-span-1 lg:col-span-1">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-3.5 w-3.5 text-muted-foreground lg:hidden" />
+                  <SelectValue placeholder="Ano" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Anos</SelectItem>
+                {years.map(year => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {(tipoFilter !== "todos" || mesFilter !== "todos" || anoFilter !== "todos" || searchQuery !== "") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setTipoFilter("todos");
+                  setMesFilter("todos");
+                  setAnoFilter("todos");
+                  setSearchQuery("");
+                }}
+                className="text-muted-foreground hover:text-red-500 w-full lg:w-auto col-span-1 lg:col-span-1"
+              >
+                <XCircle className="h-4 w-4 mr-1" />
+                Limpar
+              </Button>
+            )}
+          </div>
+        </div>
 
         {/* Receipts List */}
         {filteredReceipts.length > 0 ? (

@@ -26,6 +26,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Filter, XCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -54,6 +62,8 @@ export default function TenantsList() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState("todos");
+  const [propertyFilter, setPropertyFilter] = useState("todos");
 
   useEffect(() => {
     if (user) {
@@ -148,12 +158,23 @@ export default function TenantsList() {
 
   const filteredTenants = useMemo(() => {
     return tenants.filter(
-      (tenant) =>
-        tenant.nome_completo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.cpf.includes(searchQuery) ||
-        (tenant.imoveis?.titulo || '').toLowerCase().includes(searchQuery.toLowerCase())
+      (tenant) => {
+        const matchesSearch = tenant.nome_completo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          tenant.cpf.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesStatus = statusFilter === "todos" || tenant.status === statusFilter;
+
+        const matchesProperty = propertyFilter === "todos" || tenant.imoveis?.titulo === propertyFilter;
+
+        return matchesSearch && matchesStatus && matchesProperty;
+      }
     );
-  }, [tenants, searchQuery]);
+  }, [tenants, searchQuery, statusFilter, propertyFilter]);
+
+  const properties = useMemo(() => {
+    const unique = new Set(tenants.map(t => t.imoveis?.titulo).filter(Boolean));
+    return Array.from(unique).sort();
+  }, [tenants]);
 
   if (isLoading) {
     return (
@@ -199,9 +220,9 @@ export default function TenantsList() {
           </div>
         </div>
 
-        {/* Search */}
-        {tenants.length > 0 && (
-          <div className="relative max-w-md">
+        {/* Search and Filters */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
               type="search"
@@ -212,7 +233,56 @@ export default function TenantsList() {
               aria-label="Buscar inquilino"
             />
           </div>
-        )}
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full lg:w-[160px]">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Status" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Status</SelectItem>
+                <SelectItem value="ativo">Ativo</SelectItem>
+                <SelectItem value="inativo">Inativo</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={propertyFilter} onValueChange={setPropertyFilter}>
+              <SelectTrigger className="w-full lg:w-[200px]">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Imóvel" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Imóveis</SelectItem>
+                {properties.map(title => (
+                  <SelectItem key={title} value={title || ''}>
+                    {title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {(statusFilter !== "todos" || propertyFilter !== "todos" || searchQuery !== "") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setStatusFilter("todos");
+                  setPropertyFilter("todos");
+                  setSearchQuery("");
+                }}
+                className="text-muted-foreground hover:text-red-500 w-full lg:w-auto col-span-1 sm:col-span-2 lg:col-span-1"
+              >
+                <XCircle className="h-4 w-4 mr-1" />
+                Limpar
+              </Button>
+            )}
+          </div>
+        </div>
 
         {/* Tenants List */}
         {filteredTenants.length > 0 ? (

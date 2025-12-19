@@ -26,6 +26,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Filter, XCircle } from "lucide-react";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -46,6 +54,8 @@ interface Property {
   status: string;
   tenant: string | null;
   image: string;
+  neighborhood: string;
+  city: string;
 }
 
 export default function PropertiesList() {
@@ -54,6 +64,8 @@ export default function PropertiesList() {
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("todos");
+  const [neighborhoodFilter, setNeighborhoodFilter] = useState("todos");
 
   // Carregar imóveis do banco
   useEffect(() => {
@@ -97,7 +109,9 @@ export default function PropertiesList() {
           tenant: activeInquilino?.nome_completo || null,
           image: (imovel.fotos && imovel.fotos.length > 0)
             ? imovel.fotos[0]
-            : "/preview.png"
+            : "/preview.png",
+          neighborhood: imovel.endereco_bairro || '',
+          city: imovel.endereco_cidade || ''
         };
       });
 
@@ -113,11 +127,23 @@ export default function PropertiesList() {
   // Usar useMemo para evitar recalcular filteredProperties em cada render
   const filteredProperties = useMemo(() => {
     return properties.filter(
-      (property) =>
-        property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        property.address.toLowerCase().includes(searchQuery.toLowerCase())
+      (property) => {
+        const matchesSearch = property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          property.address.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesStatus = statusFilter === "todos" || property.status === statusFilter;
+
+        const matchesNeighborhood = neighborhoodFilter === "todos" || property.neighborhood === neighborhoodFilter;
+
+        return matchesSearch && matchesStatus && matchesNeighborhood;
+      }
     );
-  }, [properties, searchQuery]);
+  }, [properties, searchQuery, statusFilter, neighborhoodFilter]);
+
+  const neighborhoods = useMemo(() => {
+    const unique = new Set(properties.map(p => p.neighborhood).filter(Boolean));
+    return Array.from(unique).sort();
+  }, [properties]);
 
   // Usar useCallback para evitar recriar funções em cada render
   const handleShare = useCallback((property: Property) => {
@@ -237,17 +263,69 @@ export default function PropertiesList() {
           </Link>
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <Input
-            type="search"
-            placeholder="Buscar imóvel..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-            aria-label="Buscar imóvel"
-          />
+        {/* Search and Filters */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <Input
+              type="search"
+              placeholder="Buscar imóvel..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+              aria-label="Buscar imóvel"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full lg:w-[160px]">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Status" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Status</SelectItem>
+                <SelectItem value="disponível">Disponível</SelectItem>
+                <SelectItem value="ocupado">Ocupado</SelectItem>
+                <SelectItem value="manutenção">Manutenção</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={neighborhoodFilter} onValueChange={setNeighborhoodFilter}>
+              <SelectTrigger className="w-full lg:w-[180px]">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Bairro" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Bairros</SelectItem>
+                {neighborhoods.map(neighborhood => (
+                  <SelectItem key={neighborhood} value={neighborhood}>
+                    {neighborhood}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {(statusFilter !== "todos" || neighborhoodFilter !== "todos" || searchQuery !== "") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setStatusFilter("todos");
+                  setNeighborhoodFilter("todos");
+                  setSearchQuery("");
+                }}
+                className="text-muted-foreground hover:text-red-500 w-full lg:w-auto col-span-1 sm:col-span-2 lg:col-span-1"
+              >
+                <XCircle className="h-4 w-4 mr-1" />
+                Limpar
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Properties Grid - Loading */}
@@ -308,7 +386,7 @@ export default function PropertiesList() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir imóvel</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir este imóvel? Esta ação não pode ser desfeita e todos os dados relacionados (inquilinos, comprovantes) também serão excluídos.
+              Tem certeza que deseja excluir este imóvel? Esta ação não pode ser desfeita e dados relacionados (inquilinos, comprovantes) também serão excluídos.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
