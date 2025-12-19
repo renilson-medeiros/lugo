@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -25,9 +25,12 @@ import {
   Calendar,
   User,
   Building2,
-  DollarSign
+  DollarSign,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ReceiptFormData {
   tenantId: string;
@@ -35,6 +38,7 @@ interface ReceiptFormData {
   tenantCpf: string;
   propertyName: string;
   propertyAddress: string;
+  propertyId: string;
   rentValue: string;
   condoValue: string;
   iptuValue: string;
@@ -45,24 +49,23 @@ interface ReceiptFormData {
   observations: string;
 }
 
-const mockTenants = [
-  {
-    id: "1",
-    name: "João Silva",
-    cpf: "123.456.789-00",
-    property: "Apartamento Centro",
-    propertyAddress: "Rua das Flores, 123 - Centro, São Paulo",
-    rentValue: "2500"
-  },
-  {
-    id: "2",
-    name: "Maria Santos",
-    cpf: "987.654.321-00",
-    property: "Kitnet Zona Sul",
-    propertyAddress: "Rua Augusta, 789 - Consolação, São Paulo",
-    rentValue: "1200"
-  },
-];
+interface Tenant {
+  id: string;
+  nome_completo: string;
+  cpf: string;
+  valor_aluguel: number;
+  imovel_id: string;
+  imoveis: {
+    id: string;
+    titulo: string;
+    endereco_rua: string;
+    endereco_numero: string;
+    endereco_bairro: string;
+    endereco_cidade: string;
+    valor_condominio: number;
+    valor_iptu: number;
+  };
+}
 
 const months = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -75,6 +78,7 @@ const initialFormData: ReceiptFormData = {
   tenantCpf: "",
   propertyName: "",
   propertyAddress: "",
+  propertyId: "",
   rentValue: "",
   condoValue: "",
   iptuValue: "",
@@ -87,46 +91,95 @@ const initialFormData: ReceiptFormData = {
 
 export default function ReceiptForm() {
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
-  /* const searchParams defined above */
   const receiptRef = useRef<HTMLDivElement>(null);
-  const [formData, setFormData] = useState<ReceiptFormData>(() => {
-    const tenantId = searchParams.get("inquilino");
-    if (tenantId) {
-      const tenant = mockTenants.find(t => t.id === tenantId);
-      if (tenant) {
-        return {
-          ...initialFormData,
-          tenantId: tenant.id,
-          tenantName: tenant.name,
-          tenantCpf: tenant.cpf,
-          propertyName: tenant.property,
-          propertyAddress: tenant.propertyAddress,
-          rentValue: tenant.rentValue,
-        };
-      }
-    }
-    return initialFormData;
-  });
+  const [formData, setFormData] = useState<ReceiptFormData>(initialFormData);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const loadTenants = useCallback(async () => {
+    if (!user) return;
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('inquilinos')
+        .select(`
+          id,
+          nome_completo,
+          cpf,
+          valor_aluguel,
+          imovel_id,
+          imoveis!inner (
+            id,
+            titulo,
+            endereco_rua,
+            endereco_numero,
+            endereco_bairro,
+            endereco_cidade,
+            valor_condominio,
+            valor_iptu,
+            proprietario_id
+          )
+        `)
+        .eq('imoveis.proprietario_id', user.id)
+        .eq('status', 'ativo');
+
+      if (error) throw error;
+
+      const formattedData = (data || []).map(item => ({
+        ...item,
+        imoveis: Array.isArray(item.imoveis) ? item.imoveis[0] : item.imoveis
+      })) as unknown as Tenant[];
+
+      setTenants(formattedData);
+
+      // Se houver ID de inquilino na URL, seleciona ele
+      const urlTenantId = searchParams.get("inquilino");
+      if (urlTenantId) {
+        const tenant = formattedData.find(t => t.id === urlTenantId);
+        if (tenant) {
+          applyTenantData(tenant);
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar inquilinos:', error);
+      toast.error('Erro ao carregar inquilinos');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, searchParams]);
+
+  useEffect(() => {
+    loadTenants();
+  }, [loadTenants]);
+
+  const applyTenantData = (tenant: Tenant) => {
+    setFormData(prev => ({
+      ...prev,
+      tenantId: tenant.id,
+      tenantName: tenant.nome_completo,
+      tenantCpf: tenant.cpf,
+      propertyId: tenant.imoveis.id,
+      propertyName: tenant.imoveis.titulo || `${tenant.imoveis.endereco_rua}, ${tenant.imoveis.endereco_numero}`,
+      propertyAddress: `${tenant.imoveis.endereco_rua}, ${tenant.imoveis.endereco_numero} - ${tenant.imoveis.endereco_bairro}, ${tenant.imoveis.endereco_cidade}`,
+      rentValue: formatCurrency((tenant.valor_aluguel * 100).toString()),
+      condoValue: formatCurrency((tenant.imoveis.valor_condominio * 100 || 0).toString()),
+      iptuValue: formatCurrency((tenant.imoveis.valor_iptu * 100 || 0).toString()),
+      otherValue: "",
+    }));
+  };
 
   const handleInputChange = (field: keyof ReceiptFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleTenantSelect = (tenantId: string) => {
-    const tenant = mockTenants.find(t => t.id === tenantId);
+    const tenant = tenants.find(t => t.id === tenantId);
     if (tenant) {
-      setFormData(prev => ({
-        ...prev,
-        tenantId: tenant.id,
-        tenantName: tenant.name,
-        tenantCpf: tenant.cpf,
-        propertyName: tenant.property,
-        propertyAddress: tenant.propertyAddress,
-        rentValue: tenant.rentValue,
-      }));
+      applyTenantData(tenant);
     }
   };
 
@@ -138,13 +191,23 @@ export default function ReceiptForm() {
     return rent + condo + iptu + other;
   };
 
+  const formatCPF = (value: string) => {
+    const numbers = value.replace(/\D/g, "");
+    return numbers
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+      .slice(0, 14);
+  };
+
   const formatCurrency = (value: string) => {
     const numbers = value.replace(/\D/g, "");
+    if (!numbers) return "";
     const formatted = (parseInt(numbers) / 100).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
-    return numbers ? formatted : "";
+    return formatted;
   };
 
   const handleDownload = () => {
@@ -171,15 +234,38 @@ export default function ReceiptForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.tenantId || !formData.propertyId) return;
+
     setIsSubmitting(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { error } = await supabase
+        .from('comprovantes')
+        .insert({
+          inquilino_id: formData.tenantId,
+          imovel_id: formData.propertyId,
+          tipo: 'pagamento',
+          mes_referencia: `${formData.referenceYear}-${formData.referenceMonth.padStart(2, '0')}-01`,
+          valor: calculateTotal(),
+          descricao: formData.observations,
+          created_at: new Date().toISOString()
+        });
 
-    toast.success("Comprovante gerado com sucesso!", {
-      description: "O comprovante foi salvo no histórico.",
-    });
+      if (error) throw error;
 
-    router.push("/dashboard/comprovantes");
+      toast.success("Comprovante gerado com sucesso!", {
+        description: "O comprovante foi salvo no histórico.",
+      });
+
+      router.push("/dashboard/comprovantes");
+    } catch (error: any) {
+      console.error('Erro ao salvar comprovante:', error);
+      toast.error('Erro ao salvar comprovante', {
+        description: error.message || 'Ocorreu um erro inesperado.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -220,31 +306,42 @@ export default function ReceiptForm() {
                   <Select
                     value={formData.tenantId}
                     onValueChange={handleTenantSelect}
+                    disabled={isLoading}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione um inquilino" />
+                      <SelectValue placeholder={isLoading ? "Carregando inquilinos..." : "Selecione um inquilino"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockTenants.map(tenant => (
-                        <SelectItem key={tenant.id} value={tenant.id}>
-                          {tenant.name} - {tenant.property}
-                        </SelectItem>
-                      ))}
+                      {isLoading ? (
+                        <div className="flex items-center justify-center p-4">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        </div>
+                      ) : tenants.length === 0 ? (
+                        <div className="p-4 text-sm text-center text-muted-foreground">
+                          Nenhum inquilino ativo encontrado.
+                        </div>
+                      ) : (
+                        tenants.map(tenant => (
+                          <SelectItem key={tenant.id} value={tenant.id}>
+                            {tenant.nome_completo} - {tenant.imoveis.titulo || tenant.imoveis.endereco_rua}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 {formData.tenantId && (
                   <div className="rounded-lg bg-accent/50 p-4 space-y-2">
                     <div className="flex items-center gap-2 text-sm">
+                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                      <span>{formData.propertyName}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
                       <User className="h-4 w-4 text-muted-foreground" />
                       <span>{formData.tenantName}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>CPF: {formData.tenantCpf}</span>
-                    </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <span>{formData.propertyName}</span>
+                      <span>CPF: {formData.tenantCpf ? formatCPF(formData.tenantCpf) : "—"}</span>
                     </div>
                   </div>
                 )}
@@ -420,7 +517,7 @@ export default function ReceiptForm() {
                     </p>
                     <p className="text-sm">
                       <span className="text-muted-foreground">CPF: </span>
-                      <span>{formData.tenantCpf || "—"}</span>
+                      <span>{formData.tenantCpf ? formatCPF(formData.tenantCpf) : "—"}</span>
                     </p>
                     <p className="text-sm">
                       <span className="text-muted-foreground">Imóvel: </span>

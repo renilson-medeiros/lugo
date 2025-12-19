@@ -94,8 +94,8 @@ export default function TenantsList() {
       // Transformar dados para corresponder à interface
       const transformedData: Tenant[] = (data || []).map(item => ({
         ...item,
-        imoveis: Array.isArray(item.imoveis) && item.imoveis.length > 0 ? item.imoveis[0] : null
-      }));
+        imoveis: Array.isArray(item.imoveis) ? item.imoveis[0] : item.imoveis
+      })) as unknown as Tenant[];
 
       setTenants(transformedData);
     } catch (err: any) {
@@ -193,7 +193,13 @@ export default function TenantsList() {
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="font-display font-semibold">{tenant.nome_completo}</h3>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge
+                            variant="outline"
+                            className={`text-xs font-normal ${tenant.status === "ativo"
+                              ? "bg-green-50 text-green-500 border-green-200"
+                              : "bg-red-50 text-red-500 border-red-200"
+                              }`}
+                          >
                             {tenant.status === "ativo" ? "Ativo" : "Inativo"}
                           </Badge>
                         </div>

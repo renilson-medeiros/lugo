@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 
@@ -13,9 +13,19 @@ import {
   X,
   User,
   Calendar,
-  FileText
+  FileText,
+  Building2,
+  Loader2
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 interface TenantFormData {
   name: string;
@@ -25,6 +35,7 @@ interface TenantFormData {
   rentDay: string;
   startDate: Date | undefined;
   endDate: Date | undefined;
+  rentValue: string;
 }
 
 const initialFormData: TenantFormData = {
@@ -32,19 +43,62 @@ const initialFormData: TenantFormData = {
   cpf: "",
   phone: "",
   email: "",
-  rentDay: "",
+  rentDay: "10",
   startDate: undefined,
   endDate: undefined,
+  rentValue: "",
 };
+
+interface PropertyData {
+  id: string;
+  titulo: string;
+  endereco_rua: string;
+  endereco_numero: string;
+  valor_aluguel: number;
+}
 
 export default function TenantForm() {
   const router = useRouter();
   const params = useParams();
-  const propertyId = Array.isArray(params?.propertyId) ? params.propertyId[0] : params?.propertyId;
+  const propertyId = params?.id || params?.propertyId;
   const [formData, setFormData] = useState<TenantFormData>(initialFormData);
+  const [property, setProperty] = useState<PropertyData | null>(null);
   const [contractPhotos, setContractPhotos] = useState<File[]>([]);
   const [contractPreviews, setContractPreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingProperty, setIsLoadingProperty] = useState(false);
+
+  useEffect(() => {
+    if (propertyId) {
+      loadPropertyDetails();
+    }
+  }, [propertyId]);
+
+  const loadPropertyDetails = async () => {
+    try {
+      setIsLoadingProperty(true);
+      const { data, error } = await supabase
+        .from('imoveis')
+        .select('id, titulo, endereco_rua, endereco_numero, valor_aluguel')
+        .eq('id', propertyId)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setProperty(data);
+        // Pre-preencher o valor do aluguel se estiver disponível com máscara
+        setFormData(prev => ({
+          ...prev,
+          rentValue: formatCurrency((data.valor_aluguel * 100).toString())
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar detalhes do imóvel:', error);
+      toast.error('Erro ao carregar detalhes do imóvel');
+    } finally {
+      setIsLoadingProperty(false);
+    }
+  };
 
   const handleInputChange = (field: keyof TenantFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -65,6 +119,16 @@ export default function TenantForm() {
       .replace(/(\d{2})(\d)/, "($1) $2")
       .replace(/(\d{5})(\d{4})$/, "$1-$2")
       .slice(0, 15);
+  };
+
+  const formatCurrency = (value: string) => {
+    const numbers = value.replace(/\D/g, "");
+    if (!numbers) return "";
+    const formatted = (parseInt(numbers) / 100).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+    return formatted;
   };
 
   const handleContractUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,17 +154,57 @@ export default function TenantForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!propertyId) return;
+
     setIsSubmitting(true);
 
-    // Simular salvamento
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // 1. Inserir o inquilino
+      const rentAmount = parseFloat(formData.rentValue.replace(/\D/g, "")) / 100 || 0;
 
-    toast.success("Inquilino cadastrado com sucesso!", {
-      description: "O inquilino foi vinculado ao imóvel.",
-    });
+      const { data: tenant, error: tenantError } = await supabase
+        .from('inquilinos')
+        .insert({
+          imovel_id: propertyId,
+          nome_completo: formData.name,
+          cpf: formData.cpf.replace(/\D/g, ""),
+          telefone: formData.phone.replace(/\D/g, ""),
+          email: formData.email,
+          dia_vencimento: parseInt(formData.rentDay),
+          data_inicio: formData.startDate?.toISOString().split('T')[0],
+          data_fim: formData.endDate?.toISOString().split('T')[0],
+          valor_aluguel: rentAmount,
+          status: 'ativo'
+        })
+        .select()
+        .single();
 
-    router.push("/dashboard/inquilinos");
+      if (tenantError) throw tenantError;
+
+      // 2. Atualizar o status do imóvel para 'alugado'
+      const { error: propertyError } = await supabase
+        .from('imoveis')
+        .update({ status: 'alugado' })
+        .eq('id', propertyId);
+
+      if (propertyError) throw propertyError;
+
+      toast.success("Inquilino cadastrado com sucesso!", {
+        description: "O inquilino foi vinculado ao imóvel.",
+      });
+
+      router.push("/dashboard/inquilinos");
+    } catch (error: any) {
+      console.error('Erro ao cadastrar inquilino:', error);
+      toast.error('Erro ao cadastrar inquilino', {
+        description: error.message || 'Ocorreu um erro inesperado.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
 
   return (
     <>
@@ -123,11 +227,36 @@ export default function TenantForm() {
           </div>
         </div>
 
+        {/* Imóvel Selecionado */}
+        <Card className="animate-fade-in border-blue-100 bg-blue-50/30">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <CardTitle className="text-lg">Imóvel</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoadingProperty ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Carregando dados do imóvel...</span>
+              </div>
+            ) : property ? (
+              <div className="space-y-1">
+                <p className="font-medium">{property.titulo || `${property.endereco_rua}, ${property.endereco_numero}`}</p>
+                <p className="text-sm text-muted-foreground">{property.endereco_rua}, {property.endereco_numero}</p>
+              </div>
+            ) : (
+              <p className="text-sm text-destructive">Imóvel não encontrado. Certifique-se de que o ID é válido.</p>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Dados Pessoais */}
-        <Card className="animate-fade-in">
+        <Card className="animate-fade-in" style={{ animationDelay: "50ms" }}>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" aria-hidden="true" />
+              <User className="h-5 w-5 text-blue-500" aria-hidden="true" />
               <CardTitle>Dados Pessoais</CardTitle>
             </div>
             <CardDescription>Informações do inquilino</CardDescription>
@@ -183,26 +312,40 @@ export default function TenantForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "100ms" }}>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" aria-hidden="true" />
+              <Calendar className="h-5 w-5 text-blue-500" aria-hidden="true" />
               <CardTitle>Dados do Contrato</CardTitle>
             </div>
             <CardDescription>Período de locação e vencimento</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
-                <Label htmlFor="rentDay">Dia do pagamento</Label>
+                <Label htmlFor="rentValue">Valor do Aluguel</Label>
                 <Input
-                  id="rentDay"
-                  type="number"
-                  placeholder="10"
-                  min="1"
-                  max="31"
-                  value={formData.rentDay}
-                  onChange={(e) => handleInputChange("rentDay", e.target.value)}
+                  id="rentValue"
+                  placeholder="R$ 0,00"
+                  value={formData.rentValue}
+                  onChange={(e) => handleInputChange("rentValue", formatCurrency(e.target.value))}
                   required
                 />
-                <p className="text-xs text-muted-foreground">Dia do mês para pagamento do aluguel</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="rentDay">Dia do pagamento</Label>
+                <Select
+                  value={formData.rentDay}
+                  onValueChange={(value) => handleInputChange("rentDay", value)}
+                >
+                  <SelectTrigger id="rentDay">
+                    <SelectValue placeholder="Selecione o dia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map(day => (
+                      <SelectItem key={day} value={parseInt(day).toString()}>
+                        Dia {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="startDate">Data de entrada</Label>
@@ -219,7 +362,6 @@ export default function TenantForm() {
                   onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
                   placeholder="Selecione a data de saída"
                 />
-                <p className="text-xs text-muted-foreground">Pode ser alterada em caso de renovação</p>
               </div>
             </div>
           </CardContent>
@@ -229,7 +371,7 @@ export default function TenantForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "200ms" }}>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" aria-hidden="true" />
+              <FileText className="h-5 w-5 text-blue-500" aria-hidden="true" />
               <CardTitle>Contrato Assinado</CardTitle>
             </div>
             <CardDescription>Upload opcional de fotos do contrato assinado</CardDescription>
@@ -282,7 +424,7 @@ export default function TenantForm() {
               Cancelar
             </Button>
           </Link>
-          <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+          <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-400 sm:w-auto">
             {isSubmitting ? "Salvando..." : "Cadastrar inquilino"}
           </Button>
         </div>
