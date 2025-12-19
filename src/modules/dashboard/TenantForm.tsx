@@ -307,9 +307,7 @@ export default function TenantForm() {
       router.push("/dashboard/inquilinos");
     } catch (error: any) {
       console.error('Erro ao salvar inquilino:', error);
-      toast.error('Erro ao salvar inquilino', {
-        description: error.message || 'Ocorreu um erro inesperado.'
-      });
+      toast.error('Erro ao salvar inquilino. Tente novamente.');
     } finally {
       setIsSubmitting(false);
     }

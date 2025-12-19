@@ -552,7 +552,7 @@ export default function PropertyDetail() {
                       <h2 className="font-display text-xl font-semibold">Cômodos</h2>
                       <div className="mt-4 flex flex-wrap gap-2">
                         {property.rooms.map((room) => (
-                          <Badge key={room} variant="outline" className="px-3 py-1.5">
+                          <Badge key={room} variant="outline" className="px-3 py-1.5 capitalize">
                             {room}
                           </Badge>
                         ))}

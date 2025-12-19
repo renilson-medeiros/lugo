@@ -277,7 +277,7 @@ export default function PropertyForm() {
       let propertyId = id;
 
       // Se não for edição, precisamos criar o registro primeiro para ter o ID
-      if (!isEditMode) {
+      if (!isEditing) {
         const initialPropertyData = {
           proprietario_id: user.id,
           endereco_cep: formData.cep,
@@ -385,7 +385,7 @@ export default function PropertyForm() {
 
       if (updateError) throw updateError;
 
-      if (isEditMode) {
+      if (isEditing) {
         toast.success("Imóvel atualizado com sucesso!");
       } else {
         toast.success("Imóvel cadastrado com sucesso!", {
@@ -396,7 +396,7 @@ export default function PropertyForm() {
       router.push("/dashboard/imoveis");
     } catch (error: any) {
       console.error('Erro ao salvar imóvel:', error);
-      toast.error(error.message || 'Erro ao salvar imóvel');
+      toast.error('Erro ao salvar imóvel. Tente novamente.');
     } finally {
       setIsSubmitting(false);
     }
