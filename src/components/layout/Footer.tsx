@@ -4,7 +4,7 @@ import { Building2, Home } from "lucide-react";
 export function Footer() {
   return (
     <footer className="border-t border-border/40 bg-secondary/30">
-      <div className="container py-12">
+      <div className="container px-4 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">

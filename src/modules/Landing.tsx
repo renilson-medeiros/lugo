@@ -61,10 +61,10 @@ export default function Landing() {
     <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-1 ">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-blue-50/25 py-20 lg:py-32">
-          <div className="container">
+          <div className="container px-6">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="animate-fade-in font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Aluguel direto com o{" "}
@@ -100,7 +100,7 @@ export default function Landing() {
 
         {/* Features Section */}
         <section className="py-20 lg:py-28" aria-labelledby="features-heading">
-          <div className="container">
+          <div className="container px-4">
             <div className="mx-auto max-w-2xl text-center">
               <h2 id="features-heading" className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
                 Tudo que você precisa para gerenciar seus aluguéis
@@ -132,7 +132,7 @@ export default function Landing() {
 
         {/* Pricing Section */}
         <section className="bg-secondary/30 py-20 lg:py-28" aria-labelledby="pricing-heading">
-          <div className="container">
+          <div className="container px-4">
             <div className="mx-auto max-w-4xl">
               <div className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
                 <div>
@@ -182,7 +182,7 @@ export default function Landing() {
 
         {/* CTA Section */}
         <section className="py-20 lg:py-28">
-          <div className="container">
+          <div className="container px-4">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
                 Pronto para simplificar seus aluguéis?
