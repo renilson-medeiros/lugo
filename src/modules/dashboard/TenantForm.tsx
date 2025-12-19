@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,8 @@ interface TenantFormData {
   startDate: Date | undefined;
   endDate: Date | undefined;
   rentValue: string;
+  rg: string;
+  observations: string;
 }
 
 const initialFormData: TenantFormData = {
@@ -47,6 +49,8 @@ const initialFormData: TenantFormData = {
   startDate: undefined,
   endDate: undefined,
   rentValue: "",
+  rg: "",
+  observations: "",
 };
 
 interface PropertyData {
@@ -60,32 +64,81 @@ interface PropertyData {
 export default function TenantForm() {
   const router = useRouter();
   const params = useParams();
-  const propertyId = params?.id || params?.propertyId;
+  const pathname = usePathname();
+  const id = params?.id as string;
+
+  // Determinar o modo baseado na URL
+  const isEditMode = pathname?.includes("/dashboard/inquilinos/");
+  const isRegistrationMode = pathname?.includes("/inquilino");
+
   const [formData, setFormData] = useState<TenantFormData>(initialFormData);
   const [property, setProperty] = useState<PropertyData | null>(null);
+  const [tenantId, setTenantId] = useState<string | null>(isEditMode ? id : null);
+  const [propertyId, setPropertyId] = useState<string | null>(isRegistrationMode ? id : null);
+
   const [contractPhotos, setContractPhotos] = useState<File[]>([]);
   const [contractPreviews, setContractPreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingProperty, setIsLoadingProperty] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (propertyId) {
-      loadPropertyDetails();
+    if (isEditMode && id) {
+      loadTenantData(id);
+    } else if (isRegistrationMode && id) {
+      loadPropertyDetails(id);
     }
-  }, [propertyId]);
+  }, [id, isEditMode, isRegistrationMode]);
 
-  const loadPropertyDetails = async () => {
+  const loadTenantData = async (tid: string) => {
     try {
-      setIsLoadingProperty(true);
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('inquilinos')
+        .select('*, imoveis(id, titulo, endereco_rua, endereco_numero, valor_aluguel)')
+        .eq('id', tid)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setFormData({
+          name: data.nome_completo,
+          cpf: formatCPF(data.cpf),
+          phone: formatPhone(data.telefone),
+          email: data.email || "",
+          rentDay: data.dia_vencimento.toString(),
+          startDate: data.data_inicio ? new Date(data.data_inicio) : undefined,
+          endDate: data.data_fim ? new Date(data.data_fim) : undefined,
+          rentValue: formatCurrency((data.valor_aluguel * 100).toString()),
+          rg: data.rg || "",
+          observations: data.observacoes || "",
+        });
+
+        if (data.imoveis) {
+          setProperty(Array.isArray(data.imoveis) ? data.imoveis[0] : data.imoveis);
+          setPropertyId(data.imovel_id);
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados do inquilino:', error);
+      toast.error('Erro ao carregar dados do inquilino');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadPropertyDetails = async (pid: string) => {
+    try {
+      setIsLoading(true);
       const { data, error } = await supabase
         .from('imoveis')
         .select('id, titulo, endereco_rua, endereco_numero, valor_aluguel')
-        .eq('id', propertyId)
+        .eq('id', pid)
         .single();
 
       if (error) throw error;
       if (data) {
         setProperty(data);
+        setPropertyId(data.id);
         // Pre-preencher o valor do aluguel se estiver disponível com máscara
         setFormData(prev => ({
           ...prev,
@@ -96,7 +149,7 @@ export default function TenantForm() {
       console.error('Erro ao carregar detalhes do imóvel:', error);
       toast.error('Erro ao carregar detalhes do imóvel');
     } finally {
-      setIsLoadingProperty(false);
+      setIsLoading(false);
     }
   };
 
@@ -154,49 +207,69 @@ export default function TenantForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!propertyId) return;
+    if (!propertyId && !isEditMode) {
+      toast.error("Imóvel não identificado.");
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
-      // 1. Inserir o inquilino
       const rentAmount = parseFloat(formData.rentValue.replace(/\D/g, "")) / 100 || 0;
+      const tenantData = {
+        nome_completo: formData.name,
+        cpf: formData.cpf.replace(/\D/g, ""),
+        telefone: formData.phone.replace(/\D/g, ""),
+        email: formData.email,
+        dia_vencimento: parseInt(formData.rentDay),
+        data_inicio: formData.startDate ? new Date(formData.startDate.getTime() - (formData.startDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : null,
+        data_fim: formData.endDate ? new Date(formData.endDate.getTime() - (formData.endDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : null,
+        valor_aluguel: rentAmount,
+        rg: formData.rg,
+        observacoes: formData.observations,
+        status: 'ativo'
+      };
 
-      const { data: tenant, error: tenantError } = await supabase
-        .from('inquilinos')
-        .insert({
-          imovel_id: propertyId,
-          nome_completo: formData.name,
-          cpf: formData.cpf.replace(/\D/g, ""),
-          telefone: formData.phone.replace(/\D/g, ""),
-          email: formData.email,
-          dia_vencimento: parseInt(formData.rentDay),
-          data_inicio: formData.startDate?.toISOString().split('T')[0],
-          data_fim: formData.endDate?.toISOString().split('T')[0],
-          valor_aluguel: rentAmount,
-          status: 'ativo'
-        })
-        .select()
-        .single();
+      if (isEditMode && tenantId) {
+        // Atualizar inquilino existente
+        const { error: updateError } = await supabase
+          .from('inquilinos')
+          .update(tenantData)
+          .eq('id', tenantId);
 
-      if (tenantError) throw tenantError;
+        if (updateError) throw updateError;
 
-      // 2. Atualizar o status do imóvel para 'alugado'
-      const { error: propertyError } = await supabase
-        .from('imoveis')
-        .update({ status: 'alugado' })
-        .eq('id', propertyId);
+        toast.success("Inquilino atualizado com sucesso!");
+      } else {
+        // Criar novo inquilino
+        const { data: tenant, error: tenantError } = await supabase
+          .from('inquilinos')
+          .insert({
+            ...tenantData,
+            imovel_id: propertyId,
+          })
+          .select()
+          .single();
 
-      if (propertyError) throw propertyError;
+        if (tenantError) throw tenantError;
 
-      toast.success("Inquilino cadastrado com sucesso!", {
-        description: "O inquilino foi vinculado ao imóvel.",
-      });
+        // Atualizar o status do imóvel para 'alugado'
+        const { error: propertyError } = await supabase
+          .from('imoveis')
+          .update({ status: 'alugado' })
+          .eq('id', propertyId);
+
+        if (propertyError) throw propertyError;
+
+        toast.success("Inquilino cadastrado com sucesso!", {
+          description: "O inquilino foi vinculado ao imóvel.",
+        });
+      }
 
       router.push("/dashboard/inquilinos");
     } catch (error: any) {
-      console.error('Erro ao cadastrar inquilino:', error);
-      toast.error('Erro ao cadastrar inquilino', {
+      console.error('Erro ao salvar inquilino:', error);
+      toast.error('Erro ao salvar inquilino', {
         description: error.message || 'Ocorreu um erro inesperado.'
       });
     } finally {
@@ -222,8 +295,12 @@ export default function TenantForm() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="font-display text-2xl font-bold sm:text-3xl">Cadastrar Inquilino</h1>
-            <p className="text-muted-foreground">Preencha os dados do inquilino</p>
+            <h1 className="font-display text-2xl font-bold sm:text-3xl">
+              {isEditMode ? "Detalhes do Inquilino" : "Cadastrar Inquilino"}
+            </h1>
+            <p className="text-muted-foreground">
+              {isEditMode ? "Visualize ou edite os dados do inquilino" : "Preencha os dados do inquilino"}
+            </p>
           </div>
         </div>
 
@@ -236,10 +313,10 @@ export default function TenantForm() {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoadingProperty ? (
+            {isLoading ? (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Carregando dados do imóvel...</span>
+                <span>Carregando dados...</span>
               </div>
             ) : property ? (
               <div className="space-y-1">
@@ -304,6 +381,15 @@ export default function TenantForm() {
                   onChange={(e) => handleInputChange("email", e.target.value)}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="rg">RG (Opcional)</Label>
+                <Input
+                  id="rg"
+                  placeholder="00.000.000-0"
+                  value={formData.rg}
+                  onChange={(e) => handleInputChange("rg", e.target.value)}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -361,6 +447,15 @@ export default function TenantForm() {
                   date={formData.endDate}
                   onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
                   placeholder="Selecione a data de saída"
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-2 lg:col-span-4">
+                <Label htmlFor="observations">Observações</Label>
+                <Input
+                  id="observations"
+                  placeholder="Observações adicionais sobre o contrato ou inquilino"
+                  value={formData.observations}
+                  onChange={(e) => handleInputChange("observations", e.target.value)}
                 />
               </div>
             </div>
@@ -425,7 +520,7 @@ export default function TenantForm() {
             </Button>
           </Link>
           <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-400 sm:w-auto">
-            {isSubmitting ? "Salvando..." : "Cadastrar inquilino"}
+            {isSubmitting ? "Salvando..." : isEditMode ? "Salvar alterações" : "Cadastrar inquilino"}
           </Button>
         </div>
       </form>

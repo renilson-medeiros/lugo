@@ -17,7 +17,8 @@ import {
   Receipt,
   Eye,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  UserMinus
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -106,6 +107,42 @@ export default function TenantsList() {
       setIsLoading(false);
     }
   }, [user?.id]);
+
+  const handleTerminateLease = useCallback(async (tenant: Tenant) => {
+    try {
+      setIsLoading(true);
+
+      // 1. Inativar o inquilino
+      const { error: tenantError } = await supabase
+        .from('inquilinos')
+        .update({
+          status: 'inativo',
+          data_fim: new Date().toISOString().split('T')[0]
+        })
+        .eq('id', tenant.id);
+
+      if (tenantError) throw tenantError;
+
+      // 2. Voltar o imóvel para disponível
+      const { error: propertyError } = await supabase
+        .from('imoveis')
+        .update({ status: 'disponivel' })
+        .eq('id', tenant.imovel_id);
+
+      if (propertyError) throw propertyError;
+
+      toast.success('Locação finalizada!', {
+        description: `O contrato de ${tenant.nome_completo} foi encerrado.`
+      });
+
+      await loadTenants();
+    } catch (error) {
+      console.error('Erro ao finalizar locação:', error);
+      toast.error('Erro ao finalizar locação');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const filteredTenants = useMemo(() => {
     return tenants.filter(
@@ -247,6 +284,15 @@ export default function TenantsList() {
                               Ver detalhes
                             </Link>
                           </DropdownMenuItem>
+                          {tenant.status === 'ativo' && (
+                            <DropdownMenuItem
+                              className="cursor-pointer text-orange-600 focus:text-orange-600"
+                              onClick={() => handleTerminateLease(tenant)}
+                            >
+                              <UserMinus className="mr-2 h-4 w-4" />
+                              Finalizar Locação
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>

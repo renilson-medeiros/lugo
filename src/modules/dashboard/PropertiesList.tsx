@@ -15,7 +15,8 @@ import {
   Edit,
   MoreHorizontal,
   MapPin,
-  Trash2
+  Trash2,
+  UserMinus
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -175,6 +176,50 @@ export default function PropertiesList() {
     }
   }, [deleteId]);
 
+  const handleTerminateLease = useCallback(async (propertyId: string) => {
+    try {
+      setLoading(true);
+
+      // 1. Encontrar o inquilino ativo para este imóvel
+      const { data: inquilino } = await supabase
+        .from('inquilinos')
+        .select('id')
+        .eq('imovel_id', propertyId)
+        .eq('status', 'ativo')
+        .single();
+
+      if (inquilino) {
+        // 2. Inativar o inquilino
+        await supabase
+          .from('inquilinos')
+          .update({
+            status: 'inativo',
+            data_fim: new Date().toISOString().split('T')[0]
+          })
+          .eq('id', inquilino.id);
+      }
+
+      // 3. Voltar o imóvel para disponível
+      const { error: propertyError } = await supabase
+        .from('imoveis')
+        .update({ status: 'disponivel' })
+        .eq('id', propertyId);
+
+      if (propertyError) throw propertyError;
+
+      toast.success('Locação finalizada!', {
+        description: 'O imóvel agora está disponível para novos inquilinos.'
+      });
+
+      await loadProperties();
+    } catch (error) {
+      console.error('Erro ao finalizar locação:', error);
+      toast.error('Erro ao finalizar locação');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return (
     <>
       <div className="space-y-6">
@@ -228,6 +273,7 @@ export default function PropertiesList() {
                 index={index}
                 onShare={handleShare}
                 onDelete={setDeleteId}
+                onTerminate={handleTerminateLease}
               />
             ))}
           </div>
@@ -287,9 +333,10 @@ interface PropertyCardProps {
   index: number;
   onShare: (property: Property) => void;
   onDelete: (id: string) => void;
+  onTerminate: (id: string) => void;
 }
 
-const PropertyCard = memo(({ property, index, onShare, onDelete }: PropertyCardProps) => {
+const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate }: PropertyCardProps) => {
   return (
     <Card
       className="group overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in"
@@ -357,6 +404,15 @@ const PropertyCard = memo(({ property, index, onShare, onDelete }: PropertyCardP
                       <Plus className="mr-2 h-4 w-4 text-blue-500" />
                       Cadastrar inquilino
                     </Link>
+                  </DropdownMenuItem>
+                )}
+                {property.status === "ocupado" && (
+                  <DropdownMenuItem
+                    className="cursor-pointer text-orange-600 focus:text-orange-600"
+                    onClick={() => onTerminate(property.id)}
+                  >
+                    <UserMinus className="mr-2 h-4 w-4" />
+                    Finalizar Locação
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
