@@ -205,7 +205,9 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">WhatsApp</Label>
+                <Label htmlFor="phone">
+                  WhatsApp
+                </Label>
                 <Input
                   id="phone"
                   type="tel"
