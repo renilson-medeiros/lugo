@@ -11,7 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, userData: SignUpData) => Promise<void>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: () => Promise<Profile | null>;
 }
 
 interface SignUpData {
@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (data) {
         setProfile(data);
-        return;
+        return data;
       }
 
       if (error) {
@@ -90,6 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     console.warn('Profile não encontrado após retries');
     setProfile(null);
+    return null;
   };
 
 
@@ -151,7 +152,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signOut,
         isAdmin: profile?.role === 'admin',
         refreshProfile: async () => {
-          if (user) await loadProfileWithRetry(user.id, 1);
+          if (user) return await loadProfileWithRetry(user.id, 1);
+          return null;
         }
       }}
     >

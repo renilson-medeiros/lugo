@@ -81,14 +81,15 @@ export default function Checkout() {
         setLoading(true);
         toast.info("Verificando status do pagamento...");
 
-        // Força a atualização do perfil para buscar do banco
-        await refreshProfile();
+        // Agora o refreshProfile retorna o dado mais atualizado do banco
+        const freshProfile = await refreshProfile();
 
         // Pequena pausa para UX
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        if (profile?.subscription_status === 'active') {
+        if (freshProfile?.subscription_status === 'active') {
             setSuccess(true);
+            toast.success("Pagamento detectado com sucesso!");
         } else {
             toast.warning("Pagamento ainda não detectado. Pode levar alguns minutos.");
         }
