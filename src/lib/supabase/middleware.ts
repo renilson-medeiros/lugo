@@ -51,6 +51,14 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
+    // Proteger rotas da API do usuário
+    if (request.nextUrl.pathname.startsWith('/api/user') && !user) {
+        return NextResponse.json(
+            { error: 'Não autorizado' },
+            { status: 401 }
+        )
+    }
+
     // Redirecionar usuários logados das páginas de auth
     if ((request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/registro') && user) {
         const url = request.nextUrl.clone()

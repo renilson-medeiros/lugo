@@ -12,6 +12,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { validarTelefone, formatarTelefone, formatarCPF } from "@/lib/validators";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 export default function Settings() {
   const { user, profile } = useAuth();
@@ -22,7 +34,9 @@ export default function Settings() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (profile) {
@@ -78,6 +92,28 @@ export default function Settings() {
       toast.error(err.message || 'Erro ao salvar configurações');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch('/api/user/delete-account', {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erro ao excluir conta');
+      }
+
+      toast.success("Conta excluída com sucesso");
+      // Forçar logout no frontend para limpar estado
+      window.location.href = '/login';
+    } catch (err: any) {
+      console.error('Erro ao excluir conta:', err);
+      toast.error(err.message);
+      setIsDeleting(false);
     }
   };
 
@@ -160,7 +196,7 @@ export default function Settings() {
                     </PopoverTrigger>
                     <PopoverContent side="top" className="w-60 mb-2 bg-popover shadow-md rounded-lg p-3 text-xs leading-relaxed">
                       <p>
-                        Use seu número de contato principal para 
+                        Use seu número de contato principal para
                         que os interessados possam falar com você diretamente.
                       </p>
                     </PopoverContent>
@@ -290,11 +326,40 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Para excluir sua conta, entre em contato com o suporte.
+              A exclusão da sua conta apagará permanentemente todos os seus dados, incluindo imóveis, inquilinos e histórico.
             </p>
-            <Button variant="destructive" className="bg-red-500 hover:bg-red-400" disabled>
-              Excluir conta (Em breve)
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="bg-red-500 hover:bg-red-400">
+                  Excluir minha conta
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Essa ação não pode ser desfeita. Isso excluirá permanentemente sua conta
+                    e removerá todos os seus dados de nossos servidores.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteAccount}
+                    className="bg-red-500 hover:bg-red-600 focus:ring-red-600"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Excluindo...
+                      </>
+                    ) : (
+                      'Sim, excluir minha conta'
+                    )}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       </div>
