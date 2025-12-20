@@ -44,6 +44,13 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
+    // Proteger rotas do checkout
+    if (request.nextUrl.pathname.startsWith('/checkout') && !user) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        return NextResponse.redirect(url)
+    }
+
     // Redirecionar usuários logados das páginas de auth
     if ((request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/registro') && user) {
         const url = request.nextUrl.clone()
