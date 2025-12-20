@@ -25,7 +25,7 @@ export default function Checkout() {
     const router = useRouter();
     const { user, profile, loading: authLoading, refreshProfile } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [generating, setGenerating] = useState(false); // Mudado para false inicial
+    const [generating, setGenerating] = useState(false);
     const [success, setSuccess] = useState(false);
     const [copying, setCopying] = useState(false);
     const [paymentData, setPaymentData] = useState<{
@@ -38,23 +38,36 @@ export default function Checkout() {
     // 1. Redirecionamento instantâneo se já for ativo
     useEffect(() => {
         if (!authLoading && profile?.subscription_status === 'active' && !success) {
-            console.log('Usuário já é ativo, redirecionando...');
+            console.log('✅ Usuário já é ativo, liberando acesso...');
             setSuccess(true);
-            toast.success("Você já possui uma assinatura ativa!");
-            setTimeout(() => router.push('/dashboard'), 2000);
+            setTimeout(() => {
+                if (window.location.pathname === '/checkout') {
+                    router.push('/dashboard');
+                }
+            }, 2000);
         }
-    }, [profile, authLoading, success]);
+    }, [profile, authLoading, success, router]);
 
-    // 2. Carrega o pagamento apenas se necessário
+    // 2. Aciona o redirecionamento quando o sucesso é atingido manualmente
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => router.push('/dashboard'), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [success, router]);
+
+    // 3. Carrega o pagamento apenas se necessário
     useEffect(() => {
         const prepareCheckout = async () => {
+            // ESSENCIAL: Esperar o Auth carregar o perfil real
             if (authLoading || !user || !profile) return;
 
-            // Se já for ativo, não gera pagamento
+            // Se já for ativo, não faz nada (o useEffect acima cuida)
             if (profile.subscription_status === 'active') return;
 
-            // Se for trial e ainda não pedimos o pagamento
+            // Só gera se for trial e ainda não tivermos pedido nesta sessão do componente
             if (!hasRequestedPayment.current && !paymentData) {
+                console.log('💎 Iniciando preparação de checkout...');
                 hasRequestedPayment.current = true;
                 await generateRealPayment();
             }
@@ -65,8 +78,8 @@ export default function Checkout() {
 
     const generateRealPayment = async () => {
         try {
-            console.log('Gerando novo pagamento Asaas...');
             setGenerating(true);
+            console.log('📡 Chamando API para gerar PIX...');
             const response = await fetch('/api/asaas/create-payment', {
                 method: 'POST',
             });
@@ -74,11 +87,11 @@ export default function Checkout() {
 
             if (data.error) throw new Error(data.error);
 
-            console.log('Pagamento recebido:', data.paymentId);
+            console.log('✅ PIX Gerado:', data.paymentId);
             setPaymentData(data);
         } catch (error: any) {
-            console.error('Erro Asaas:', error);
-            toast.error("Erro ao gerar pagamento. Tente recarregar.");
+            console.error('❌ Erro Asaas:', error);
+            toast.error("Erro ao gerar pagamento. Tente recarregar a página.");
             hasRequestedPayment.current = false;
         } finally {
             setGenerating(false);
@@ -96,41 +109,51 @@ export default function Checkout() {
     const checkPaymentStatus = async () => {
         if (loading) return;
 
+        console.log('🔄 Verificação manual iniciada...');
         setLoading(true);
-        const tId = toast.loading("Verificando seu pagamento no Asaas...");
-        console.log('🔍 Iniciando verificação manual...');
+        const toastId = toast.loading("Verificando status no banco de dados...");
 
         try {
-            // Forçamos a busca no servidor
-            const freshProfile = await refreshProfile();
-            console.log('🔍 Status retornado do banco:', freshProfile?.subscription_status);
+            // USAMOS O SUPABASE DIRETO para evitar lag de estado do contexto
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('subscription_status')
+                .eq('id', user?.id)
+                .single();
 
-            // Pequena espera para o usuário ver que algo aconteceu
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (error) throw error;
 
-            if (freshProfile?.subscription_status === 'active') {
-                toast.dismiss(tId);
-                toast.success("Pagamento confirmado com sucesso!");
+            console.log('📊 Status atual no banco:', data.subscription_status);
+
+            if (data.subscription_status === 'active') {
+                console.log('🎉 Pagamento confirmado!');
+                toast.success("Pagamento detectado! Ativando sua conta...", { id: toastId });
+
+                // Atualiza o contexto global para que outras partes do app saibam
+                await refreshProfile();
+
                 setSuccess(true);
             } else {
-                toast.dismiss(tId);
-                toast.warning("Ainda não recebemos a confirmação. Se você já pagou, aguarde 1 minuto e tente novamente.");
+                console.log('⏳ Ainda pendente...');
+                toast.warning("Pagamento ainda não detectado. Se você pagou agora, aguarde uns segundos.", { id: toastId });
+                // Mesmo falhando, o refreshProfile ajuda a sincronizar o estado local
+                await refreshProfile();
             }
         } catch (error: any) {
-            console.error('Erro na verificação:', error);
-            toast.dismiss(tId);
-            toast.error("Erro ao conectar com o servidor.");
+            console.error('❌ Erro na verificação:', error);
+            toast.error("Erro ao conectar com o banco de dados.", { id: toastId });
         } finally {
             setLoading(false);
+            console.log('🔚 Verificação concluída.');
         }
     };
 
-    // Tela de carregamento inicial (enquanto o AuthContext carrega o perfil)
+    // Tela de carregamento bloqueante (SÓ enquanto o AuthContext inicializa)
     if (authLoading && !success) {
         return (
             <div className="flex flex-col min-h-screen items-center justify-center bg-accent/5">
                 <Loader2 className="h-10 w-10 animate-spin text-blue-500 mb-4" />
-                <p className="text-muted-foreground animate-pulse">Carregando informações da sua conta...</p>
+                <p className="text-muted-foreground animate-pulse font-medium">Sincronizando sua conta...</p>
             </div>
         );
     }
@@ -146,7 +169,7 @@ export default function Checkout() {
                         </div>
                         <h1 className="text-3xl font-bold mb-2">Assinatura Ativa!</h1>
                         <p className="text-muted-foreground mb-8">
-                            Parabéns! Sua conta **Alugue Fácil Profissional** foi ativada.
+                            Parabéns! Sua conta <strong>Alugue Fácil Profissional</strong> foi ativada.
                             Você já pode cadastrar imóveis ilimitados e gerenciar seu patrimônio.
                         </p>
                         <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" />
