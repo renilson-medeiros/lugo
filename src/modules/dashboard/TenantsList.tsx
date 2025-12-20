@@ -387,7 +387,7 @@ export default function TenantsList() {
               </p>
               {!searchQuery && (
                 <Link href="/dashboard/imoveis" className="mt-4">
-                  <Button variant="outline">
+                  <Button variant="default" className="bg-blue-600 hover:bg-blue-500 text-white">
                     Ver imóveis
                   </Button>
                 </Link>

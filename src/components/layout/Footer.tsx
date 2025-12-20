@@ -11,7 +11,7 @@ export function Footer() {
             <Link href="/" className="transition-opacity hover:opacity-80">
               <Logo size="sm" />
             </Link>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm mt-4 text-muted-foreground">
               Plataforma de aluguel direto com o proprietário. Simples, seguro e sem intermediários.
             </p>
           </div>
