@@ -15,25 +15,77 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Invalid CEP format' }, { status: 400 });
     }
 
+    // Função para buscar no ViaCEP
+    const fetchViaCep = async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`, {
+                signal: controller.signal,
+                headers: { 'User-Agent': 'AlugueFacil/1.0' }
+            });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) throw new Error(`ViaCEP error: ${response.status}`);
+
+            const data = await response.json();
+            if (data.erro) throw new Error('CEP not found in ViaCEP');
+
+            return {
+                logradouro: data.logradouro,
+                bairro: data.bairro,
+                localidade: data.localidade,
+                uf: data.uf,
+            };
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
+        }
+    };
+
+    // Função para buscar no BrasilAPI
+    const fetchBrasilApi = async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+
+        try {
+            const response = await fetch(`https://brasilapi.com.br/api/cep/v1/${cleanCep}`, {
+                signal: controller.signal,
+                headers: { 'User-Agent': 'AlugueFacil/1.0' }
+            });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) throw new Error(`BrasilAPI error: ${response.status}`);
+
+            const data = await response.json();
+
+            return {
+                logradouro: data.street,
+                bairro: data.neighborhood,
+                localidade: data.city,
+                uf: data.state,
+            };
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
+        }
+    };
+
     try {
-        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        // Tenta ViaCEP primeiro
+        try {
+            const data = await fetchViaCep();
+            return NextResponse.json(data);
+        } catch (viaCepError) {
+            console.warn('ViaCEP failed, trying BrasilAPI...', viaCepError);
 
-        if (!response.ok) {
-            return NextResponse.json(
-                { error: 'Failed to fetch from ViaCEP' },
-                { status: response.status }
-            );
+            // Fallback para BrasilAPI
+            const data = await fetchBrasilApi();
+            return NextResponse.json(data);
         }
-
-        const data = await response.json();
-
-        if (data.erro) {
-            return NextResponse.json({ error: 'CEP not found' }, { status: 404 });
-        }
-
-        return NextResponse.json(data);
     } catch (error) {
-        console.error('Error fetching CEP:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        console.error('All CEP services failed:', error);
+        return NextResponse.json({ error: 'CEP not found or service unavailable' }, { status: 404 });
     }
 }
