@@ -81,19 +81,25 @@ export default function Checkout() {
         setLoading(true);
         toast.info("Verificando status do pagamento...");
 
-        // Agora o refreshProfile retorna o dado mais atualizado do banco
-        const freshProfile = await refreshProfile();
+        try {
+            // Agora o refreshProfile retorna o dado mais atualizado do banco
+            const freshProfile = await refreshProfile();
 
-        // Pequena pausa para UX
-        await new Promise(resolve => setTimeout(resolve, 1500));
+            // Pequena pausa para UX
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-        if (freshProfile?.subscription_status === 'active') {
-            setSuccess(true);
-            toast.success("Pagamento detectado com sucesso!");
-        } else {
-            toast.warning("Pagamento ainda não detectado. Pode levar alguns minutos.");
+            if (freshProfile?.subscription_status === 'active') {
+                setSuccess(true);
+                toast.success("Pagamento detectado com sucesso!");
+            } else {
+                toast.warning("Pagamento ainda não detectado. Pode levar alguns minutos.");
+            }
+        } catch (error) {
+            console.error('Erro ao verificar pagamento:', error);
+            toast.error("Erro ao verificar status. Tente atualizar a página.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     if (success) {
