@@ -56,7 +56,41 @@ export default function Checkout() {
         }
     }, [success, router]);
 
-    // 3. Carrega o pagamento apenas se necessário
+    // 3. Supabase Realtime: Escuta mudanças no perfil em tempo real
+    useEffect(() => {
+        if (!user) return;
+
+        console.log('📡 Ativando Realtime para perfil:', user.id);
+
+        const channel = supabase
+            .channel(`profile_changes_${user.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'profiles',
+                    filter: `id=eq.${user.id}`
+                },
+                (payload) => {
+                    console.log('⚡ Mudança detectada via Realtime:', payload);
+                    const newStatus = payload.new.subscription_status;
+                    if (newStatus === 'active') {
+                        toast.success("Pagamento confirmado instantaneamente!");
+                        setSuccess(true);
+                        // Atualiza o contexto global para garantir que o resto do app saiba
+                        refreshProfile();
+                    }
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [user, refreshProfile]);
+
+    // 4. Carrega o pagamento apenas se necessário
     useEffect(() => {
         const prepareCheckout = async () => {
             // ESSENCIAL: Esperar o Auth carregar o perfil real
@@ -110,21 +144,39 @@ export default function Checkout() {
         if (loading) return;
 
         setLoading(true);
-        toast.info("Sincronizando com o banco de dados. Por favor, aguarde...");
+        const toastId = toast.loading("Verificando pagamento agora...");
 
-        // Simples e direto: espera 5 segundos e recarrega a página
-        // Ao recarregar, o AuthContext buscará o status real e o useEffect fará o resto
-        setTimeout(() => {
-            window.location.reload();
-        }, 5000);
+        try {
+            // Busca direta no banco (muito rápido)
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('subscription_status')
+                .eq('id', user?.id)
+                .single();
+
+            if (error) throw error;
+
+            if (data.subscription_status === 'active') {
+                toast.success("Confirmado! Seu acesso foi liberado.", { id: toastId });
+                setSuccess(true);
+                await refreshProfile();
+            } else {
+                toast.warning("Ainda não recebemos o aviso do Asaas. Aguarde uns instantes.", { id: toastId });
+            }
+        } catch (error) {
+            console.error('Erro na verificação rápida:', error);
+            toast.error("Erro ao verificar. Tente atualizar a página.", { id: toastId });
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Tela de carregamento bloqueante (SÓ enquanto o AuthContext inicializa)
+    // Tela de carregamento bloqueante
     if (authLoading && !success) {
         return (
             <div className="flex flex-col min-h-screen items-center justify-center bg-accent/5">
                 <Loader2 className="h-10 w-10 animate-spin text-blue-500 mb-4" />
-                <p className="text-muted-foreground animate-pulse font-medium">Sincronizando sua conta...</p>
+                <p className="text-muted-foreground animate-pulse font-medium">Verificando pagamento...</p>
             </div>
         );
     }

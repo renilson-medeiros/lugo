@@ -39,7 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setUser(data.session.user);
-      await loadProfileWithRetry(data.session.user.id);
+      // Busca o perfil sem esperar o retry longo para o primeiro carregamento
+      loadProfileWithRetry(data.session.user.id, 2);
       setLoading(false);
     };
 
@@ -85,7 +86,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         break;
       }
 
-      await new Promise((res) => setTimeout(res, 400));
+      // Reduzido o delay para 200ms para ser mais responsivo
+      await new Promise((res) => setTimeout(res, 200));
     }
 
     console.warn('Profile não encontrado após retries');
