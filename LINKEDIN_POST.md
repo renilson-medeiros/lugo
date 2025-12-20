@@ -1,10 +1,10 @@
-# 🏠 Alugue Fácil - Sua Gestão de Aluguéis, Simples e Direta
+# 🏠 Lugo - Sua Gestão de Aluguéis, Simples e Direta
 
-Acabei de lançar o **Alugue Fácil** - uma plataforma completa projetada para dar autonomia total aos proprietários na gestão de seus imóveis e locações! 🚀
+Acabei de lançar o **Lugo** - uma plataforma completa projetada para dar autonomia total aos proprietários na gestão de seus imóveis e locações! 🚀
 
 ## 🎯 O Projeto
 
-O Alugue Fácil é uma solução Full-Stack que elimina intermediários e profissionaliza o aluguel direto. Proprietários podem:
+A Lugo é uma solução Full-Stack que elimina intermediários e profissionaliza o aluguel direto. Proprietários podem:
 - ✅ **Organizar seu Portfólio**: Centralize todos os seus imóveis em um só lugar.
 - ✅ **Divulgação com Autonomia**: Gere links exclusivos para compartilhar via WhatsApp e Redes Sociais.
 - ✅ **Gestão de Locações**: Vincule inquilinos, monitore vencimentos e histórico de pagamentos.
@@ -45,13 +45,13 @@ O Alugue Fácil é uma solução Full-Stack que elimina intermediários e profis
 
 ## 🔗 Link
 
-- **Demo**: Acessar [Alugue Fácil](https://aluguefacil.vercel.app)
+- **Demo**: Acessar [Lugo](https://alugo.vercel.app)
 
 ---
 
 **Tecnologias**: #NextJS #TypeScript #Supabase #React #TailwindCSS #PostgreSQL #WebDevelopment #FullStack #SaaS #PropTech
 
-🎯 **Acesse agora**: Experimente o Alugue Fácil gratuitamente por 7 dias!
+🎯 **Acesse agora**: Experimente o Lugo gratuitamente por 7 dias!
 
 Feedback e sugestões são muito bem-vindos! 💬
 
