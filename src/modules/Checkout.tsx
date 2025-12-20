@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,10 +33,12 @@ export default function Checkout() {
         qrCode: string;
         invoiceUrl: string;
     } | null>(null);
+    const hasRequestedPayment = useRef(false);
 
     // Carrega o pagamento real ao montar
     useEffect(() => {
-        if (user) {
+        if (user && !hasRequestedPayment.current) {
+            hasRequestedPayment.current = true;
             generateRealPayment();
         }
     }, [user]);
@@ -44,6 +46,7 @@ export default function Checkout() {
     // Verifica se a assinatura já foi ativada (polling ou redirecionamento)
     useEffect(() => {
         if (profile?.subscription_status === 'active' && !success) {
+            console.log('Detectada assinatura ativa no perfil:', profile);
             setSuccess(true);
             toast.success("Pagamento confirmado!");
             setTimeout(() => router.push('/dashboard'), 3000);
@@ -52,6 +55,7 @@ export default function Checkout() {
 
     const generateRealPayment = async () => {
         try {
+            console.log('Iniciando geração de pagamento Asaas...');
             setGenerating(true);
             const response = await fetch('/api/asaas/create-payment', {
                 method: 'POST',
@@ -60,10 +64,12 @@ export default function Checkout() {
 
             if (data.error) throw new Error(data.error);
 
+            console.log('Pagamento gerado com sucesso:', data.paymentId);
             setPaymentData(data);
         } catch (error: any) {
             console.error('Erro ao gerar PIX:', error);
             toast.error("Erro ao gerar QR Code. Tente novamente.");
+            hasRequestedPayment.current = false; // Permite tentar novamente se falhou
         } finally {
             setGenerating(false);
         }
@@ -78,26 +84,36 @@ export default function Checkout() {
     };
 
     const checkPaymentStatus = async () => {
+        if (loading) return;
+
         setLoading(true);
-        toast.info("Verificando status do pagamento...");
+        const tId = toast.info("Verificando status do pagamento...");
+        console.log('--- Iniciando verificação manual de pagamento ---');
 
         try {
             // Agora o refreshProfile retorna o dado mais atualizado do banco
+            console.log('Chamando refreshProfile...');
             const freshProfile = await refreshProfile();
+            console.log('Resultado do refreshProfile:', freshProfile);
 
             // Pequena pausa para UX
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             if (freshProfile?.subscription_status === 'active') {
+                console.log('STATUS CONFIRMADO: active');
                 setSuccess(true);
                 toast.success("Pagamento detectado com sucesso!");
+                toast.dismiss(tId);
             } else {
+                console.log('STATUS AINDA NÃO ATIVO:', freshProfile?.subscription_status);
                 toast.warning("Pagamento ainda não detectado. Pode levar alguns minutos.");
+                toast.dismiss(tId);
             }
-        } catch (error) {
-            console.error('Erro ao verificar pagamento:', error);
+        } catch (error: any) {
+            console.error('Erro fatal ao verificar pagamento:', error);
             toast.error("Erro ao verificar status. Tente atualizar a página.");
         } finally {
+            console.log('--- Finalizada verificação manual ---');
             setLoading(false);
         }
     };
