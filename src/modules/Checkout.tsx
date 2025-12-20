@@ -23,9 +23,9 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function Checkout() {
     const router = useRouter();
-    const { user, profile, refreshProfile } = useAuth();
+    const { user, profile, loading: authLoading, refreshProfile } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [generating, setGenerating] = useState(true);
+    const [generating, setGenerating] = useState(false); // Mudado para false inicial
     const [success, setSuccess] = useState(false);
     const [copying, setCopying] = useState(false);
     const [paymentData, setPaymentData] = useState<{
@@ -35,27 +35,37 @@ export default function Checkout() {
     } | null>(null);
     const hasRequestedPayment = useRef(false);
 
-    // Carrega o pagamento real ao montar
+    // 1. Redirecionamento instantâneo se já for ativo
     useEffect(() => {
-        if (user && !hasRequestedPayment.current) {
-            hasRequestedPayment.current = true;
-            generateRealPayment();
-        }
-    }, [user]);
-
-    // Verifica se a assinatura já foi ativada (polling ou redirecionamento)
-    useEffect(() => {
-        if (profile?.subscription_status === 'active' && !success) {
-            console.log('Detectada assinatura ativa no perfil:', profile);
+        if (!authLoading && profile?.subscription_status === 'active' && !success) {
+            console.log('Usuário já é ativo, redirecionando...');
             setSuccess(true);
-            toast.success("Pagamento confirmado!");
-            setTimeout(() => router.push('/dashboard'), 3000);
+            toast.success("Você já possui uma assinatura ativa!");
+            setTimeout(() => router.push('/dashboard'), 2000);
         }
-    }, [profile, success]);
+    }, [profile, authLoading, success]);
+
+    // 2. Carrega o pagamento apenas se necessário
+    useEffect(() => {
+        const prepareCheckout = async () => {
+            if (authLoading || !user || !profile) return;
+
+            // Se já for ativo, não gera pagamento
+            if (profile.subscription_status === 'active') return;
+
+            // Se for trial e ainda não pedimos o pagamento
+            if (!hasRequestedPayment.current && !paymentData) {
+                hasRequestedPayment.current = true;
+                await generateRealPayment();
+            }
+        };
+
+        prepareCheckout();
+    }, [user, profile, authLoading, paymentData]);
 
     const generateRealPayment = async () => {
         try {
-            console.log('Iniciando geração de pagamento Asaas...');
+            console.log('Gerando novo pagamento Asaas...');
             setGenerating(true);
             const response = await fetch('/api/asaas/create-payment', {
                 method: 'POST',
@@ -64,12 +74,12 @@ export default function Checkout() {
 
             if (data.error) throw new Error(data.error);
 
-            console.log('Pagamento gerado com sucesso:', data.paymentId);
+            console.log('Pagamento recebido:', data.paymentId);
             setPaymentData(data);
         } catch (error: any) {
-            console.error('Erro ao gerar PIX:', error);
-            toast.error("Erro ao gerar QR Code. Tente novamente.");
-            hasRequestedPayment.current = false; // Permite tentar novamente se falhou
+            console.error('Erro Asaas:', error);
+            toast.error("Erro ao gerar pagamento. Tente recarregar.");
+            hasRequestedPayment.current = false;
         } finally {
             setGenerating(false);
         }
@@ -87,36 +97,43 @@ export default function Checkout() {
         if (loading) return;
 
         setLoading(true);
-        const tId = toast.info("Verificando status do pagamento...");
-        console.log('--- Iniciando verificação manual de pagamento ---');
+        const tId = toast.loading("Verificando seu pagamento no Asaas...");
+        console.log('🔍 Iniciando verificação manual...');
 
         try {
-            // Agora o refreshProfile retorna o dado mais atualizado do banco
-            console.log('Chamando refreshProfile...');
+            // Forçamos a busca no servidor
             const freshProfile = await refreshProfile();
-            console.log('Resultado do refreshProfile:', freshProfile);
+            console.log('🔍 Status retornado do banco:', freshProfile?.subscription_status);
 
-            // Pequena pausa para UX
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Pequena espera para o usuário ver que algo aconteceu
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             if (freshProfile?.subscription_status === 'active') {
-                console.log('STATUS CONFIRMADO: active');
+                toast.dismiss(tId);
+                toast.success("Pagamento confirmado com sucesso!");
                 setSuccess(true);
-                toast.success("Pagamento detectado com sucesso!");
-                toast.dismiss(tId);
             } else {
-                console.log('STATUS AINDA NÃO ATIVO:', freshProfile?.subscription_status);
-                toast.warning("Pagamento ainda não detectado. Pode levar alguns minutos.");
                 toast.dismiss(tId);
+                toast.warning("Ainda não recebemos a confirmação. Se você já pagou, aguarde 1 minuto e tente novamente.");
             }
         } catch (error: any) {
-            console.error('Erro fatal ao verificar pagamento:', error);
-            toast.error("Erro ao verificar status. Tente atualizar a página.");
+            console.error('Erro na verificação:', error);
+            toast.dismiss(tId);
+            toast.error("Erro ao conectar com o servidor.");
         } finally {
-            console.log('--- Finalizada verificação manual ---');
             setLoading(false);
         }
     };
+
+    // Tela de carregamento inicial (enquanto o AuthContext carrega o perfil)
+    if (authLoading && !success) {
+        return (
+            <div className="flex flex-col min-h-screen items-center justify-center bg-accent/5">
+                <Loader2 className="h-10 w-10 animate-spin text-blue-500 mb-4" />
+                <p className="text-muted-foreground animate-pulse">Carregando informações da sua conta...</p>
+            </div>
+        );
+    }
 
     if (success) {
         return (
