@@ -18,27 +18,35 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: 'Missing externalReference' }, { status: 400 });
             }
 
+            console.log(`Processando ativação para usuário: ${userId}`);
             const supabaseAdmin = createAdminClient();
 
             // Ativa a assinatura por 30 dias
             const expiresAt = new Date();
             expiresAt.setDate(expiresAt.getDate() + 30);
 
-            const { error } = await supabaseAdmin
+            const { data, error, count } = await supabaseAdmin
                 .from('profiles')
                 .update({
                     subscription_status: 'active',
                     expires_at: expiresAt.toISOString(),
                     subscription_id: payment.id
                 })
-                .eq('id', userId);
+                .eq('id', userId)
+                .select(); // Adicionado select para debug
 
             if (error) {
-                console.error('Erro ao atualizar perfil via Webhook:', error);
+                console.error('Erro detalhado Supabase Webhook:', error);
                 throw error;
             }
 
-            console.log(`Assinatura ativada para o usuário ${userId}`);
+            console.log(`Resultado do update: ${data?.length} linha(s) afetada(s)`);
+
+            if (!data || data.length === 0) {
+                console.warn(`AVISO: Nenhum perfil encontrado com o ID ${userId}`);
+            } else {
+                console.log(`Assinatura ativada com SUCESSO para o usuário ${userId}`);
+            }
         }
 
         return NextResponse.json({ received: true });

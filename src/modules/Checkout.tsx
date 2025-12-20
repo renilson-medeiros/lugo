@@ -23,7 +23,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function Checkout() {
     const router = useRouter();
-    const { user, profile } = useAuth();
+    const { user, profile, refreshProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(true);
     const [success, setSuccess] = useState(false);
@@ -79,11 +79,13 @@ export default function Checkout() {
 
     const checkPaymentStatus = async () => {
         setLoading(true);
-        // Atualiza o perfil para ver se o Webhook já processou
-        // O AuthContext normalmente atualiza o profile periodicamente ou podemos forçar
-        // Por agora, vamos apenas mostrar um feedback e confiar no useEffect do profile
         toast.info("Verificando status do pagamento...");
-        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Força a atualização do perfil para buscar do banco
+        await refreshProfile();
+
+        // Pequena pausa para UX
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
         if (profile?.subscription_status === 'active') {
             setSuccess(true);

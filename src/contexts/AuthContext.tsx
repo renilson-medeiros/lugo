@@ -11,6 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, userData: SignUpData) => Promise<void>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
+  refreshProfile: () => Promise<void>;
 }
 
 interface SignUpData {
@@ -26,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  
+
   // INIT + AUTH LISTENER
   useEffect(() => {
     const init = async () => {
@@ -64,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  
+
   // LOAD PROFILE WITH RETRY
   const loadProfileWithRetry = async (userId: string, retries = 5) => {
     for (let i = 0; i < retries; i++) {
@@ -91,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(null);
   };
 
-  
+
   // LOGIN
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -107,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  
+
   // SIGNUP (trigger cuida do profile)
   const signUp = async (email: string, password: string, userData: SignUpData) => {
     if (!validarCPF(userData.cpf)) {
@@ -129,7 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   };
 
-  
+
   // LOGOUT
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -149,6 +150,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signUp,
         signOut,
         isAdmin: profile?.role === 'admin',
+        refreshProfile: async () => {
+          if (user) await loadProfileWithRetry(user.id, 1);
+        }
       }}
     >
       {children}
