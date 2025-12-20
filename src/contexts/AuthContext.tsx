@@ -12,6 +12,8 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   isAdmin: boolean;
   refreshProfile: () => Promise<Profile | null>;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
 }
 
 interface SignUpData {
@@ -153,6 +155,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(null);
   };
 
+  // PASSWORD RESET
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/atualizar-senha`,
+    });
+    if (error) throw error;
+  };
+
+  const updatePassword = async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) throw error;
+  };
+
   const value = useMemo(() => ({
     user,
     profile,
@@ -161,7 +176,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     isAdmin: profile?.role === 'admin',
-    refreshProfile
+    refreshProfile,
+    resetPassword,
+    updatePassword
   }), [user, profile, loading, refreshProfile]);
 
   return (
