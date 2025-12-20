@@ -19,7 +19,7 @@ export default function ComoFuncionaPage() {
                     </p>
                     <div className="flex justify-center gap-4 pt-4">
                         <Button size="lg" className="bg-blue-600 hover:bg-blue-500" asChild>
-                            <Link href="/register">Começar Grátis</Link>
+                            <Link href="/registro">Começar Grátis</Link>
                         </Button>
                         <Button size="lg" variant="outline" asChild>
                             <Link href="/contato">Falar Conosco</Link>
@@ -141,7 +141,7 @@ export default function ComoFuncionaPage() {
                         Comece hoje mesmo, gratuitamente. Sem cartão de crédito.
                     </p>
                     <Button size="lg" variant="secondary" asChild className="text-blue-600">
-                        <Link href="/register">Criar Conta Grátis</Link>
+                        <Link href="/registro">Criar Conta Grátis</Link>
                     </Button>
                 </div>
             </section>

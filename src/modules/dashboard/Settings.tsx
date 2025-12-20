@@ -204,7 +204,6 @@ export default function Settings() {
                 </div>
                 <Input
                   id="phone"
-                  type="password"
                   value={userData.telefone}
                   onChange={(e) => setUserData({ ...userData, telefone: formatarTelefone(e.target.value) })}
                   placeholder="(11) 99999-9999"
@@ -216,7 +215,6 @@ export default function Settings() {
                 <Label htmlFor="cpf">CPF</Label>
                 <Input
                   id="cpf"
-                  type="password"
                   value={profile?.cpf ? formatarCPF(profile.cpf) : ""}
                   disabled
                   className="bg-muted cursor-not-allowed"
