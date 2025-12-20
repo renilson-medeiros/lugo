@@ -38,13 +38,9 @@ export default function Checkout() {
     // 1. Redirecionamento instantâneo se já for ativo
     useEffect(() => {
         if (!authLoading && profile?.subscription_status === 'active' && !success) {
-            console.log('✅ Usuário já é ativo, liberando acesso...');
             setSuccess(true);
-            setTimeout(() => {
-                if (window.location.pathname === '/checkout') {
-                    router.push('/dashboard');
-                }
-            }, 2000);
+            toast.success("Assinatura ativa detectada!");
+            setTimeout(() => router.push('/dashboard'), 1500);
         }
     }, [profile, authLoading, success, router]);
 
@@ -58,12 +54,10 @@ export default function Checkout() {
 
     // 3. Supabase Realtime: Escuta mudanças no perfil em tempo real
     useEffect(() => {
-        if (!user) return;
-
-        console.log('📡 Ativando Realtime para perfil:', user.id);
+        if (!user || success) return;
 
         const channel = supabase
-            .channel(`profile_changes_${user.id}`)
+            .channel(`public:profiles:id=eq.${user.id}`)
             .on(
                 'postgres_changes',
                 {
@@ -73,7 +67,6 @@ export default function Checkout() {
                     filter: `id=eq.${user.id}`
                 },
                 (payload) => {
-                    console.log('⚡ Mudança Realtime recebida:', payload);
                     if (payload.new.subscription_status === 'active') {
                         toast.success("Pagamento confirmado via Realtime!");
                         setSuccess(true);
@@ -81,12 +74,9 @@ export default function Checkout() {
                     }
                 }
             )
-            .subscribe((status) => {
-                console.log('📡 Status da conexão Realtime:', status);
-            });
+            .subscribe();
 
         return () => {
-            console.log('📡 Finalizando canal Realtime');
             supabase.removeChannel(channel);
         };
     }, [user, success, refreshProfile]);
@@ -108,7 +98,6 @@ export default function Checkout() {
 
     const generateRealPayment = async () => {
         try {
-            console.log('📡 Solicitando novo PIX ao Asaas...');
             setGenerating(true);
             const response = await fetch('/api/asaas/create-payment', {
                 method: 'POST',
@@ -118,9 +107,7 @@ export default function Checkout() {
             if (data.error) throw new Error(data.error);
 
             setPaymentData(data);
-            console.log('✅ Pagamento gerado:', data.paymentId);
         } catch (error: any) {
-            console.error('❌ Erro Asaas:', error);
             toast.error("Erro ao gerar QR Code. Tente atualizar a página.");
             hasRequestedPayment.current = false;
         } finally {
@@ -139,7 +126,6 @@ export default function Checkout() {
     const checkPaymentStatus = async () => {
         if (loading) return;
 
-        console.log('🔍 Verificando status manualmente...');
         setLoading(true);
         const toastId = toast.loading("Verificando com o Asaas...");
 
@@ -153,18 +139,16 @@ export default function Checkout() {
 
             if (error) throw error;
 
-            console.log('📊 Status atual:', data.subscription_status);
-
             if (data.subscription_status === 'active') {
-                toast.success("Confirmado! Seu acesso foi liberated.", { id: toastId });
+                toast.success("Confirmado! Seu acesso foi liberado.", { id: toastId });
                 setSuccess(true);
                 await refreshProfile();
             } else {
-                toast.warning("Ainda não recebemos o aviso do Asaas. Aguarde uns instantes.", { id: toastId });
+                toast.warning("Pagamento ainda em processamento. Aguarde um momento.", { id: toastId });
+                await refreshProfile();
             }
-        } catch (error) {
-            console.error('Erro na verificação rápida:', error);
-            toast.error("Erro ao verificar. Tente atualizar a página.", { id: toastId });
+        } catch (err: any) {
+            toast.error("Erro ao verificar status. Tente novamente.", { id: toastId });
         } finally {
             setLoading(false);
         }
