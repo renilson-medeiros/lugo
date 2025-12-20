@@ -123,12 +123,39 @@ export default function PropertyForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCep, setIsLoadingCep] = useState(false);
 
-  // Carregar dados se estiver editando
+  // Carregar dados se estiver editando ou verificar trava de trial se for novo
   useEffect(() => {
     if (isEditing) {
       loadProperty();
+    } else if (user) {
+      checkTrialLimit();
     }
-  }, [id]);
+  }, [id, user]);
+
+  const checkTrialLimit = async () => {
+    if (!user) return;
+
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_status')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.subscription_status === 'trial') {
+        const { count } = await supabase
+          .from('imoveis')
+          .select('*', { count: 'exact', head: true });
+
+        if (count && count >= 1) {
+          toast.info("Você atingiu o limite de 1 imóvel do período de teste.");
+          router.push('/checkout');
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao verificar limite de trial:', error);
+    }
+  };
 
   const loadProperty = async () => {
     try {

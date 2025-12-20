@@ -8,7 +8,7 @@ Atualmente, o projeto possui a funcionalidade de registro técnica funcional, ma
 
 - **Registro**: O formulário em `src/modules/Register.tsx` coleta dados e cria o usuário no Supabase Auth.
 - **Perfil**: Um trigger no banco de dados cria automaticamente uma entrada na tabela `profiles`.
-- **Pagamento**: Existe um card visual informativo sobre o valor de **R$ 30,00/mês**.
+- **Pagamento**: Existe um card visual informativo sobre o valor de **R$ 29,90/mês**.
 
 ---
 
@@ -21,10 +21,13 @@ Ao criar a conta, o usuário recebe automaticamente **7 dias de teste grátis**.
 - **Status Inicial**: `trial`
 - **Data de Expiração**: `data_cadastro + 7 dias`
 
-### 2. Limitações do Período de Teste
-Durante os 7 dias, o proprietário pode usar a plataforma com limitações pedagógicas:
-- 🏠 **Máximo de 1 Imóvel**: Permite cadastrar apenas um imóvel para teste.
-- 👤 **Máximo de 1 Inquilino**: Permite gerenciar apenas um contrato ativo.
+### 2. Acesso durante o Trial
+Durante os 7 dias, o proprietário tem acesso às ferramentas para vivenciar o valor do serviço, mas com uma trava de segurança para evitar uso massivo abusivo antes da conversão:
+- 🏠 **Máximo de 1 Imóvel**: Permite configurar e gerenciar completamente um imóvel para teste do "efeito uau".
+- 👤 **Inquilinos e Comprovantes**: Ilimitados para este imóvel único.
+
+> [!NOTE]
+> Essa limitação de volume **não deve ser anunciada na Landing Page**, onde o foco é a liberdade e os 7 dias grátis. A trava serve como um "limite de segurança" técnico.
 
 ### 3. O Paywall (Bloqueio de Acesso)
 Assim que os **7 dias expirarem**:
@@ -32,17 +35,16 @@ Assim que os **7 dias expirarem**:
 - Caso o status não seja `active`, o usuário será redirecionado para uma **Página de Pagamento Obrigatória**.
 - O acesso ao Dashboard e ferramentas de gestão fica totalmente bloqueado até a confirmação do pagamento.
 
----
+### 💳 Escolha da Plataforma de Pagamento: Asaas
 
-## 💸 Método de Pagamento: PIX
+O **Asaas** foi escolhido como a plataforma oficial para o Alugue Fácil devido à sua especialização em SaaS, recorrência e ambiente de testes (Sandbox) superior.
 
-A preferência absoluta da plataforma é o **PIX**, devido à sua natureza instantânea e facilidade de conciliação.
-
-- **Gateway Recomendado**: **Mercado Pago** (Líder em integração de PIX no Brasil).
-- **Processo**:
-    1. O usuário gera o QR Code/Copia e Cola no sistema.
-    2. O gateway confirma o recebimento em segundos.
-    3. O Webhook ativa o status do usuário para `active` instantaneamente.
+| Característica | Benefício para o Alugue Fácil |
+| :--- | :--- |
+| **Recorrência** | Gestão nativa de assinaturas mensais de R$ 29,90. |
+| **PIX e Boleto** | Cobrança profissional com notificações automáticas. |
+| **Sandbox** | Permite testar todo o fluxo de pagamento sem usar dinheiro real. |
+| **Webhooks** | Ativação instantânea do plano após o pagamento. |
 
 ---
 
@@ -54,12 +56,15 @@ Devemos expandir a tabela `profiles` com os seguintes campos de controle:
 | :--- | :--- | :--- |
 | `subscription_status` | `text` | `trial`, `active`, `past_due`, `canceled` |
 | `expires_at` | `timestamp` | Fim do trial ou do mês pago |
-| `trial_limit_reached` | `boolean` | Flag para controle de limites de teste |
-| `subscription_id` | `text` | ID da transação no Mercado Pago |
+| `subscription_id` | `text` | ID da assinatura/cliente no Asaas |
 
 ---
 
-## � Regras de Segurança e Middleware
+## 🛡️ Lógica de Acesso (Paywall) e Regras de Segurança
+
+---
+
+##  Regras de Segurança e Middleware
 
 1. **Middleware de Assinatura**:
    - Se `current_date > expires_at` E `status != 'active'`, redireciona para `/checkout`.

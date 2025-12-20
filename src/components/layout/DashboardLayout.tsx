@@ -53,7 +53,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { signOut, profile } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -63,6 +63,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       console.error("Erro ao sair:", error);
     }
   };
+
+  // Verificação de Trial Expirado (Paywall)
+  const isExpired = profile?.subscription_status === 'trial' &&
+    profile?.expires_at &&
+    new Date(profile.expires_at) < new Date();
+
+  const isSettingsPage = pathname === "/dashboard/configuracoes";
+
+  if (isExpired && !isSettingsPage) {
+    router.push('/checkout');
+    return null; // Evita renderizar o dashboard se estiver expirado
+  }
 
   return (
     <div className="min-h-screen bg-background">

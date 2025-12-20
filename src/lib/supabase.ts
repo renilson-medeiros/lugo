@@ -26,6 +26,9 @@ export interface Profile {
   telefone: string | null;
   email: string;
   role: 'proprietario' | 'admin';
+  subscription_status: 'trial' | 'active' | 'past_due' | 'canceled';
+  expires_at: string | null;
+  subscription_id: string | null;
   created_at: string;
   updated_at: string;
 }

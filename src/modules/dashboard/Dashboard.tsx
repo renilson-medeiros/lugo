@@ -327,12 +327,21 @@ export default function Dashboard() {
               Olá {firstName}! Aqui está o resumo dos seus imóveis.
             </p>
           </div>
-          <Link href="/dashboard/imoveis/novo">
-            <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
-              <Plus className="h-4 w-4" aria-hidden="true" />
-              Novo imóvel
-            </Button>
-          </Link>
+          {profile?.subscription_status === 'trial' && stats.totalImoveis >= 1 ? (
+            <Link href="/checkout">
+              <Button className="gap-2 bg-blue-500 hover:bg-blue-400 text-white border-none shadow-sm shadow-blue-200">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Assinar para adicionar mais
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/dashboard/imoveis/novo">
+              <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Novo imóvel
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Stats */}
