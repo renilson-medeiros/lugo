@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Home, X, Building2, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Logo } from "@/components/ui/Logo";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,13 +22,10 @@ export function Header() {
       <nav className="container px-4 flex h-16 items-center justify-between" aria-label="Navegação principal">
         <Link
           href="/"
-          className="flex items-center gap-2 transition-opacity hover:opacity-80 focus-visible:opacity-80"
-          aria-label="AlugueFácil - Página inicial"
+          className="transition-opacity hover:opacity-80 focus-visible:opacity-80"
+          aria-label="Lugo - Página inicial"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500">
-            <Building2 className="h-5 w-5 text-primary-foreground" aria-hidden="true" />
-          </div>
-          <span className="font-display text-xl font-semibold text-foreground">Alugue Fácil</span>
+          <Logo />
         </Link>
 
         {/* Desktop Navigation */}
@@ -37,7 +35,7 @@ export function Header() {
               {user ? (
                 <div className="flex items-center gap-3">
                   <Link href="/dashboard">
-                    <Button className="font-medium bg-blue-500 hover:bg-blue-400 gap-2">
+                    <Button className="font-medium bg-blue-600 hover:bg-blue-500 gap-2">
                       <LayoutDashboard className="h-4 w-4" />
                       Dashboard
                     </Button>
@@ -58,7 +56,7 @@ export function Header() {
                     </Button>
                   </Link>
                   <Link href="/registro">
-                    <Button className="font-medium bg-blue-500 hover:bg-blue-400">
+                    <Button className="font-medium bg-blue-600 hover:bg-blue-500">
                       Começar agora
                     </Button>
                   </Link>
@@ -87,7 +85,7 @@ export function Header() {
                       {user ? (
                         <div className="flex flex-col gap-3">
                           <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full font-medium bg-blue-500 hover:bg-blue-400 gap-2">
+                            <Button className="w-full font-medium bg-blue-600 hover:bg-blue-500 gap-2">
                               <LayoutDashboard className="h-4 w-4" />
                               Dashboard
                             </Button>
@@ -111,7 +109,7 @@ export function Header() {
                             </Button>
                           </Link>
                           <Link href="/registro" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full font-medium bg-blue-500 hover:bg-blue-400">
+                            <Button className="w-full font-medium bg-blue-600 hover:bg-blue-500">
                               Começar agora
                             </Button>
                           </Link>

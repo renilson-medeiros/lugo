@@ -16,7 +16,7 @@ export default function PrivacyPage() {
                 <section className="container px-4 py-16 md:py-24">
                     <div className="max-w-3xl mx-auto">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-500">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-600">
                                 <Shield className="h-6 w-6" />
                             </div>
                             <h1 className="font-display text-4xl font-bold tracking-tight">Política de Privacidade</h1>
@@ -43,9 +43,9 @@ export default function PrivacyPage() {
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-bold text-foreground font-display">1. Introdução</h2>
                                 <p>
-                                    O Alugue Fácil valoriza a sua privacidade. Esta Política de Privacidade explica como coletamos, usamos,
+                                    O Lugo valoriza a sua privacidade. Esta Política de Privacidade explica como coletamos, usamos,
                                     protegemos e compartilhamos suas informações pessoais ao utilizar nossa plataforma.
-                                    Ao acessar o Alugue Fácil, você concorda com as práticas descritas nesta política.
+                                    Ao acessar o Lugo, você concorda com as práticas descritas nesta política.
                                 </p>
                             </section>
 

@@ -344,7 +344,7 @@ export default function TenantForm() {
         <Card className="animate-fade-in border-blue-100 bg-blue-50/30">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <Building2 className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle className="text-lg">Imóvel</CardTitle>
             </div>
           </CardHeader>
@@ -369,7 +369,7 @@ export default function TenantForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "50ms" }}>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <User className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <User className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Dados Pessoais</CardTitle>
             </div>
             <CardDescription>Informações do inquilino</CardDescription>
@@ -434,7 +434,7 @@ export default function TenantForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "100ms" }}>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <Calendar className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Dados do Contrato</CardTitle>
             </div>
             <CardDescription>Período de locação e vencimento</CardDescription>
@@ -502,7 +502,7 @@ export default function TenantForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "200ms" }}>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <FileText className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Contrato Assinado</CardTitle>
             </div>
             <CardDescription>Upload opcional de fotos do contrato assinado</CardDescription>
@@ -555,7 +555,7 @@ export default function TenantForm() {
               Cancelar
             </Button>
           </Link>
-          <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-400 sm:w-auto">
+          <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-500 sm:w-auto">
             {isSubmitting ? "Salvando..." : isEditMode ? "Salvar alterações" : "Cadastrar inquilino"}
           </Button>
         </div>

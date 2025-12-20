@@ -364,7 +364,7 @@ export default function PropertyDetail() {
               O imóvel que você procura não existe ou foi removido.
             </p>
             <Button
-              className="bg-blue-500 hover:bg-blue-400"
+              className="bg-blue-500 hover:bg-blue-500"
               onClick={() => router.back()}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -791,7 +791,7 @@ export default function PropertyDetail() {
                           </>
                         ) : (
                           <Link href={`/dashboard/imoveis/${property.id}/inquilino`} className="block w-full">
-                            <Button className="w-full gap-2 bg-blue-500 hover:bg-blue-400">
+                            <Button className="w-full gap-2 bg-blue-500 hover:bg-blue-500">
                               <UserPlus className="h-4 w-4" />
                               Cadastrar Inquilino
                             </Button>
@@ -809,7 +809,7 @@ export default function PropertyDetail() {
                       <>
                         <Button
                           size="lg"
-                          className="mt-4 w-full gap-2 text-base bg-blue-500 hover:bg-blue-400"
+                          className="mt-4 w-full gap-2 text-base bg-blue-500 hover:bg-blue-500"
                           onClick={handleWhatsAppContact}
                         >
                           <MessageCircle className="h-5 w-5" aria-hidden="true" />

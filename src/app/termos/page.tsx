@@ -16,7 +16,7 @@ export default function TermsPage() {
                 <section className="container px-4 py-16 md:py-24">
                     <div className="max-w-3xl mx-auto">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-500">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-600">
                                 <FileText className="h-6 w-6" />
                             </div>
                             <h1 className="font-display text-4xl font-bold tracking-tight">Termos de Uso</h1>
@@ -32,7 +32,7 @@ export default function TermsPage() {
                                 Resumo Simplificado
                             </h2>
                             <ul className="space-y-2 text-sm text-blue-900/80">
-                                <li>• O Alugue Fácil é uma ferramenta de gestão, não uma imobiliária.</li>
+                                <li>• O Lugo é uma ferramenta de gestão, não uma imobiliária.</li>
                                 <li>• Você é o único responsável pelos seus imóveis e negociações.</li>
                                 <li>• A plataforma funciona via assinatura (R$ 29,90/mês), sem comissões sobre o aluguel.</li>
                                 <li>• Seus dados são protegidos, mas as informações públicas do imóvel são acessíveis via link.</li>
@@ -43,7 +43,7 @@ export default function TermsPage() {
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-bold text-foreground font-display">1. Aceitação dos Termos</h2>
                                 <p>
-                                    Ao acessar e utilizar o Alugue Fácil, você concorda em cumprir e estar vinculado a estes Termos de Uso.
+                                    Ao acessar e utilizar o Lugo, você concorda em cumprir e estar vinculado a estes Termos de Uso.
                                     Se você não concordar com qualquer parte destes termos, não deverá utilizar nossa plataforma.
                                 </p>
                             </section>
@@ -51,9 +51,9 @@ export default function TermsPage() {
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-bold text-foreground font-display">2. Descrição do Serviço</h2>
                                 <p>
-                                    O Alugue Fácil é uma ferramenta de gestão e divulgação para locadores diretos. Facilitamos a conexão entre
+                                    O Lugo é uma ferramenta de gestão e divulgação para locadores diretos. Facilitamos a conexão entre
                                     proprietários e interessados, além de oferecer ferramentas de gestão de inquilinos e emissão de comprovantes.
-                                    O Alugue Fácil não é uma imobiliária e não intermedia transações financeiras.
+                                    O Lugo não é uma imobiliária e não intermedia transações financeiras.
                                 </p>
                             </section>
 
@@ -69,7 +69,7 @@ export default function TermsPage() {
                                 <h2 className="text-2xl font-bold text-foreground font-display">4. Responsabilidades do Locador</h2>
                                 <p>
                                     O locador é o único responsável pela veracidade das informações dos imóveis cadastrados, bem como pelas negociações
-                                    realizadas diretamente com os inquilinos. O Alugue Fácil não se responsabiliza por contratos de locação ou
+                                    realizadas diretamente com os inquilinos. O Lugo não se responsabiliza por contratos de locação ou
                                     descumprimento de acordos entre as partes.
                                 </p>
                             </section>
@@ -85,7 +85,7 @@ export default function TermsPage() {
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-bold text-foreground font-display">6. Propriedade Intelectual</h2>
                                 <p>
-                                    Todo o conteúdo da plataforma (marca, design, código) é de propriedade exclusiva do Alugue Fácil.
+                                    Todo o conteúdo da plataforma (marca, design, código) é de propriedade exclusiva do Lugo.
                                     É proibida a reprodução ou uso não autorizado.
                                 </p>
                             </section>
@@ -93,7 +93,7 @@ export default function TermsPage() {
                             <section className="space-y-4">
                                 <h2 className="text-2xl font-bold text-foreground font-display">7. Limitação de Responsabilidade</h2>
                                 <p>
-                                    O Alugue Fácil não será responsável por quaisquer danos diretos, indiretos ou consequentes resultantes
+                                    O Lugo não será responsável por quaisquer danos diretos, indiretos ou consequentes resultantes
                                     do uso ou da incapacidade de usar nossos serviços.
                                 </p>
                             </section>

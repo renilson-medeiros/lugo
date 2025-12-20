@@ -39,7 +39,7 @@ export default function PricingPage() {
                                     "Suporte via e-mail"
                                 ].map((feature, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm">
-                                        <Check className="h-4 w-4 text-blue-500" />
+                                        <Check className="h-4 w-4 text-blue-600" />
                                         <span>{feature}</span>
                                     </li>
                                 ))}
@@ -51,7 +51,7 @@ export default function PricingPage() {
                         </div>
 
                         {/* Pro Plan */}
-                        <div className="flex flex-col p-8 bg-blue-600 text-white border border-blue-500 rounded-2xl shadow-xl relative overflow-hidden">
+                        <div className="flex flex-col p-8 bg-blue-600 text-white border border-blue-600 rounded-2xl shadow-xl relative overflow-hidden">
                             <div className="absolute top-4 right-4 bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                                 Recomendado
                             </div>

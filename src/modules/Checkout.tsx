@@ -158,7 +158,7 @@ export default function Checkout() {
     if (authLoading && !success) {
         return (
             <div className="flex flex-col min-h-screen items-center justify-center bg-accent/5">
-                <Loader2 className="h-10 w-10 animate-spin text-blue-500 mb-4" />
+                <Loader2 className="h-10 w-10 animate-spin text-blue-600 mb-4" />
                 <p className="text-muted-foreground animate-pulse font-medium">Verificando pagamento...</p>
             </div>
         );
@@ -175,11 +175,11 @@ export default function Checkout() {
                         </div>
                         <h1 className="text-3xl font-bold mb-2">Assinatura Ativa!</h1>
                         <p className="text-muted-foreground mb-8">
-                            Parabéns! Sua conta <strong>Alugue Fácil Profissional</strong> foi ativada.
+                            Parabéns! Sua conta <strong>Lugo Profissional</strong> foi ativada.
                             Você já pode cadastrar imóveis ilimitados e gerenciar seu patrimônio.
                         </p>
-                        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" />
-                        <p className="text-sm font-medium text-blue-500">Redirecionando para o Dashboard...</p>
+                        <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
+                        <p className="text-sm font-medium text-blue-600">Redirecionando para o Dashboard...</p>
                     </Card>
                 </main>
                 <Footer />
@@ -207,10 +207,10 @@ export default function Checkout() {
                     <div className="grid gap-8 md:grid-cols-2">
                         {/* Left Col: Order Summary */}
                         <div className="space-y-6">
-                            <Card className="border-blue-500/20 shadow-sm">
+                            <Card className="border-blue-600/20 shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Zap className="h-5 w-5 text-blue-500" />
+                                        <Zap className="h-5 w-5 text-blue-600" />
                                         Plano Profissional
                                     </CardTitle>
                                     <CardDescription>Acesso total e ilimitado</CardDescription>
@@ -234,7 +234,7 @@ export default function Checkout() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="pt-4 flex items-center justify-between text-xl font-bold text-blue-500">
+                                    <div className="pt-4 flex items-center justify-between text-xl font-bold text-blue-600">
                                         <span>Total</span>
                                         <span>R$ 29,90</span>
                                     </div>
@@ -242,9 +242,9 @@ export default function Checkout() {
                             </Card>
 
                             <div className="flex items-center gap-3 p-4 rounded-lg bg-blue-50 border border-blue-100">
-                                <ShieldCheck className="h-6 w-6 text-blue-500" />
-                                <div className="text-xs text-blue-400">
-                                    <p className="font-bold text-blue-500">Pagamento Seguro via Asaas</p>
+                                <ShieldCheck className="h-6 w-6 text-blue-600" />
+                                <div className="text-xs text-blue-500">
+                                    <p className="font-bold text-blue-600">Pagamento Seguro via Asaas</p>
                                     <p>Seus dados estão protegidos por criptografia de ponta a ponta.</p>
                                 </div>
                             </div>
@@ -273,7 +273,7 @@ export default function Checkout() {
                                             <div className="w-48 h-48 bg-gray-50 flex items-center justify-center relative overflow-hidden">
                                                 {generating ? (
                                                     <div className="flex flex-col items-center gap-2">
-                                                        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                                                        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
                                                         <span className="text-[10px] text-muted-foreground">Gerando PIX...</span>
                                                     </div>
                                                 ) : paymentData?.qrCode ? (

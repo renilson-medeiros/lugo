@@ -180,7 +180,7 @@ export default function TenantsList() {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando inquilinos...</p>
         </div>
       </div>
@@ -297,7 +297,7 @@ export default function TenantsList() {
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-start gap-4">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
-                        <Users className="h-6 w-6 text-blue-500" aria-hidden="true" />
+                        <Users className="h-6 w-6 text-blue-600" aria-hidden="true" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
@@ -338,7 +338,7 @@ export default function TenantsList() {
 
                     <div className="flex items-center gap-2">
                       <Link href={`/dashboard/comprovantes/novo?inquilino=${tenant.id}`}>
-                        <Button variant="outline" size="sm" className="gap-1.5 border-blue-500 hover:border-blue-400 bg-blue-500 hover:bg-blue-400 text-muted hover:text-muted">
+                        <Button variant="outline" size="sm" className="gap-1.5 border-blue-600 hover:border-blue-500 bg-blue-600 hover:bg-blue-500 text-muted hover:text-muted">
                           <Receipt className="h-4 w-4" aria-hidden="true" />
                           Gerar comprovante
                         </Button>
@@ -352,7 +352,7 @@ export default function TenantsList() {
                         <DropdownMenuContent align="end" className="bg-popover">
                           <DropdownMenuItem asChild>
                             <Link href={`/dashboard/inquilinos/${tenant.id}`} className="cursor-pointer">
-                              <Eye className="mr-2 h-4 w-4 text-blue-500" />
+                              <Eye className="mr-2 h-4 w-4 text-blue-600" />
                               Ver detalhes
                             </Link>
                           </DropdownMenuItem>

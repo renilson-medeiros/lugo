@@ -1,4 +1,4 @@
-# 🏠 AluguelFácil - Sistema de Gestão de Imóveis
+# 🏠 Lugo - Sistema de Gestão de Imóveis
 
 > **Sistema completo e profissional para gestão de imóveis de aluguel, desenvolvido com as melhores práticas de desenvolvimento web moderno.**
 
@@ -11,7 +11,7 @@
 
 ## 🎯 Sobre o Projeto
 
-AluguelFácil é uma aplicação full-stack que resolve problemas reais de proprietários de imóveis, oferecendo uma plataforma completa para gerenciar aluguéis, inquilinos e documentação de forma eficiente e profissional.
+Lugo é uma aplicação full-stack que resolve problemas reais de proprietários de imóveis, oferecendo uma plataforma completa para gerenciar aluguéis, inquilinos e documentação de forma eficiente e profissional.
 
 ### 🌟 Diferenciais Técnicos
 
@@ -88,7 +88,7 @@ AluguelFácil é uma aplicação full-stack que resolve problemas reais de propr
 ## 🏗️ Arquitetura do Projeto
 
 ```
-aluguelfacil/
+lugo/
 ├── src/
 │   ├── app/                    # App Router (Next.js 14)
 │   │   ├── dashboard/          # Páginas protegidas
@@ -185,8 +185,8 @@ const { data } = await supabase
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/aluguelfacil.git
-cd aluguelfacil
+git clone https://github.com/seu-usuario/lugo.git
+cd lugo
 
 # Instale as dependências
 npm install

@@ -49,7 +49,7 @@ export function YearPicker({
                     )}
                     disabled={disabled}
                 >
-                    <CalendarIcon className="h-4 w-4 text-blue-500" />
+                    <CalendarIcon className="h-4 w-4 text-blue-600" />
                     {value ? value : <span>{placeholder}</span>}
                 </Button>
             </PopoverTrigger>
@@ -61,7 +61,7 @@ export function YearPicker({
                             variant={value === year ? "default" : "ghost"}
                             className={cn(
                                 "h-9 w-full font-normal",
-                                value === year && "bg-blue-500 hover:bg-blue-400 text-white"
+                                value === year && "bg-blue-600 hover:bg-blue-400 text-white"
                             )}
                             onClick={() => {
                                 onChange(year)

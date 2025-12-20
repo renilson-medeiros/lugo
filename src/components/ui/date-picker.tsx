@@ -43,7 +43,7 @@ export function DatePicker({
                     )}
                     disabled={disabled}
                 >
-                    <CalendarIcon className="text-blue-500 h-4 w-4" />
+                    <CalendarIcon className="text-blue-600 h-4 w-4" />
                     {date ? format(date, "PP", { locale: ptBR }) : <span>{placeholder}</span>}
                 </Button>
             </PopoverTrigger>

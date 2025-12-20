@@ -256,7 +256,7 @@ export default function PropertiesList() {
             <p className="text-muted-foreground">Gerencie seus imóveis cadastrados</p>
           </div>
           <Link href="/dashboard/imoveis/novo">
-            <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
+            <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Novo imóvel
             </Button>
@@ -369,7 +369,7 @@ export default function PropertiesList() {
               </p>
               {!searchQuery && (
                 <Link href="/dashboard/imoveis/novo" className="mt-4">
-                  <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
+                  <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
                     <Plus className="h-4 w-4" aria-hidden="true" />
                     Cadastrar imóvel
                   </Button>
@@ -456,30 +456,30 @@ const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate }: 
               onClick={() => onShare(property)}
               aria-label="Compartilhar imóvel"
             >
-              <Share2 className="h-4 w-4 text-blue-500" />
+              <Share2 className="h-4 w-4 text-blue-600" />
             </Button>
             <Link href={`/imovel/${property.id}`}>
               <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Ver imóvel">
-                <Eye className="h-4 w-4 text-blue-500" />
+                <Eye className="h-4 w-4 text-blue-600" />
               </Button>
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Mais opções">
-                  <MoreHorizontal className="h-4 w-4 text-blue-500" />
+                  <MoreHorizontal className="h-4 w-4 text-blue-600" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-popover">
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/imoveis/${property.id}/editar`} className="cursor-pointer">
-                    <Edit className="mr-2 h-4 w-4 text-blue-500" />
+                    <Edit className="mr-2 h-4 w-4 text-blue-600" />
                     Editar
                   </Link>
                 </DropdownMenuItem>
                 {property.status === "disponível" && (
                   <DropdownMenuItem asChild>
                     <Link href={`/dashboard/imoveis/${property.id}/inquilino`} className="cursor-pointer">
-                      <Plus className="mr-2 h-4 w-4 text-blue-500" />
+                      <Plus className="mr-2 h-4 w-4 text-blue-600" />
                       Cadastrar inquilino
                     </Link>
                   </DropdownMenuItem>

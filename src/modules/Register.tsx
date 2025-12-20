@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { validarSenha } from "@/lib/validators";
+import { Logo } from "@/components/ui/Logo";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -144,8 +145,8 @@ export default function Register() {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md animate-fade-in border-border/50 shadow-xl">
           <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500">
-              <Building2 className="h-6 w-6 text-primary-foreground" aria-hidden="true" />
+            <div className="mx-auto mb-4 flex items-center justify-center">
+              <Logo iconOnly size="lg" />
             </div>
             <CardTitle className="font-display text-2xl">Criar conta</CardTitle>
             <CardDescription>
@@ -214,8 +215,8 @@ export default function Register() {
                   <Label htmlFor="phone">WhatsApp</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button type="button" className="inline-flex cursor-pointer items-center">
-                        <Info className="h-3.5 w-3.5 text-blue-500" />
+                      <button type="button" className="inline-flex cursor-pointer items-center text-blue-600">
+                        <Info className="h-3.5 w-3.5" />
                       </button>
                     </PopoverTrigger>
                     <PopoverContent side="right" className="w-60 p-3 text-xs leading-relaxed">
@@ -344,9 +345,9 @@ export default function Register() {
                 />
                 <Label htmlFor="terms" className="text-sm font-normal leading-tight text-muted-foreground">
                   Aceito os{" "}
-                  <Link href="#" className="text-blue-500 hover:underline">termos de uso</Link>
+                  <Link href="#" className="text-blue-600 hover:underline">termos de uso</Link>
                   {" "}e a{" "}
-                  <Link href="#" className="text-blue-500 hover:underline">política de privacidade</Link>
+                  <Link href="#" className="text-blue-600 hover:underline">política de privacidade</Link>
                 </Label>
               </div>
 
@@ -362,7 +363,7 @@ export default function Register() {
 
               <Button
                 type="submit"
-                className="h-11 w-full text-base bg-blue-500 hover:bg-blue-400"
+                className="h-11 w-full text-base bg-blue-600 hover:bg-blue-600"
                 disabled={loading}
               >
                 {loading ? (
@@ -378,7 +379,7 @@ export default function Register() {
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">Já tem uma conta? </span>
-              <Link href="/login" className="font-medium text-blue-500 hover:underline">
+              <Link href="/login" className="font-medium text-blue-600 hover:underline">
                 Fazer login
               </Link>
             </div>

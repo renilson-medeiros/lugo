@@ -38,7 +38,7 @@ export async function POST() {
             billingType: 'PIX',
             value: 29.90,
             dueDate: dueDate.toISOString().split('T')[0],
-            description: 'Assinatura Alugue Fácil Profissional',
+            description: 'Assinatura Lugo Profissional',
             externalReference: user.id // Importante para o Webhook identificar o usuário
         });
 

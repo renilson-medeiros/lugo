@@ -455,7 +455,7 @@ export default function PropertyForm() {
       <>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
+            <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
             <p className="text-muted-foreground">Carregando dados...</p>
           </div>
         </div>
@@ -490,7 +490,7 @@ export default function PropertyForm() {
         <Card className="animate-fade-in">
           <CardHeader>
             <div className="flex items-end gap-2">
-              <MapPin className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <MapPin className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Endereço</CardTitle>
             </div>
             <CardDescription>Localização completa do imóvel</CardDescription>
@@ -515,7 +515,7 @@ export default function PropertyForm() {
                     disabled={isLoadingCep}
                   />
                   {isLoadingCep && (
-                    <Loader2 className="absolute right-3 top-2.5 h-5 w-5 animate-spin text-blue-500" />
+                    <Loader2 className="absolute right-3 top-2.5 h-5 w-5 animate-spin text-blue-600" />
                   )}
                 </div>
               </div>
@@ -589,7 +589,7 @@ export default function PropertyForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "100ms" }}>
           <CardHeader>
             <div className="flex items-end gap-2">
-              <Home className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <Home className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Informações do Imóvel</CardTitle>
             </div>
             <CardDescription>Detalhes e características</CardDescription>
@@ -775,7 +775,7 @@ export default function PropertyForm() {
                   />
                 </div>
 
-                <Button type="button" className="w-full md:w-fit px-4 bg-blue-500 hover:bg-blue-400" variant="default" size="icon" onClick={addRoom} aria-label="Adicionar cômodo">
+                <Button type="button" className="w-full md:w-fit px-4 bg-blue-600 hover:bg-blue-500" variant="default" size="icon" onClick={addRoom} aria-label="Adicionar cômodo">
                   {/* <HousePlusIcon className="h-4 w-4" /> */}
                   <span>Adicionar</span>
                 </Button>
@@ -818,7 +818,7 @@ export default function PropertyForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "200ms" }}>
           <CardHeader>
             <div className="flex items-end gap-2">
-              <DollarSign className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <DollarSign className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Valores</CardTitle>
             </div>
             <CardDescription>Custos mensais do imóvel</CardDescription>
@@ -911,7 +911,7 @@ export default function PropertyForm() {
         <Card className="animate-fade-in" style={{ animationDelay: "300ms" }}>
           <CardHeader>
             <div className="flex items-end gap-2">
-              <FileText className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <FileText className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Observações</CardTitle>
             </div>
             <CardDescription>Informações adicionais que deseja compartilhar</CardDescription>
@@ -937,7 +937,7 @@ export default function PropertyForm() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full sm:w-auto bg-blue-500 hover:bg-blue-400"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500"
           >
             {isSubmitting ? (
               <>

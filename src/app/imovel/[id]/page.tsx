@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (!imovel) {
         return {
             title: {
-                absolute: 'Alugue Fácil | Imóvel não encontrado'
+                absolute: 'Lugo | Imóvel não encontrado'
             },
             description: 'O imóvel solicitado não foi encontrado.',
         };
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const title = imovel.titulo || `${imovel.endereco_rua}, ${imovel.endereco_numero} - ${imovel.endereco_bairro}`;
     const price = imovel.valor_aluguel.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const description = `🏠 ${imovel.tipo === 'apartamento' ? 'Apartamento' : 'Casa'} incrível em ${imovel.endereco_cidade}. Com ${imovel.quartos || 'vários'} quartos, por apenas ${price}/mês. Confira fotos e agende uma visita no Alugue Fácil!`;
+    const description = `🏠 ${imovel.tipo === 'apartamento' ? 'Apartamento' : 'Casa'} incrível em ${imovel.endereco_cidade}. Com ${imovel.quartos || 'vários'} quartos, por apenas ${price}/mês. Confira fotos e agende uma visita no Lugo!`;
 
     const firstImage = imovel.fotos?.[0] || 'https://aluguefacil.vercel.app/og-image.png';
     const baseUrl = 'https://aluguefacil.vercel.app';
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
         title: {
-            absolute: `${title} | Alugue Fácil`
+            absolute: `${title} | Lugo`
         },
         description,
         keywords: [
@@ -46,17 +46,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             `aluguel em ${imovel.endereco_cidade}`,
             `imóvel em ${imovel.endereco_bairro}`,
             imovel.endereco_cidade,
-            'alugue fácil',
+            'lugo',
             'aluguel direto com proprietário'
         ],
         alternates: {
             canonical: canonicalUrl,
         },
         openGraph: {
-            title: `${title} | Alugue Fácil`,
+            title: `${title} | Lugo`,
             description,
             url: canonicalUrl,
-            siteName: 'Alugue Fácil',
+            siteName: 'Lugo',
             locale: 'pt_BR',
             type: 'website',
             images: [
@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
         twitter: {
             card: 'summary_large_image',
-            title: `${title} | Alugue Fácil`,
+            title: `${title} | Lugo`,
             description,
             images: [firstImage],
             creator: '@aluguefacil',

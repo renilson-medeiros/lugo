@@ -85,7 +85,7 @@ export default function Settings() {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando configurações...</p>
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function Settings() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-end gap-2 font-display">
-              <User className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <User className="h-5 w-5 text-blue-600" aria-hidden="true" />
               Dados pessoais
             </CardTitle>
             <CardDescription>
@@ -155,7 +155,7 @@ export default function Settings() {
                   <Popover>
                     <PopoverTrigger asChild>
                       <button type="button" className="inline-flex cursor-pointer items-center">
-                        <Info className="h-3.5 w-3.5 text-blue-500" />
+                        <Info className="h-3.5 w-3.5 text-blue-600" />
                       </button>
                     </PopoverTrigger>
                     <PopoverContent side="top" className="w-60 mb-2 bg-popover shadow-md rounded-lg p-3 text-xs leading-relaxed">
@@ -189,7 +189,7 @@ export default function Settings() {
             </div>
             <Button
               onClick={handleSave}
-              className="bg-blue-500 hover:bg-blue-400"
+              className="bg-blue-600 hover:bg-blue-500"
               disabled={isSaving}
             >
               {isSaving ? (
@@ -208,7 +208,7 @@ export default function Settings() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-end gap-2 font-display">
-              <CreditCard className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <CreditCard className="h-5 w-5 text-blue-600" aria-hidden="true" />
               Informações da conta
             </CardTitle>
             <CardDescription>
@@ -252,7 +252,7 @@ export default function Settings() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-end gap-2 font-display">
-              <Bell className="h-5 w-5 text-blue-500" aria-hidden="true" />
+              <Bell className="h-5 w-5 text-blue-600" aria-hidden="true" />
               Notificações
             </CardTitle>
             <CardDescription>

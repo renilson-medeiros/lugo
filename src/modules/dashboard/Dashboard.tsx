@@ -308,7 +308,7 @@ export default function Dashboard() {
       <>
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
             <p className="text-muted-foreground">Carregando...</p>
           </div>
         </div>
@@ -329,14 +329,14 @@ export default function Dashboard() {
           </div>
           {profile?.subscription_status === 'trial' && stats.totalImoveis >= 1 ? (
             <Link href="/checkout">
-              <Button className="gap-2 bg-blue-500 hover:bg-blue-400 text-white border-none shadow-sm shadow-blue-200">
+              <Button className="gap-2 bg-blue-600 hover:bg-blue-500 text-white border-none shadow-sm shadow-blue-200">
                 <Plus className="h-4 w-4" aria-hidden="true" />
                 Assinar para adicionar mais
               </Button>
             </Link>
           ) : (
             <Link href="/dashboard/imoveis/novo">
-              <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
+              <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
                 <Plus className="h-4 w-4" aria-hidden="true" />
                 Novo imóvel
               </Button>
@@ -363,12 +363,12 @@ export default function Dashboard() {
             statsData.map((stat, index) => (
               <Link key={stat.label} href={stat.href}>
                 <Card
-                  className="group transition-all duration-300 hover:border-blue-500/30 hover:shadow-lg"
+                  className="group transition-all duration-300 hover:border-blue-600/30 hover:shadow-lg"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <CardContent className="flex items-center gap-4 p-6">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent transition-colors group-hover:bg-primary/10">
-                      <stat.icon className="h-6 w-6 text-blue-500" aria-hidden="true" />
+                      <stat.icon className="h-6 w-6 text-blue-600" aria-hidden="true" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">{stat.label}</p>
@@ -437,7 +437,7 @@ export default function Dashboard() {
                           <Cell
                             key={`cell-${index}`}
                             fill={index === revenueData.length - 1 ? "#3b82f6" : "#94a3b8"}
-                            className="transition-all duration-300 hover:fill-blue-400"
+                            className="transition-all duration-300 hover:fill-blue-500"
                           />
                         ))}
                       </Bar>
@@ -455,9 +455,9 @@ export default function Dashboard() {
 
           {/* Quick Stats / Info */}
           <div className="space-y-6">
-            <Card className="border-blue-500 bg-blue-500">
+            <Card className="border-blue-600 bg-blue-600">
               <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500">
                   <TrendingUp className="h-5 w-5 text-white" aria-hidden="true" />
                 </div>
                 <div className="flex-1">
@@ -486,7 +486,7 @@ export default function Dashboard() {
                 </div>
                 <div className="mt-4 h-2 w-full bg-accent rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                    className="h-full bg-blue-600 rounded-full transition-all duration-500"
                     style={{ width: `${stats.totalImoveis > 0 ? (stats.inquilinosAtivos / stats.totalImoveis) * 100 : 0}%` }}
                   />
                 </div>
@@ -625,7 +625,7 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent">
-                        <Building2 className="h-5 w-5 text-blue-500" aria-hidden="true" />
+                        <Building2 className="h-5 w-5 text-blue-600" aria-hidden="true" />
                       </div>
                       <div className="min-w-0">
                         <p className="font-medium truncate text-sm sm:text-base">
@@ -694,7 +694,7 @@ export default function Dashboard() {
                       Comece cadastrando seu primeiro imóvel para gerenciar aluguéis e inquilinos.
                     </p>
                     <Link href="/dashboard/imoveis/novo">
-                      <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
+                      <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
                         <Plus className="h-4 w-4" aria-hidden="true" />
                         Cadastrar primeiro imóvel
                       </Button>

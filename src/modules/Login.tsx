@@ -9,6 +9,7 @@ import { Header } from "@/components/layout/Header";
 import { useState } from "react";
 import { Building2, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Logo } from "@/components/ui/Logo";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -66,8 +67,8 @@ export default function Login() {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md animate-fade-in border-border/50 shadow-xl">
           <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500">
-              <Building2 className="h-6 w-6 text-primary-foreground" aria-hidden="true" />
+            <div className="mx-auto mb-4 flex items-center justify-center">
+              <Logo iconOnly size="lg" />
             </div>
             <CardTitle className="font-display text-2xl">Bem-vindo de volta</CardTitle>
             <CardDescription>
@@ -107,7 +108,7 @@ export default function Login() {
                   <Label htmlFor="password">Senha</Label>
                   <Link
                     href="#"
-                    className="text-sm text-blue-500 hover:underline focus-visible:underline"
+                    className="text-sm text-blue-600 hover:underline focus-visible:underline"
                   >
                     Esqueceu a senha?
                   </Link>
@@ -144,7 +145,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="h-11 w-full text-base bg-blue-500 hover:bg-blue-400"
+                className="h-11 w-full text-base bg-blue-600 hover:bg-blue-600"
                 disabled={loading}
               >
                 {loading ? (
@@ -160,7 +161,7 @@ export default function Login() {
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">Não tem uma conta? </span>
-              <Link href="/registro" className="font-medium text-blue-500 hover:underline">
+              <Link href="/registro" className="font-medium text-blue-600 hover:underline">
                 Criar conta
               </Link>
             </div>

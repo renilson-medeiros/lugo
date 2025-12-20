@@ -32,8 +32,8 @@ export default function ContactPage() {
 
                             <div className="space-y-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
-                                        <Mail className="h-5 w-5 text-blue-500" />
+                                    <div className="h-10 w-10 rounded-lg bg-blue-600/10 flex items-center justify-center shrink-0">
+                                        <Mail className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold">E-mail</h3>
@@ -65,11 +65,11 @@ export default function ContactPage() {
 
                             <div className="p-6 bg-accent/50 rounded-2xl border border-border">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <Building2 className="h-5 w-5 text-blue-500" />
+                                    <Building2 className="h-5 w-5 text-blue-600" />
                                     <span className="font-bold">Sede Virtual</span>
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    O Alugue Fácil é uma plataforma 100% digital, focada em eficiência e comodidade para proprietários de todo o Brasil.
+                                    O Lugo é uma plataforma 100% digital, focada em eficiência e comodidade para proprietários de todo o Brasil.
                                 </p>
                             </div>
                         </div>
@@ -103,7 +103,7 @@ export default function ContactPage() {
                                         />
                                     </div>
 
-                                    <Button className="w-full bg-blue-500 hover:bg-blue-400 gap-2 h-12 text-base">
+                                    <Button className="w-full bg-blue-600 hover:bg-blue-500 gap-2 h-12 text-base">
                                         Enviar Mensagem
                                         <Send className="h-4 w-4" />
                                     </Button>

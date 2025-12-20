@@ -176,7 +176,7 @@ export default function ReceiptsList() {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando comprovantes...</p>
         </div>
       </div>
@@ -215,7 +215,7 @@ export default function ReceiptsList() {
             </p>
           </div>
           <Link href="/dashboard/comprovantes/novo">
-            <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
+            <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
               <Plus className="h-4 w-4 " aria-hidden="true" />
               Novo comprovante
             </Button>
@@ -316,7 +316,7 @@ export default function ReceiptsList() {
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-500">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-600">
                         <Receipt className="h-6 w-6" aria-hidden="true" />
                       </div>
                       <div>
@@ -355,7 +355,7 @@ export default function ReceiptsList() {
                       <div className="flex items-center gap-1">
                         <Link href={`/dashboard/comprovantes/${receipt.id}`}>
                           <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Ver comprovante">
-                            <Eye className="h-4 w-4 text-blue-500" />
+                            <Eye className="h-4 w-4 text-blue-600" />
                           </Button>
                         </Link>
                         {receipt.pdf_url && (
@@ -366,7 +366,7 @@ export default function ReceiptsList() {
                             aria-label="Baixar comprovante"
                             onClick={() => handleDownload(receipt.pdf_url)}
                           >
-                            <Download className="h-4 w-4 text-blue-500" />
+                            <Download className="h-4 w-4 text-blue-600" />
                           </Button>
                         )}
                       </div>
@@ -390,7 +390,7 @@ export default function ReceiptsList() {
               </p>
               {!searchQuery && (
                 <Link href="/dashboard/comprovantes/novo" className="mt-4">
-                  <Button className="gap-2 bg-blue-500 hover:bg-blue-400">
+                  <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
                     <Plus className="h-4 w-4" aria-hidden="true" />
                     Gerar comprovante
                   </Button>
