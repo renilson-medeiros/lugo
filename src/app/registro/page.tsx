@@ -21,6 +21,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormData } from "@/lib/schemas";
 import { formatarCPF, formatarTelefone } from "@/lib/validators";
+import { PLAN_PRICE_FORMATTED, TRIAL_DAYS, LINKS } from "@/lib/constants";
+import { PasswordStrengthMeter } from "@/components/ui/PasswordStrengthMeter";
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -238,50 +240,7 @@ export default function Register() {
                                 )}
 
                                 {/* Password Strength Indicators */}
-                                {password && (
-                                    <div className="space-y-1.5 mt-2">
-                                        <div className="flex items-center gap-2 text-xs">
-                                            {password.length >= 8 ? (
-                                                <Check className="h-3 w-3 text-green-600" />
-                                            ) : (
-                                                <X className="h-3 w-3 text-red-500" />
-                                            )}
-                                            <span className={password.length >= 8 ? "text-green-600" : "text-muted-foreground"}>
-                                                Mínimo 8 caracteres
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs">
-                                            {/[A-Z]/.test(password) ? (
-                                                <Check className="h-3 w-3 text-green-600" />
-                                            ) : (
-                                                <X className="h-3 w-3 text-red-500" />
-                                            )}
-                                            <span className={/[A-Z]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
-                                                Uma letra maiúscula
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs">
-                                            {/[a-z]/.test(password) ? (
-                                                <Check className="h-3 w-3 text-green-600" />
-                                            ) : (
-                                                <X className="h-3 w-3 text-red-500" />
-                                            )}
-                                            <span className={/[a-z]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
-                                                Uma letra minúscula
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs">
-                                            {/[0-9]/.test(password) ? (
-                                                <Check className="h-3 w-3 text-green-600" />
-                                            ) : (
-                                                <X className="h-3 w-3 text-red-500" />
-                                            )}
-                                            <span className={/[0-9]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
-                                                Um número
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
+                                <PasswordStrengthMeter password={password} />
                             </div>
 
                             <div className="space-y-2">
@@ -309,9 +268,9 @@ export default function Register() {
                                     />
                                     <Label htmlFor="terms" className="text-sm font-normal leading-tight text-muted-foreground">
                                         Aceito os{" "}
-                                        <Link href="#" className="text-blue-600 hover:underline">termos de uso</Link>
+                                        <Link href={LINKS.TERMS_OF_USE} className="text-blue-600 hover:underline">termos de uso</Link>
                                         {" "}e a{" "}
-                                        <Link href="#" className="text-blue-600 hover:underline">política de privacidade</Link>
+                                        <Link href={LINKS.PRIVACY_POLICY} className="text-blue-600 hover:underline">política de privacidade</Link>
                                     </Label>
                                 </div>
                             </div>
@@ -323,8 +282,8 @@ export default function Register() {
                                 <div className="flex items-center gap-3">
                                     <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" />
                                     <div>
-                                        <p className="text-sm font-medium">Plano Profissional: R$ 29,90/mês</p>
-                                        <p className="text-xs text-muted-foreground">7 dias de teste grátis • Cancele quando quiser</p>
+                                        <p className="text-sm font-medium">Plano Profissional: {PLAN_PRICE_FORMATTED}</p>
+                                        <p className="text-xs text-muted-foreground">{TRIAL_DAYS} dias de teste grátis • Cancele quando quiser</p>
                                     </div>
                                 </div>
                             </div>

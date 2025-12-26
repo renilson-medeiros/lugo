@@ -33,12 +33,12 @@ Este documento detalha as melhorias identificadas para o projeto "Alugue Fácil"
 
 ---
 
-## 🟩 Prioridade 3: Polimento (Médio Prazo)
+## 🟩 Prioridade 3: Polimento (Médio Prazo) ✅ [CONCLUÍDO]
 
 ### 5. Configurações Globais
 **Situação Atual**: Preços e textos legais "hardcoded" (fixos no código).
-**Solução Proposta**: Mover para constantes ou banco de dados para facilitar alterações futuras sem mexer no código fonte.
+**Solução Proposta**: Mover para constantes ou banco de dados para facilitar alterações futuras sem mexer no código fonte. ✅ [FEITO] (`src/lib/constants.ts`)
 
 ### 6. Componentes de UI Isolados
 **Situação Atual**: Componentes complexos (ex: medidor de força de senha) misturados com a lógica da página.
-**Solução Proposta**: Extrair para componentes menores e isolados.
+**Solução Proposta**: Extrair para componentes menores e isolados. ✅ [FEITO] (`PasswordStrengthMeter.tsx`)
