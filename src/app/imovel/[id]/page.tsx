@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
-import PropertyDetail from "@/modules/PropertyDetail";
+
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -78,6 +78,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+import PropertyDetailClient from "./PropertyDetailClient";
+
 export default function PropertyDetailPage() {
-    return <PropertyDetail />;
+    return <PropertyDetailClient />;
 }

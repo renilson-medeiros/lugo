@@ -21,7 +21,7 @@ import { supabase } from "@/lib/supabase";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
-export default function Checkout() {
+export default function CheckoutClient() {
     const router = useRouter();
     const { user, profile, loading: authLoading, refreshProfile } = useAuth();
     const [loading, setLoading] = useState(false);

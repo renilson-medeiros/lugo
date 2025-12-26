@@ -1,4 +1,4 @@
-import Checkout from "@/modules/Checkout";
+import CheckoutClient from "./CheckoutClient";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CheckoutPage() {
-    return <Checkout />;
+    return <CheckoutClient />;
 }
