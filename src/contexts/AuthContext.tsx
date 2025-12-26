@@ -1,7 +1,8 @@
-// src\contexts\AuthContext.tsx
+// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase, Profile } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
+import { validarCPF } from '../lib/validators';
 
 interface AuthContextType {
   user: User | null;
@@ -41,8 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setUser(data.session.user);
-      // Busca o perfil sem esperar o retry longo para o primeiro carregamento
-      loadProfileWithRetry(data.session.user.id, 2);
+      await loadProfile(data.session.user.id);
       setLoading(false);
     };
 
@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setUser(session.user);
         if (session.user) {
-          loadProfileWithRetry(session.user.id, 2);
+          await loadProfile(session.user.id);
         } else {
           setProfile(null);
         }
@@ -73,40 +73,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
 
-  // LOAD PROFILE WITH RETRY
-  const loadProfileWithRetry = useCallback(async (userId: string, retries = 5) => {
-    for (let i = 0; i < retries; i++) {
-      const { data, error } = await supabase
+  // LOAD PROFILE OPTIMIZED
+  const loadProfile = useCallback(async (userId: string) => {
+    try {
+      // Tentativa 1: Busca direta
+      let { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
+
+      if (error) {
+        console.error('Erro ao buscar profile:', error);
+        return null;
+      }
+
+      // Se não encontrou (pode ser delay do trigger no signup), tenta mais uma vez após 500ms
+      if (!data) {
+        await new Promise((res) => setTimeout(res, 500));
+        const retry = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+
+        data = retry.data;
+      }
 
       if (data) {
         setProfile(data);
         return data;
       }
 
-      if (error) {
-        console.error('Erro ao buscar profile:', error);
-        break;
-      }
-
-      // Reduzido o delay para 200ms para ser mais responsivo
-      await new Promise((res) => setTimeout(res, 200));
+    } catch (err) {
+      console.error('Exceção ao carregar profile:', err);
     }
 
-    setProfile(null);
+    // Se falhar tudo, define null mas não limpa o usuário
     return null;
   }, []);
 
   // MEMOIZED REFRESH
   const refreshProfile = useCallback(async () => {
     if (user) {
-      return await loadProfileWithRetry(user.id, 2);
+      return await loadProfile(user.id);
     }
     return null;
-  }, [user]);
+  }, [user, loadProfile]);
 
   // LOGIN
   const signIn = async (email: string, password: string) => {
@@ -119,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setUser(data.user);
     if (data.user) {
-      await loadProfileWithRetry(data.user.id);
+      await loadProfile(data.user.id);
     }
   };
 
@@ -130,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('CPF inválido');
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -188,7 +201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshProfile,
     resetPassword,
     updatePassword
-  }), [user, profile, loading, refreshProfile]);
+  }), [user, profile, loading, refreshProfile, signIn, signUp, signOut, resetPassword, updatePassword]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -204,25 +217,3 @@ export const useAuth = () => {
   if (!context) throw new Error('useAuth deve ser usado dentro do AuthProvider');
   return context;
 };
-
-
-// CPF VALIDATION
-function validarCPF(cpf: string): boolean {
-  cpf = cpf.replace(/[^\d]/g, '');
-  if (cpf.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(cpf)) return false;
-
-  let soma = 0;
-  for (let i = 0; i < 9; i++) soma += Number(cpf[i]) * (10 - i);
-  let resto = (soma * 10) % 11;
-  if (resto === 10) resto = 0;
-  if (resto !== Number(cpf[9])) return false;
-
-  soma = 0;
-  for (let i = 0; i < 10; i++) soma += Number(cpf[i]) * (11 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10) resto = 0;
-  if (resto !== Number(cpf[10])) return false;
-
-  return true;
-}

@@ -2,7 +2,7 @@
 
 Este documento detalha as melhorias identificadas para o projeto "Alugue Fácil", com foco em segurança, manutenibilidade e experiência do usuário.
 
-## 🟥 Prioridade 1: Padronização e Segurança (Imediato)
+## 🟥 Prioridade 1: Padronização e Segurança (Imediato) ✅ [CONCLUÍDO]
 
 ### 1. Refatoração dos Formulários de Autenticação
 **Situação Atual**:
@@ -17,7 +17,7 @@ Este documento detalha as melhorias identificadas para o projeto "Alugue Fácil"
 
 ### 2. Centralização de Utilitários
 **Situação Atual**: Funções como validação de CPF e formatação de telefone estão duplicadas ou "escondidas" dentro de componentes.
-**Solução Proposta**: Extrair para `src/utils/validators.ts` e `src/utils/formatters.ts`.
+**Solução Proposta**: Extrair para `src/utils/validators.ts` e `src/utils/formatters.ts`. ✅ [FEITO]
 
 ---
 
