@@ -29,7 +29,7 @@ Este documento detalha as melhorias identificadas para o projeto "Alugue Fácil"
 
 ### 4. Organização de Código
 **Situação Atual**: Mistura de responsabilidades na pasta `modules`.
-**Solução Proposta**: Padronizar a estrutura de pastas, movendo componentes de página para locais mais semânticos se necessário, ou documentar o padrão atual.
+**Solução Proposta**: Padronizar a estrutura de pastas, movendo componentes de página para locais mais semânticos se necessário, ou documentar o padrão atual. ✅ [EM ANDAMENTO]
 
 ---
 
