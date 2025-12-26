@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -37,7 +39,7 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col bg-gradient-to-b from-accent/30 to-background">
+        <div className="flex min-h-screen flex-col bg-linear-to-b from-accent/30 to-background">
             <Header />
 
             <main className="flex flex-1 items-center justify-center px-4 py-12">
@@ -71,7 +73,7 @@ export default function ForgotPassword() {
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 {error && (
                                     <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
-                                        <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                        <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
                                         <div className="flex-1">
                                             <p className="text-sm text-red-800 font-medium">Erro no envio</p>
                                             <p className="text-sm text-red-700 mt-0.5">{error}</p>
