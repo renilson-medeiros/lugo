@@ -130,10 +130,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('CPF inválido');
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
         data: {
           nome_completo: userData.nome_completo,
           cpf: userData.cpf.replace(/\D/g, ''),
@@ -142,7 +143,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       },
     });
 
-    if (error) throw error;
+    if (error) {
+      // Se o erro for de confirmação de email, mas o usuário foi criado, não bloquear
+      if (error.message.includes('Error sending confirmation email')) {
+        console.warn('Usuário criado, mas email de confirmação não foi enviado:', error);
+        // Não lançar erro, apenas avisar
+        throw new Error('Error sending confirmation email');
+      }
+      throw error;
+    }
   };
 
 

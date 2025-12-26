@@ -1,4 +1,4 @@
-// src/pages/Register.tsx
+// src/modules/Register.tsx
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -8,138 +8,92 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Header } from "@/components/layout/Header";
 import { useState } from "react";
-import { Eye, EyeOff, CreditCard, Building2, AlertCircle, Check, X, Info } from "lucide-react";
+import { Eye, EyeOff, CreditCard, AlertCircle, Check, X, Info } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
-import { validarSenha } from "@/lib/validators";
 import { Logo } from "@/components/ui/Logo";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, RegisterFormData } from "@/lib/schemas";
+import { formatarCPF, formatarTelefone } from "@/lib/validators";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    cpf: "",
-    password: "",
-    confirmPassword: "",
-    acceptTerms: false
-  });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
   const router = useRouter();
   const { signUp } = useAuth();
 
-  const updateField = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setError(""); // Limpar erro ao digitar
-  };
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      cpf: "",
+      password: "",
+      confirmPassword: "",
+      acceptTerms: false
+    },
+    mode: "onChange" // Enable realtime validation for password strength feedback
+  });
 
-  // Função para formatar telefone
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 2) return numbers;
-    if (numbers.length <= 6) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-    if (numbers.length <= 10) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
-    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-  };
-
-  // Função para formatar CPF
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
-    if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
-    return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
-  };
+  const password = watch("password");
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhone(e.target.value);
-    updateField("phone", formatted);
+    const formatted = formatarTelefone(e.target.value);
+    setValue("phone", formatted, { shouldValidate: true });
   };
 
   const handleCPFChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCPF(e.target.value);
-    updateField("cpf", formatted);
+    const formatted = formatarCPF(e.target.value);
+    setValue("cpf", formatted, { shouldValidate: true });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const onSubmit = async (data: RegisterFormData) => {
+    setAuthError("");
 
     try {
-      // Validações
-      if (!formData.name || !formData.cpf || !formData.phone ||
-        !formData.email || !formData.password || !formData.confirmPassword) {
-        throw new Error("Preencha todos os campos");
-      }
+      const cpfNumeros = data.cpf.replace(/\D/g, "");
+      const telefoneNumeros = data.phone.replace(/\D/g, "");
 
-      if (formData.name.split(" ").length < 2) {
-        throw new Error("Digite seu nome completo");
-      }
-
-      const cpfNumeros = formData.cpf.replace(/\D/g, "");
-      if (cpfNumeros.length !== 11) {
-        throw new Error("CPF inválido - deve conter 11 dígitos");
-      }
-
-      const telefoneNumeros = formData.phone.replace(/\D/g, "");
-      if (telefoneNumeros.length < 10) {
-        throw new Error("Telefone inválido");
-      }
-
-      if (!formData.email.includes("@")) {
-        throw new Error("Email inválido");
-      }
-
-      // Validar força da senha
-      const senhaValidacao = validarSenha(formData.password);
-      if (!senhaValidacao.valida) {
-        throw new Error(senhaValidacao.mensagem);
-      }
-
-      if (formData.password !== formData.confirmPassword) {
-        throw new Error("As senhas não coincidem");
-      }
-
-      if (!formData.acceptTerms) {
-        throw new Error("Você precisa aceitar os termos de uso");
-      }
-
-      // Criar conta no Supabase
-      await signUp(formData.email, formData.password, {
-        nome_completo: formData.name,
+      await signUp(data.email, data.password, {
+        nome_completo: data.name,
         cpf: cpfNumeros,
         telefone: telefoneNumeros,
       });
 
-      // Redirecionar para dashboard
       router.push("/dashboard");
     } catch (err: any) {
       console.error("Erro no cadastro:", err);
 
-      // Mensagens de erro personalizadas
-      if (err.message.includes("already registered") || err.message.includes("User already registered")) {
-        setError("Este email já está cadastrado");
-      } else if (err.message.includes("Password should be")) {
-        setError("A senha deve ter pelo menos 6 caracteres");
+      if (err.message.includes("Error sending confirmation email")) {
+        setAuthError("Sua conta foi criada, mas houve um problema ao enviar o email de confirmação. Entre em contato com o suporte ou tente fazer login.");
+      } else if (err.message.includes("already registered") || err.message.includes("User already registered")) {
+        setAuthError("Este email já está cadastrado");
       } else if (err.message.includes("duplicate key value violates unique constraint")) {
-        setError("CPF ou email já cadastrado no sistema");
+        setAuthError("CPF ou email já cadastrado no sistema");
+      } else if (err.message.includes("Invalid email")) {
+        setAuthError("Email inválido. Verifique o endereço digitado.");
+      } else if (err.message.includes("Database error")) {
+        setAuthError("Erro no servidor. Tente novamente em alguns instantes.");
       } else {
-        setError(err.message || "Erro ao criar conta. Tente novamente.");
+        setAuthError(err.message || "Erro ao criar conta. Tente novamente.");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-accent/30 to-background">
+    <div className="flex min-h-screen flex-col bg-linear-to-b from-accent/30 to-background">
       <Header />
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
@@ -154,13 +108,14 @@ export default function Register() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Mensagem de Erro */}
-              {error && (
-                <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {/* Mensagem de Erro Geral */}
+              {authError && (
+                <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
+                  <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm text-red-800 font-medium">Erro no cadastro</p>
+                    <p className="text-sm text-red-700 mt-0.5">{authError}</p>
                   </div>
                 </div>
               )}
@@ -171,13 +126,14 @@ export default function Register() {
                   id="name"
                   type="text"
                   placeholder="Seu nome"
-                  value={formData.name}
-                  onChange={(e) => updateField("name", e.target.value)}
-                  required
                   autoComplete="name"
-                  className="h-11"
-                  disabled={loading}
+                  className={`h-11 ${errors.name ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  disabled={isSubmitting}
+                  {...register("name")}
                 />
+                {errors.name && (
+                  <p className="text-xs text-red-500">{errors.name.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -186,13 +142,16 @@ export default function Register() {
                   id="cpf"
                   type="text"
                   placeholder="000.000.000-00"
-                  value={formData.cpf}
-                  onChange={handleCPFChange}
-                  required
                   maxLength={14}
-                  className="h-11"
-                  disabled={loading}
+                  className={`h-11 ${errors.cpf ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  disabled={isSubmitting}
+                  {...register("cpf", {
+                    onChange: handleCPFChange
+                  })}
                 />
+                {errors.cpf && (
+                  <p className="text-xs text-red-500">{errors.cpf.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -201,13 +160,14 @@ export default function Register() {
                   id="email"
                   type="email"
                   placeholder="seu@email.com"
-                  value={formData.email}
-                  onChange={(e) => updateField("email", e.target.value)}
-                  required
                   autoComplete="email"
-                  className="h-11"
-                  disabled={loading}
+                  className={`h-11 ${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  disabled={isSubmitting}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-xs text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -231,14 +191,17 @@ export default function Register() {
                   id="phone"
                   type="tel"
                   placeholder="(00) 00000-0000"
-                  value={formData.phone}
-                  onChange={handlePhoneChange}
-                  required
                   maxLength={15}
                   autoComplete="tel"
-                  className="h-11"
-                  disabled={loading}
+                  className={`h-11 ${errors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  disabled={isSubmitting}
+                  {...register("phone", {
+                    onChange: handlePhoneChange
+                  })}
                 />
+                {errors.phone && (
+                  <p className="text-xs text-red-500">{errors.phone.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -248,13 +211,10 @@ export default function Register() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Mínimo 8 caracteres"
-                    value={formData.password}
-                    onChange={(e) => updateField("password", e.target.value)}
-                    required
-                    minLength={8}
                     autoComplete="new-password"
-                    className="h-11 pr-10"
-                    disabled={loading}
+                    className={`h-11 pr-10 ${errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                    disabled={isSubmitting}
+                    {...register("password")}
                   />
                   <Button
                     type="button"
@@ -263,7 +223,7 @@ export default function Register() {
                     className="absolute right-0 top-0 h-11 w-11 text-muted-foreground hover:text-foreground"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                    disabled={loading}
+                    disabled={isSubmitting}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -272,45 +232,50 @@ export default function Register() {
                     )}
                   </Button>
                 </div>
-                {formData.password && (
+                {errors.password && (
+                  <p className="text-xs text-red-500">{errors.password.message}</p>
+                )}
+
+                {/* Password Strength Indicators */}
+                {password && (
                   <div className="space-y-1.5 mt-2">
                     <div className="flex items-center gap-2 text-xs">
-                      {formData.password.length >= 8 ? (
+                      {password.length >= 8 ? (
                         <Check className="h-3 w-3 text-green-600" />
                       ) : (
                         <X className="h-3 w-3 text-red-500" />
                       )}
-                      <span className={formData.password.length >= 8 ? "text-green-600" : "text-muted-foreground"}>
+                      <span className={password.length >= 8 ? "text-green-600" : "text-muted-foreground"}>
                         Mínimo 8 caracteres
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs">
-                      {/[A-Z]/.test(formData.password) ? (
+                      {/[A-Z]/.test(password) ? (
                         <Check className="h-3 w-3 text-green-600" />
                       ) : (
                         <X className="h-3 w-3 text-red-500" />
                       )}
-                      <span className={/[A-Z]/.test(formData.password) ? "text-green-600" : "text-muted-foreground"}>
+                      <span className={/[A-Z]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
                         Uma letra maiúscula
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs">
-                      {/[a-z]/.test(formData.password) ? (
+                      {/[a-z]/.test(password) ? (
                         <Check className="h-3 w-3 text-green-600" />
                       ) : (
                         <X className="h-3 w-3 text-red-500" />
                       )}
-                      <span className={/[a-z]/.test(formData.password) ? "text-green-600" : "text-muted-foreground"}>
+                      <span className={/[a-z]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
                         Uma letra minúscula
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs">
-                      {/[0-9]/.test(formData.password) ? (
+                      {/[0-9]/.test(password) ? (
                         <Check className="h-3 w-3 text-green-600" />
                       ) : (
                         <X className="h-3 w-3 text-red-500" />
                       )}
-                      <span className={/[0-9]/.test(formData.password) ? "text-green-600" : "text-muted-foreground"}>
+                      <span className={/[0-9]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
                         Um número
                       </span>
                     </div>
@@ -324,32 +289,34 @@ export default function Register() {
                   id="confirmPassword"
                   type="password"
                   placeholder="Digite a senha novamente"
-                  value={formData.confirmPassword}
-                  onChange={(e) => updateField("confirmPassword", e.target.value)}
-                  required
-                  minLength={6}
                   autoComplete="new-password"
-                  className="h-11"
-                  disabled={loading}
+                  className={`h-11 ${errors.confirmPassword ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  disabled={isSubmitting}
+                  {...register("confirmPassword")}
                 />
+                {errors.confirmPassword && (
+                  <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
+                )}
               </div>
 
               <div className="flex items-end space-x-2">
-                <Checkbox
-                  id="terms"
-                  checked={formData.acceptTerms}
-                  onCheckedChange={(checked) => updateField("acceptTerms", checked as boolean)}
-                  required
-                  className="mt-0.5"
-                  disabled={loading}
-                />
-                <Label htmlFor="terms" className="text-sm font-normal leading-tight text-muted-foreground">
-                  Aceito os{" "}
-                  <Link href="#" className="text-blue-600 hover:underline">termos de uso</Link>
-                  {" "}e a{" "}
-                  <Link href="#" className="text-blue-600 hover:underline">política de privacidade</Link>
-                </Label>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    onCheckedChange={(checked) => setValue("acceptTerms", checked === true, { shouldValidate: true })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="terms" className="text-sm font-normal leading-tight text-muted-foreground">
+                    Aceito os{" "}
+                    <Link href="#" className="text-blue-600 hover:underline">termos de uso</Link>
+                    {" "}e a{" "}
+                    <Link href="#" className="text-blue-600 hover:underline">política de privacidade</Link>
+                  </Label>
+                </div>
               </div>
+              {errors.acceptTerms && (
+                <p className="text-xs text-red-500">{errors.acceptTerms.message}</p>
+              )}
 
               <div className="rounded-lg bg-accent/50 p-4">
                 <div className="flex items-center gap-3">
@@ -364,9 +331,9 @@ export default function Register() {
               <Button
                 type="submit"
                 className="h-11 w-full text-base bg-blue-600 hover:bg-blue-600"
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? (
+                {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     <span>Criando conta...</span>

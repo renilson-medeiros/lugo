@@ -1,4 +1,4 @@
-// src/pages/Login.tsx
+// src/modules/Login.tsx
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -7,61 +7,52 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/layout/Header";
 import { useState } from "react";
-import { Building2, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/ui/Logo";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, LoginFormData } from "@/lib/schemas";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
   const router = useRouter();
   const { signIn } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    setAuthError("");
 
     try {
-      // Validações básicas
-      if (!email || !password) {
-        throw new Error("Preencha todos os campos");
-      }
-
-      if (!email.includes("@")) {
-        throw new Error("Email inválido");
-      }
-
-      if (password.length < 6) {
-        throw new Error("A senha deve ter pelo menos 6 caracteres");
-      }
-
-      // Fazer login no Supabase
-      await signIn(email, password);
-
-      // Redirecionar para dashboard
+      await signIn(data.email, data.password);
       router.push("/dashboard");
     } catch (err: any) {
       console.error("Erro no login:", err);
 
-      // Mensagens de erro personalizadas
       if (err.message.includes("Invalid login credentials")) {
-        setError("Email ou senha incorretos");
+        setAuthError("Email ou senha incorretos");
       } else if (err.message.includes("Email not confirmed")) {
-        setError("Por favor, confirme seu email antes de fazer login");
+        setAuthError("Por favor, confirme seu email antes de fazer login");
       } else {
-        setError(err.message || "Erro ao fazer login. Tente novamente.");
+        setAuthError(err.message || "Erro ao fazer login. Tente novamente.");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-accent/30 to-background">
+    <div className="flex min-h-screen flex-col bg-linear-to-b from-accent/30 to-background">
       <Header />
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
@@ -76,14 +67,14 @@ export default function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Mensagem de Erro */}
-              {error && (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {/* Mensagem de Erro Geral */}
+              {authError && (
                 <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm text-red-800 font-medium">Erro ao fazer login</p>
-                    <p className="text-sm text-red-700 mt-0.5">{error}</p>
+                    <p className="text-sm text-red-700 mt-0.5">{authError}</p>
                   </div>
                 </div>
               )}
@@ -94,13 +85,14 @@ export default function Login() {
                   id="email"
                   type="email"
                   placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
                   autoComplete="email"
-                  className="h-11"
-                  disabled={loading}
+                  className={`h-11 ${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  disabled={isSubmitting}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-xs text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -118,12 +110,10 @@ export default function Login() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
                     autoComplete="current-password"
-                    className="h-11 pr-10"
-                    disabled={loading}
+                    className={`h-11 pr-10 ${errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                    disabled={isSubmitting}
+                    {...register("password")}
                   />
                   <Button
                     type="button"
@@ -132,7 +122,7 @@ export default function Login() {
                     className="absolute right-0 top-0 h-11 w-11  text-muted-foreground hover:text-foreground"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                    disabled={loading}
+                    disabled={isSubmitting}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -141,14 +131,17 @@ export default function Login() {
                     )}
                   </Button>
                 </div>
+                {errors.password && (
+                  <p className="text-xs text-red-500">{errors.password.message}</p>
+                )}
               </div>
 
               <Button
                 type="submit"
                 className="h-11 w-full text-base bg-blue-600 hover:bg-blue-600"
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? (
+                {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     <span>Entrando...</span>
