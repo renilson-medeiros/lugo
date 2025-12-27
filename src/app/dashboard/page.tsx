@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Info, Users, Receipt, Plus, ArrowRight, TrendingUp, Home, ChevronLeft, ChevronRight as ChevronRightIcon, AlertCircle, Clock, Calendar } from "lucide-react";
+import { Building2, Info, Users, Receipt, Plus, ArrowRight, TrendingUp, Home, ChevronLeft, ChevronRight as ChevronRightIcon, AlertCircle, Clock, Calendar, ChartPie } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
@@ -473,7 +473,8 @@ export default function Dashboard() {
 
                         <Card>
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                    <ChartPie className="h-4 w-4 text-blue-600" />
                                     Taxa de Ocupação
                                 </CardTitle>
                             </CardHeader>
@@ -499,7 +500,7 @@ export default function Dashboard() {
                         <Card>
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertCircle className="h-4 w-4 text-blue-600" />
                                     Avisos e Pendências
                                 </CardTitle>
                             </CardHeader>
