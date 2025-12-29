@@ -188,7 +188,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main Content */}
       <main className="lg:pl-64">
-        <div className="container px-4 md:px-8 py-6 lg:py-8">
+        <div className="container px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
           {isExpired && !isSettingsPage ? (
             <Paywall />
           ) : (

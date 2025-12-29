@@ -15,6 +15,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import dynamic from "next/dynamic";
+import useEmblaCarousel from "embla-carousel-react";
 
 const RevenueChart = dynamic(() => import("@/components/dashboard/RevenueChart"), {
     ssr: false,
@@ -68,6 +69,17 @@ export default function Dashboard() {
     const [loadingAlerts, setLoadingAlerts] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalProperties, setTotalProperties] = useState(0);
+
+    // Carousel de alertas
+    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+
+    const scrollPrev = useCallback(() => {
+        if (emblaApi) emblaApi.scrollPrev();
+    }, [emblaApi]);
+
+    const scrollNext = useCallback(() => {
+        if (emblaApi) emblaApi.scrollNext();
+    }, [emblaApi]);
 
     const ITEMS_PER_PAGE = 3;
 
@@ -312,6 +324,13 @@ export default function Dashboard() {
     // PEGAR O PRIMEIRO NOME
     const firstName = profile?.nome_completo?.split(' ')[0] || 'Usuário';
 
+    // Verificação de Trial Expirado
+    const isExpired = !!(
+        profile?.subscription_status === 'trial' &&
+        profile?.expires_at &&
+        new Date(profile.expires_at) < new Date()
+    );
+
     // MOSTRAR LOADING ENQUANTO AUTH CARREGA
     if (authLoading) {
         return (
@@ -332,14 +351,16 @@ export default function Dashboard() {
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="font-display text-2xl font-bold sm:text-3xl">Painel</h1>
+                        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                            Olá, {firstName}! 👋
+                        </h1>
                         <p className="text-muted-foreground">
-                            Olá {firstName}! Aqui está o resumo dos seus imóveis.
+                            Bem-vindo de volta ao seu painel de controle.
                         </p>
                     </div>
-                    {profile?.subscription_status === 'trial' && stats.totalImoveis >= 1 ? (
-                        <Link href="/checkout">
-                            <Button className="gap-2 bg-blue-600 hover:bg-blue-500 text-white border-none shadow-sm shadow-blue-200">
+                    {isExpired ? (
+                        <Link href="/dashboard/configuracoes">
+                            <Button className="gap-2 bg-amber-600 hover:bg-amber-500">
                                 <Plus className="h-4 w-4" aria-hidden="true" />
                                 Assinar para adicionar mais
                             </Button>
@@ -355,7 +376,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
                     {loading ? (
                         // Loading skeleton
                         Array.from({ length: 3 }).map((_, index) => (
@@ -376,13 +397,13 @@ export default function Dashboard() {
                                     className="group transition-all duration-300 hover:border-blue-600/30 hover:shadow-lg"
                                     style={{ animationDelay: `${index * 100}ms` }}
                                 >
-                                    <CardContent className="flex items-center gap-4 p-6">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent transition-colors group-hover:bg-primary/10">
-                                            <stat.icon className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                                    <CardContent className="flex items-center gap-4 p-4 sm:p-6">
+                                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-accent transition-colors group-hover:bg-primary/10">
+                                            <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" aria-hidden="true" />
                                         </div>
                                         <div>
-                                            <p className="text-sm text-muted-foreground">{stat.label}</p>
-                                            <p className="font-display text-2xl font-bold">{stat.value}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
+                                            <p className="font-display text-xl sm:text-2xl font-bold">{stat.value}</p>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -391,32 +412,30 @@ export default function Dashboard() {
                     )}
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                     {/* Revenue Chart */}
                     <Card className="lg:col-span-2">
                         <CardHeader>
-                            <CardTitle className="font-display text-lg flex items-center justify-between">
+                            <CardTitle className="font-display text-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 Receita Bruta Mensal
                                 {revenueData.length > 0 && (
-                                    <span className="text-xs font-normal text-muted-foreground bg-accent px-2 py-1 rounded-md">
+                                    <span className="text-xs font-normal text-muted-foreground bg-accent px-2 py-1 rounded-md w-fit">
                                         Últimos 6 meses
                                     </span>
                                 )}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-[300px] w-full mt-4">
-                                {loading ? (
-                                    <div className="h-[300px] w-full bg-accent/20 animate-pulse rounded-lg mt-4" />
-                                ) : revenueData.length > 0 ? (
-                                    <RevenueChart data={revenueData} />
-                                ) : (
-                                    <div className="flex h-full flex-col items-center justify-center text-center">
-                                        <TrendingUp className="h-8 w-8 text-muted-foreground/30 mb-2" />
-                                        <p className="text-sm text-muted-foreground">Sem dados de pagamento para exibir.</p>
-                                    </div>
-                                )}
-                            </div>
+                            {loading ? (
+                                <div className="h-[300px] w-full bg-accent/20 animate-pulse rounded-lg mt-4" />
+                            ) : revenueData.length > 0 ? (
+                                <RevenueChart data={revenueData} />
+                            ) : (
+                                <div className="flex h-[300px] flex-col items-center justify-center text-center mt-4">
+                                    <TrendingUp className="h-8 w-8 text-muted-foreground/30 mb-2" />
+                                    <p className="text-sm text-muted-foreground">Sem dados de pagamento para exibir.</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -463,11 +482,29 @@ export default function Dashboard() {
 
                         {/* Alerts Section */}
                         <Card>
-                            <CardHeader className="pb-2">
+                            <CardHeader className="pb-2 flex flex-row items-center justify-between">
                                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <AlertCircle className="h-4 w-4 text-blue-600" />
                                     Avisos e Pendências
                                 </CardTitle>
+                                {alerts.length > 1 && (
+                                    <div className="flex gap-1">
+                                        <button
+                                            onClick={scrollPrev}
+                                            className="h-6 w-6 rounded-full border border-border flex items-center justify-center hover:bg-accent transition-colors"
+                                            aria-label="Aviso anterior"
+                                        >
+                                            <ChevronLeft className="h-3 w-3" />
+                                        </button>
+                                        <button
+                                            onClick={scrollNext}
+                                            className="h-6 w-6 rounded-full border border-border flex items-center justify-center hover:bg-accent transition-colors"
+                                            aria-label="Próximo aviso"
+                                        >
+                                            <ChevronRightIcon className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                )}
                             </CardHeader>
                             <CardContent>
                                 {loadingAlerts ? (
@@ -477,43 +514,62 @@ export default function Dashboard() {
                                         ))}
                                     </div>
                                 ) : alerts.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {alerts.map((alert) => (
-                                            <Link key={alert.id} href={`/dashboard/inquilinos`}>
-                                                <div
-                                                    className={cn(
-                                                        "flex items-start gap-3 p-3 rounded-lg border transition-colors",
-                                                        alert.type === 'overdue'
-                                                            ? "bg-red-50 border-red-100 hover:bg-red-100/50"
-                                                            : "bg-amber-50 border-amber-100 hover:bg-amber-100/50"
-                                                    )}
-                                                >
-                                                    <div className={cn(
-                                                        "mt-0.5 h-8 w-8 rounded-full flex items-center justify-center shrink-0",
-                                                        alert.type === 'overdue' ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600"
-                                                    )}>
-                                                        {alert.type === 'overdue' ? <AlertCircle className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className={cn(
-                                                            "text-sm font-semibold truncate",
-                                                            alert.type === 'overdue' ? "text-red-900" : "text-amber-900"
-                                                        )}>
-                                                            {alert.type === 'overdue' ? 'Aluguel Atrasado' : 'Vencendo em breve'}
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground truncate">
-                                                            {alert.tenantName} • {alert.propertyName}
-                                                        </p>
-                                                        <p className={cn(
-                                                            "text-[10px] font-medium mt-1 uppercase",
-                                                            alert.type === 'overdue' ? "text-red-700" : "text-amber-700"
-                                                        )}>
-                                                            Vence dia {alert.dueDate} • {alert.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                                                        </p>
-                                                    </div>
+                                    <div className="overflow-hidden" ref={emblaRef}>
+                                        <div className="flex">
+                                            {alerts.map((alert) => (
+                                                <div key={alert.id} className="flex-[0_0_100%] min-w-0 px-1">
+                                                    <Link href={`/dashboard/inquilinos`}>
+                                                        <div
+                                                            className={cn(
+                                                                "flex items-start gap-3 p-3 rounded-lg border transition-colors",
+                                                                alert.type === 'overdue'
+                                                                    ? "bg-red-50 border-red-100 hover:bg-red-100/50"
+                                                                    : "bg-amber-50 border-amber-100 hover:bg-amber-100/50"
+                                                            )}
+                                                        >
+                                                            <div className={cn(
+                                                                "mt-0.5 h-8 w-8 rounded-full flex items-center justify-center shrink-0",
+                                                                alert.type === 'overdue' ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600"
+                                                            )}>
+                                                                {alert.type === 'overdue' ? <AlertCircle className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <p className={cn(
+                                                                    "text-sm font-semibold truncate",
+                                                                    alert.type === 'overdue' ? "text-red-900" : "text-amber-900"
+                                                                )}>
+                                                                    {alert.type === 'overdue' ? 'Aluguel Atrasado' : 'Vencendo em breve'}
+                                                                </p>
+                                                                <p className="text-xs text-muted-foreground truncate">
+                                                                    {alert.tenantName} • {alert.propertyName}
+                                                                </p>
+                                                                <p className={cn(
+                                                                    "text-[10px] font-medium mt-1 uppercase",
+                                                                    alert.type === 'overdue' ? "text-red-700" : "text-amber-700"
+                                                                )}>
+                                                                    Vence dia {alert.dueDate} • {alert.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
                                                 </div>
-                                            </Link>
-                                        ))}
+                                            ))}
+                                        </div>
+                                        {alerts.length > 1 && (
+                                            <div className="flex justify-center gap-1.5 mt-3">
+                                                {alerts.map((_, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className={cn(
+                                                            "h-1 rounded-full transition-all duration-300",
+                                                            index === (emblaApi?.selectedScrollSnap() || 0)
+                                                                ? "w-4 bg-blue-600"
+                                                                : "w-1 bg-gray-300"
+                                                        )}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center py-6 text-center">
