@@ -32,6 +32,8 @@ export default function CheckoutClient() {
         pixCode: string;
         qrCode: string;
         invoiceUrl: string;
+        qrCodeError?: boolean;
+        errorMessage?: string;
     } | null>(null);
     const hasRequestedPayment = useRef(false);
 
@@ -282,15 +284,25 @@ export default function CheckoutClient() {
                                                         alt="QR Code PIX"
                                                         className="w-full h-full object-contain"
                                                     />
-                                                ) : paymentData?.pixCode ? (
+                                                ) : (
                                                     <div className="flex flex-col items-center justify-center p-4 text-center">
                                                         <QrCode size={48} className="text-amber-500 mb-2" />
-                                                        <p className="text-[10px] text-amber-600 font-medium leading-tight">
-                                                            Não foi possível gerar a imagem do QR Code, mas você pode usar o código "Copia e Cola" abaixo.
+                                                        <p className="text-[10px] text-amber-600 font-medium leading-tight mb-2">
+                                                            {paymentData?.qrCodeError
+                                                                ? "Não foi possível gerar a imagem do QR Code."
+                                                                : "Aguardando geração do PIX..."}
                                                         </p>
+                                                        {paymentData?.invoiceUrl && (
+                                                            <Button
+                                                                variant="link"
+                                                                size="sm"
+                                                                className="text-xs h-auto p-0 text-blue-600"
+                                                                onClick={() => window.open(paymentData.invoiceUrl, '_blank')}
+                                                            >
+                                                                Pagar na página do Asaas
+                                                            </Button>
+                                                        )}
                                                     </div>
-                                                ) : (
-                                                    <QrCode size={160} className="text-muted-foreground opacity-20" />
                                                 )}
                                             </div>
                                         </div>

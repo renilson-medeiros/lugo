@@ -6,7 +6,13 @@ export async function asaasRequest(endpoint: string, options: RequestInit = {}) 
         throw new Error('ASAAS_API_KEY não configurada');
     }
 
-    const response = await fetch(`${ASAAS_API_URL}${endpoint}`, {
+    const url = `${ASAAS_API_URL}${endpoint}`;
+
+    // Log apenas em desenvolvimento para evitar vazar chaves em logs de prod se não houver cuidado
+    // Mas aqui vamos logar o endpoint para depurar
+    console.log(`[Asaas] Request: ${options.method || 'GET'} ${url}`);
+
+    const response = await fetch(url, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -18,7 +24,7 @@ export async function asaasRequest(endpoint: string, options: RequestInit = {}) 
     const data = await response.json();
 
     if (!response.ok) {
-        console.error('Erro Asaas:', data);
+        console.error(`[Asaas] Erro no endpoint ${endpoint}:`, data);
         throw new Error(data.errors?.[0]?.description || 'Erro na requisição ao Asaas');
     }
 
@@ -53,12 +59,13 @@ export async function createPixPayment(paymentData: {
     description: string,
     externalReference?: string
 }) {
+    // 1. Cria a transação de pagamento
     const payment = await asaasRequest('/payments', {
         method: 'POST',
         body: JSON.stringify(paymentData),
     });
 
-    // Busca o QR Code e o código "Copia e Cola" do PIX
+    // 2. Busca o QR Code e o código "Copia e Cola" do PIX
     // Adicionado try-catch para não quebrar todo o fluxo se apenas o QR Code falhar
     try {
         const qrCodeData = await asaasRequest(`/payments/${payment.id}/pixQrCode`);
@@ -67,13 +74,17 @@ export async function createPixPayment(paymentData: {
             pixCode: qrCodeData.payload,
             qrCode: qrCodeData.encodedImage,
         };
-    } catch (qrError) {
-        console.error('Erro ao buscar QR Code PIX:', qrError);
+    } catch (qrError: any) {
+        console.error(`[Asaas] Falha ao gerar QR Code para pagamento ${payment.id}:`, qrError.message);
+
+        // Em caso de erro no QR Code, retornamos o pagamento básico.
+        // O frontend deve lidar com pixCode/qrCode nulos mostrando o link da fatura (invoiceUrl)
         return {
             ...payment,
             pixCode: null,
             qrCode: null,
-            qrCodeError: true
+            qrCodeError: true,
+            errorMessage: qrError.message
         };
     }
 }
