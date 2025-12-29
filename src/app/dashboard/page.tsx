@@ -14,16 +14,12 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Cell
-} from "recharts";
+import dynamic from "next/dynamic";
+
+const RevenueChart = dynamic(() => import("@/components/dashboard/RevenueChart"), {
+    ssr: false,
+    loading: () => <div className="h-[300px] w-full bg-accent/20 animate-pulse rounded-lg mt-4" />
+});
 
 interface DashboardStats {
     totalImoveis: number;
@@ -411,52 +407,9 @@ export default function Dashboard() {
                         <CardContent>
                             <div className="h-[300px] w-full mt-4">
                                 {loading ? (
-                                    <div className="h-full w-full bg-accent/50 animate-pulse rounded-lg" />
+                                    <div className="h-[300px] w-full bg-accent/20 animate-pulse rounded-lg mt-4" />
                                 ) : revenueData.length > 0 ? (
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                            <XAxis
-                                                dataKey="month"
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: "#64748b", fontSize: 12 }}
-                                                dy={10}
-                                            />
-                                            <YAxis
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: "#64748b", fontSize: 12 }}
-                                                tickFormatter={(value) => `R$ ${value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value}`}
-                                            />
-                                            <Tooltip
-                                                cursor={{ fill: '#f1f5f9' }}
-                                                contentStyle={{
-                                                    borderRadius: '12px',
-                                                    border: 'none',
-                                                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                                                    padding: '12px'
-                                                }}
-                                                formatter={(value: number) => [
-                                                    value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-                                                    'Receita'
-                                                ]}
-                                            />
-                                            <Bar
-                                                dataKey="total"
-                                                radius={[6, 6, 0, 0]}
-                                                barSize={32}
-                                            >
-                                                {revenueData.map((entry, index) => (
-                                                    <Cell
-                                                        key={`cell-${index}`}
-                                                        fill={index === revenueData.length - 1 ? "#eff6ff" : "#155DFC"}
-                                                        className="transition-all duration-300 hover:fill-blue-500"
-                                                    />
-                                                ))}
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer>
+                                    <RevenueChart data={revenueData} />
                                 ) : (
                                     <div className="flex h-full flex-col items-center justify-center text-center">
                                         <TrendingUp className="h-8 w-8 text-muted-foreground/30 mb-2" />

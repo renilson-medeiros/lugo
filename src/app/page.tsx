@@ -63,13 +63,13 @@ export default function Landing() {
 
             <main className="flex-1 ">
                 {/* Hero Section */}
-                <section className="relative overflow-hidden bg-linear-to-b from-accent/50 to-blue-50/25 py-20 lg:py-32">
+                <section className="relative overflow-hidden bg-linear-to-b from-accent/50 to-blue-50/25 py-20 lg:py-32 min-h-[80vh]">
                     <div className="container px-6">
                         <div className="mx-auto max-w-3xl text-center">
-                            <h1 className="animate-fade-in font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                            <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                                 Sua gestão de aluguéis, <span className="text-blue-600">simples e direta</span>
                             </h1>
-                            <p className="mt-6 animate-fade-in text-lg text-muted-foreground [animation-delay:100ms] sm:text-xl">
+                            <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
                                 O Lugo oferece autonomia total para proprietários, eliminando intermediários e automatizando a rotina de gestão.
                             </p>
                             <div className="mt-10 flex flex-col items-center justify-center gap-4 animate-fade-in [animation-delay:200ms] sm:flex-row">
