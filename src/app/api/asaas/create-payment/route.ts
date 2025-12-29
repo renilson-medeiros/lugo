@@ -50,7 +50,9 @@ export async function POST() {
             paymentId: payment.id,
             pixCode: payment.pixCode,
             qrCode: payment.qrCode,
-            invoiceUrl: payment.invoiceUrl
+            invoiceUrl: payment.invoiceUrl,
+            qrCodeError: payment.qrCodeError,
+            errorMessage: payment.errorMessage
         });
 
     } catch (error: any) {
