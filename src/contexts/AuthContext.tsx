@@ -34,35 +34,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // INIT + AUTH LISTENER
   useEffect(() => {
     const init = async () => {
-      const { data } = await supabase.auth.getSession();
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error || !data.session?.user) return;
 
-      if (!data.session?.user) {
+        setUser(data.session.user);
+        await loadProfile(data.session.user.id);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      setUser(data.session.user);
-      await loadProfile(data.session.user.id);
-      setLoading(false);
     };
 
     init();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (!session?.user) {
-          setUser(null);
-          setProfile(null);
-          setLoading(false);
-          return;
-        }
+      async (event, session) => {
+        const currentUser = session?.user || null;
+        setUser(currentUser);
 
-        setUser(session.user);
-        if (session.user) {
-          await loadProfile(session.user.id);
+        if (currentUser) {
+          await loadProfile(currentUser.id);
         } else {
           setProfile(null);
         }
+
+        // Só remove o loading após a primeira tentativa de carregar o perfil
         setLoading(false);
       }
     );
@@ -76,8 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // LOAD PROFILE OPTIMIZED
   const loadProfile = useCallback(async (userId: string) => {
     try {
-      // Tentativa 1: Busca direta
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -86,18 +81,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         console.error('Erro ao buscar profile:', error);
         return null;
-      }
-
-      // Se não encontrou (pode ser delay do trigger no signup), tenta mais uma vez após 500ms
-      if (!data) {
-        await new Promise((res) => setTimeout(res, 500));
-        const retry = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-
-        data = retry.data;
       }
 
       if (data) {
@@ -109,7 +92,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Exceção ao carregar profile:', err);
     }
 
-    // Se falhar tudo, define null mas não limpa o usuário
     return null;
   }, []);
 
