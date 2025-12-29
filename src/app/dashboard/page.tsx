@@ -77,36 +77,41 @@ export default function Dashboard() {
 
     // Carregar dados iniciais
     useEffect(() => {
-        loadDashboardStats();
-        loadRevenueData();
-        loadProperties(1);
-        loadAlerts();
+        const loadAllData = async () => {
+            setLoading(true);
+            try {
+                // Carregar estatísticas e imóveis em paralelo primeiro para renderizar a base
+                await Promise.all([
+                    loadDashboardStats(),
+                    loadProperties(1),
+                    loadRevenueData(),
+                    loadAlerts()
+                ]);
+            } catch (err) {
+                console.error("Erro no carregamento paralelo:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadAllData();
     }, []);
 
     const loadDashboardStats = async () => {
         try {
-            // Buscar total de imóveis
-            const { count: totalImoveis } = await supabase
-                .from('imoveis')
-                .select('*', { count: 'exact', head: true });
-
-            // Buscar inquilinos ativos
-            const { count: inquilinosAtivos } = await supabase
-                .from('inquilinos')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'ativo');
-
-            // Buscar total de comprovantes
-            const { count: comprovantesGerados } = await supabase
-                .from('comprovantes')
-                .select('*', { count: 'exact', head: true });
+            // Buscar total de imóveis, inquilinos e comprovantes em paralelo
+            const [imoveisRes, tenantsRes, receiptsRes] = await Promise.all([
+                supabase.from('imoveis').select('*', { count: 'exact', head: true }),
+                supabase.from('inquilinos').select('*', { count: 'exact', head: true }).eq('status', 'ativo'),
+                supabase.from('comprovantes').select('*', { count: 'exact', head: true }).eq('tipo', 'pagamento')
+            ]);
 
             setStats({
-                totalImoveis: totalImoveis || 0,
-                inquilinosAtivos: inquilinosAtivos || 0,
-                comprovantesGerados: comprovantesGerados || 0,
+                totalImoveis: imoveisRes.count || 0,
+                inquilinosAtivos: tenantsRes.count || 0,
+                comprovantesGerados: receiptsRes.count || 0,
             });
-            setTotalProperties(totalImoveis || 0);
+            setTotalProperties(imoveisRes.count || 0);
         } catch (error) {
             console.error('Erro ao carregar estatísticas:', error);
         }
@@ -168,41 +173,43 @@ export default function Dashboard() {
             setLoadingAlerts(true);
 
             const now = new Date();
+            const today = now.getDate();
+            // Primeiro dia do mês atual às 00:00
             const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-            // 1. Buscar todos os inquilinos ativos
-            const { data: activeTenants, error: tenantsError } = await supabase
-                .from('inquilinos')
-                .select(`
-          id,
-          nome_completo,
-          dia_vencimento,
-          valor_aluguel,
-          imoveis (
-            endereco_rua,
-            endereco_numero
-          )
-        `)
-                .eq('status', 'ativo');
+            // 1 & 2. Buscar inquilinos ativos e recibos do mês em paralelo
+            const [tenantsRes, receiptsRes] = await Promise.all([
+                supabase
+                    .from('inquilinos')
+                    .select(`
+                        id,
+                        nome_completo,
+                        dia_vencimento,
+                        valor_aluguel,
+                        imoveis (
+                            endereco_rua,
+                            endereco_numero
+                        )
+                    `)
+                    .eq('status', 'ativo'),
+                supabase
+                    .from('comprovantes')
+                    .select('inquilino_id')
+                    .eq('tipo', 'pagamento')
+                    .gte('mes_referencia', currentMonthStart)
+            ]);
 
-            if (tenantsError) throw tenantsError;
+            if (tenantsRes.error) throw tenantsRes.error;
+            if (receiptsRes.error) throw receiptsRes.error;
 
-            // 2. Buscar comprovantes de pagamento do mês atual
-            const { data: currentMonthReceipts, error: receiptsError } = await supabase
-                .from('comprovantes')
-                .select('inquilino_id')
-                .eq('tipo', 'pagamento')
-                .gte('mes_referencia', currentMonthStart);
-
-            if (receiptsError) throw receiptsError;
+            const activeTenants = tenantsRes.data;
+            const currentMonthReceipts = receiptsRes.data;
 
             const receivedInquilinoIds = new Set(currentMonthReceipts?.map((r: any) => r.inquilino_id));
 
             const dashboardAlerts: DashboardAlert[] = [];
-            const today = now.getDate();
 
             activeTenants?.forEach((tenant: any) => {
-                // Se já pagou este mês, ignora
                 if (receivedInquilinoIds.has(tenant.id)) return;
 
                 const dueDay = tenant.dia_vencimento;
@@ -210,7 +217,6 @@ export default function Dashboard() {
                 const propertyName = property ? `${property.endereco_rua}, ${property.endereco_numero}` : 'Imóvel';
 
                 if (dueDay < today) {
-                    // Atrasado
                     dashboardAlerts.push({
                         id: `overdue-${tenant.id}`,
                         tenantId: tenant.id,
@@ -221,7 +227,6 @@ export default function Dashboard() {
                         amount: tenant.valor_aluguel
                     });
                 } else if (dueDay <= today + 5) {
-                    // Vencendo logo
                     dashboardAlerts.push({
                         id: `upcoming-${tenant.id}`,
                         tenantId: tenant.id,
@@ -234,11 +239,8 @@ export default function Dashboard() {
                 }
             });
 
-            // Ordenar por tipo (overdue primeiro) e depois por dia
             dashboardAlerts.sort((a, b) => {
-                if (a.type !== b.type) {
-                    return a.type === 'overdue' ? -1 : 1;
-                }
+                if (a.type !== b.type) return a.type === 'overdue' ? -1 : 1;
                 return a.dueDate - b.dueDate;
             });
 
