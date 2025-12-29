@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+
+const inter = Inter({
+    subsets: ["latin"],
+    variable: "--font-sans",
+});
+
+const outfit = Outfit({
+    subsets: ["latin"],
+    variable: "--font-display",
+});
 
 export const metadata: Metadata = {
     title: {
