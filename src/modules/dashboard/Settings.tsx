@@ -1,3 +1,4 @@
+"use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 
-export default function Settings() {
-  const { user, profile } = useAuth();
+interface SettingsProps {
+  initialProfile?: any;
+}
+
+export default function Settings({ initialProfile }: SettingsProps) {
+  const { user, profile: contextProfile } = useAuth();
+  const profile = contextProfile || initialProfile;
   const [userData, setUserData] = useState({
     nome_completo: "",
     email: "",
@@ -46,14 +52,14 @@ export default function Settings() {
         telefone: profile.telefone ? formatarTelefone(profile.telefone) : ""
       });
       setIsLoading(false);
-    } else if (user) {
+    } else if (user && !initialProfile) {
       // Se não tiver profile mas tiver user, ainda está carregando
       setIsLoading(true);
-    } else {
+    } else if (!user && !initialProfile) {
       setIsLoading(false);
       setError("Usuário não autenticado");
     }
-  }, [profile, user]);
+  }, [profile, user, initialProfile]);
 
   const handleSave = async () => {
     if (!user || !profile) {

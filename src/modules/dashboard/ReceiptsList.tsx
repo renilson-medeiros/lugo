@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useEffect, useState, useMemo, useCallback } from "react";
 
@@ -49,18 +51,23 @@ interface ReceiptData {
   } | null;
 }
 
-export default function ReceiptsList() {
+interface ReceiptsListProps {
+  initialData?: ReceiptData[];
+  initialLoading?: boolean;
+}
+
+export default function ReceiptsList({ initialData = [], initialLoading = true }: ReceiptsListProps) {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [receipts, setReceipts] = useState<ReceiptData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [receipts, setReceipts] = useState<ReceiptData[]>(initialData);
+  const [isLoading, setIsLoading] = useState(initialLoading);
   const [error, setError] = useState<string | null>(null);
   const [tipoFilter, setTipoFilter] = useState("todos");
   const [mesFilter, setMesFilter] = useState("todos");
   const [anoFilter, setAnoFilter] = useState("todos");
 
   useEffect(() => {
-    if (user) {
+    if (user && initialLoading) {
       loadReceipts();
     }
   }, [user]);

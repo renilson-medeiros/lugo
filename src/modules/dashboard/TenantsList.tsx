@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
 
@@ -56,17 +58,22 @@ interface Tenant {
   } | null;
 }
 
-export default function TenantsList() {
+interface TenantsListProps {
+  initialData?: Tenant[];
+  initialLoading?: boolean;
+}
+
+export default function TenantsList({ initialData = [], initialLoading = true }: TenantsListProps) {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [tenants, setTenants] = useState<Tenant[]>(initialData);
+  const [isLoading, setIsLoading] = useState(initialLoading);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("todos");
   const [propertyFilter, setPropertyFilter] = useState("todos");
 
   useEffect(() => {
-    if (user) {
+    if (user && initialLoading) {
       loadTenants();
     }
   }, [user]);

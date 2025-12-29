@@ -1,3 +1,5 @@
+"use client";
+
 // src/pages/dashboard/PropertiesList.tsx
 import Link from "next/link";
 import Image from "next/image";
@@ -58,10 +60,15 @@ interface Property {
   city: string;
 }
 
-export default function PropertiesList() {
+interface PropertiesListProps {
+  initialData?: Property[];
+  initialLoading?: boolean;
+}
+
+export default function PropertiesList({ initialData = [], initialLoading = true }: PropertiesListProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState<Property[]>(initialData);
+  const [loading, setLoading] = useState(initialLoading);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [statusFilter, setStatusFilter] = useState("todos");
@@ -69,7 +76,9 @@ export default function PropertiesList() {
 
   // Carregar imóveis do banco
   useEffect(() => {
-    loadProperties();
+    if (initialLoading) {
+      loadProperties();
+    }
   }, []);
 
   const loadProperties = async () => {

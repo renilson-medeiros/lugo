@@ -42,6 +42,18 @@ Implementar sub-estados durante a submissão para evitar a percepção de "trava
 - **Estado 2:** "Enviando imagens (X de Y)..." (Opcional, mas recomendado) ou simplesmente "Enviando imagens em alta velocidade..."
 - **Estado 3:** "Finalizando cadastro..."
 
+### 2.3 Criptografia de Dados Sensíveis (Segurança e LGPD)
+Para garantir a privacidade dos usuários e inquilinos, os campos sensíveis não devem ser salvos em texto aberto no banco de dados.
+
+**Campos Alvo:**
+- CPF, RG, Telefone (Inquilinos e Perfis).
+- Dados de pagamento (se houver armazenamento local).
+
+**Estratégia Técnica:**
+1. **Supabase Vault:** Utilizar a extensão `pg-vault` do Supabase para gerenciar chaves de criptografia.
+2. **pgcrypto (PGP):** Implementar funções no PostgreSQL para criptografar/descriptografar dados usando chaves secretas.
+3. **Application Layer:** Opcionalmente, realizar a criptografia no servidor (Next.js API Routes) antes de enviar ao Supabase.
+
 ---
 
 ## 3. Arquivos a serem Modificados
@@ -50,12 +62,16 @@ Implementar sub-estados durante a submissão para evitar a percepção de "trava
    - Refatorar a lógica de upload de fotos do imóvel.
 2. `src/modules/dashboard/TenantForm.tsx`:
    - Refatorar a lógica de upload do contrato do inquilino.
+   - Implementar a lógica de criptografia no envio dos dados do inquilino.
+3. `SQL / Supabase`:
+   - Configurar extensões de criptografia e chaves de segurança.
 
 ---
 
 ## 4. Plano de Verificação (Após implementação)
 1. **Teste de Carga:** Subir 8 imagens de 5MB cada e comparar o tempo total com a versão anterior.
 2. **Teste de Resiliência:** Simular erro em 1 das 8 imagens e garantir que o sistema não salve um registro corrompido ou incompleto.
+3. **Auditoria Visual do Banco:** Acessar o dashboard do Supabase e confirmar que os campos de CPF/RG estão ilegíveis (criptografados).
 
 ---
-*Documento criado em: 2025-12-28*
+*Documento atualizado em: 2025-12-28*
