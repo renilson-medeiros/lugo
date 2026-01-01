@@ -9,5 +9,5 @@ export const LINKS = {
 };
 
 export const CONTACT_INFO = {
-    SUPPORT_EMAIL: "suporte@aluguelfacil.com",
+    SUPPORT_EMAIL: "suporte@lugo.com.br",
 };

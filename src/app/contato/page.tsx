@@ -37,7 +37,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-bold">E-mail</h3>
-                                        <p className="text-muted-foreground">suporte@aluguelfacil.com.br</p>
+                                        <p className="text-muted-foreground">suporte@lugo.com.br</p>
                                     </div>
                                 </div>
 
