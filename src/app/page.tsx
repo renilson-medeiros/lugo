@@ -70,7 +70,7 @@ export default function Landing() {
                                 Sua gestão de aluguéis, <span className="text-blue-600">simples e direta</span>
                             </h1>
                             <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
-                                O Lugo oferece autonomia total para proprietários, eliminando intermediários e automatizando a rotina de gestão.
+                                O Lugo oferece autonomia total para proprietários, eliminando intermediários e automatizando a rotina de gestão de imóveis, inquilinos e pagamentos.
                             </p>
                             <div className="mt-10 flex flex-col items-center justify-center gap-4 animate-fade-in [animation-delay:200ms] sm:flex-row">
                                 <Link href="/registro">
