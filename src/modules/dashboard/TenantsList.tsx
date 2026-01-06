@@ -291,13 +291,13 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
             {(statusFilter !== "todos" || propertyFilter !== "todos" || searchQuery !== "") && (
               <Button
                 variant="ghost"
-                size="sm"
+                size="default"
                 onClick={() => {
                   setStatusFilter("todos");
                   setPropertyFilter("todos");
                   setSearchQuery("");
                 }}
-                className="text-muted-foreground hover:text-red-500 w-full lg:w-auto"
+                className="text-red-500 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto"
               >
                 <XCircle className="h-4 w-4 mr-1" />
                 Limpar

@@ -516,7 +516,7 @@ export default function PropertyForm() {
         {/* Endereço */}
         <Card className="animate-fade-in">
           <CardHeader>
-            <div className="flex items-end gap-2">
+            <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Endereço</CardTitle>
             </div>
@@ -615,7 +615,7 @@ export default function PropertyForm() {
         {/* Informações do Imóvel */}
         <Card className="animate-fade-in" style={{ animationDelay: "100ms" }}>
           <CardHeader>
-            <div className="flex items-end gap-2">
+            <div className="flex items-center gap-2">
               <Home className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Informações do Imóvel</CardTitle>
             </div>
@@ -813,30 +813,45 @@ export default function PropertyForm() {
 
             {/* Regras */}
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                <Label htmlFor="acceptsPets" className="cursor-pointer">Aceita animais</Label>
+              <label 
+                htmlFor="acceptsPets" 
+                className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
+              >
+                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Aceita animais
+                </span>
                 <Switch
                   id="acceptsPets"
                   checked={formData.acceptsPets}
                   onCheckedChange={(checked) => handleInputChange("acceptsPets", checked)}
                 />
-              </div>
-              <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                <Label htmlFor="hasGarage" className="cursor-pointer">Possui garagem</Label>
+              </label>
+              <label 
+                htmlFor="hasGarage" 
+                className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
+              >
+                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Possui garagem
+                </span>
                 <Switch
                   id="hasGarage"
                   checked={formData.hasGarage}
                   onCheckedChange={(checked) => handleInputChange("hasGarage", checked)}
                 />
-              </div>
-              <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                <Label htmlFor="acceptsChildren" className="cursor-pointer">Aceita crianças</Label>
+              </label>
+              <label 
+                htmlFor="acceptsChildren" 
+                className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
+              >
+                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Aceita crianças
+                </span>
                 <Switch
                   id="acceptsChildren"
                   checked={formData.acceptsChildren}
                   onCheckedChange={(checked) => handleInputChange("acceptsChildren", checked)}
                 />
-              </div>
+              </label>
             </div>
           </CardContent>
         </Card>
@@ -844,7 +859,7 @@ export default function PropertyForm() {
         {/* Valores */}
         <Card className="animate-fade-in" style={{ animationDelay: "200ms" }}>
           <CardHeader>
-            <div className="flex items-end gap-2">
+            <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Valores</CardTitle>
             </div>
@@ -897,38 +912,58 @@ export default function PropertyForm() {
             <div>
               <Label className="mb-3 block">Incluso no valor</Label>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                  <Label htmlFor="includesWater" className="cursor-pointer">Água</Label>
+                <label 
+                  htmlFor="includesWater" 
+                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
+                >
+                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Água
+                  </span>
                   <Switch
                     id="includesWater"
                     checked={formData.includesWater}
                     onCheckedChange={(checked) => handleInputChange("includesWater", checked)}
                   />
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                  <Label htmlFor="includesElectricity" className="cursor-pointer">Luz</Label>
+                </label>
+                <label 
+                  htmlFor="includesElectricity" 
+                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
+                >
+                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Luz
+                  </span>
                   <Switch
                     id="includesElectricity"
                     checked={formData.includesElectricity}
                     onCheckedChange={(checked) => handleInputChange("includesElectricity", checked)}
                   />
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                  <Label htmlFor="includesInternet" className="cursor-pointer">Internet</Label>
+                </label>
+                <label 
+                  htmlFor="includesInternet" 
+                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
+                >
+                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Internet
+                  </span>
                   <Switch
                     id="includesInternet"
                     checked={formData.includesInternet}
                     onCheckedChange={(checked) => handleInputChange("includesInternet", checked)}
                   />
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                  <Label htmlFor="includesGas" className="cursor-pointer">Gás</Label>
+                </label>
+                <label 
+                  htmlFor="includesGas" 
+                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
+                >
+                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Gás
+                  </span>
                   <Switch
                     id="includesGas"
                     checked={formData.includesGas}
                     onCheckedChange={(checked) => handleInputChange("includesGas", checked)}
                   />
-                </div>
+                </label>
               </div>
             </div>
           </CardContent>
@@ -937,7 +972,7 @@ export default function PropertyForm() {
         {/* Observações */}
         <Card className="animate-fade-in" style={{ animationDelay: "300ms" }}>
           <CardHeader>
-            <div className="flex items-end gap-2">
+            <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Observações</CardTitle>
             </div>

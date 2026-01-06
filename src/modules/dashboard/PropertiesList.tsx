@@ -322,13 +322,13 @@ export default function PropertiesList({ initialData = [], initialLoading = true
             {(statusFilter !== "todos" || neighborhoodFilter !== "todos" || searchQuery !== "") && (
               <Button
                 variant="ghost"
-                size="sm"
+                size="default"
                 onClick={() => {
                   setStatusFilter("todos");
                   setNeighborhoodFilter("todos");
                   setSearchQuery("");
                 }}
-                className="text-muted-foreground hover:text-red-500 w-full lg:w-auto col-span-1 sm:col-span-2 lg:col-span-1"
+                className="text-red-500 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto col-span-1 sm:col-span-2 lg:col-span-1"
               >
                 <XCircle className="h-4 w-4 mr-1" />
                 Limpar

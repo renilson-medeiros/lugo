@@ -176,7 +176,7 @@ function StatusItem({
     const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
     
     return (
-        <div className="flex items-center justify-between p-4 rounded-lg border border-transparent hover:border-blue-100 hover:bg-blue-50/30 transition-all duration-300">
+        <div className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-blue-100 hover:bg-blue-50/30 transition-all duration-300">
             <div className="flex items-center gap-4">
                 <div className={cn("flex h-12 w-12 items-center justify-center rounded-lg", color)}>
                     <Icon className="h-6 w-6" />

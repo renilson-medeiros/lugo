@@ -160,7 +160,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
         {/* Profile Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-end gap-2 font-display">
+            <CardTitle className="flex items-center gap-2 font-display">
               <User className="h-5 w-5 text-blue-600" aria-hidden="true" />
               Dados pessoais
             </CardTitle>
@@ -249,7 +249,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
         {/* Account Info */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-end gap-2 font-display">
+            <CardTitle className="flex items-center gap-2 font-display">
               <CreditCard className="h-5 w-5 text-blue-600" aria-hidden="true" />
               Informações da conta
             </CardTitle>
@@ -293,7 +293,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
         {/* Notifications */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-end gap-2 font-display">
+            <CardTitle className="flex items-center gap-2 font-display">
               <Bell className="h-5 w-5 text-blue-600" aria-hidden="true" />
               Notificações
             </CardTitle>

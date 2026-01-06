@@ -295,14 +295,14 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
             {(tipoFilter !== "todos" || mesFilter !== "todos" || anoFilter !== "todos" || searchQuery !== "") && (
               <Button
                 variant="ghost"
-                size="sm"
+                size="default"
                 onClick={() => {
                   setTipoFilter("todos");
                   setMesFilter("todos");
                   setAnoFilter("todos");
                   setSearchQuery("");
                 }}
-                className="text-muted-foreground hover:text-red-500 w-full lg:w-auto col-span-1 lg:col-span-1"
+                className="text-red-500 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto col-span-1 lg:col-span-1"
               >
                 <XCircle className="h-4 w-4 mr-1" />
                 Limpar
