@@ -353,90 +353,114 @@ export default function ReceiptForm() {
 
     setIsSubmitting(true);
 
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('TIMEOUT_EXCEEDED')), 30000)
+    );
+
     try {
-      // 1. Preparar dados do PDF
-      const pdfData = {
-        referenceMonth: formData.referenceMonth,
-        referenceYear: formData.referenceYear,
-        tenantName: formData.tenantName,
-        tenantCpf: formData.tenantCpf,
-        propertyName: formData.propertyName,
-        propertyAddress: formData.propertyAddress,
-        rentValue: formData.rentValue,
-        condoValue: formData.condoValue,
-        iptuValue: formData.iptuValue,
-        otherValue: formData.otherValue,
-        totalValue: `R$ ${calculateTotal().toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`,
-        paymentDate: (formData.paymentDate || new Date()).toISOString(),
-        observations: formData.observations,
-      };
-
-      // 2. Chamar API para gerar PDF
-      const response = await fetch('/api/pdf/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: pdfData,
-          userId: user.id,
-          propertyId: formData.propertyId,
-          tenantId: formData.tenantId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao gerar PDF');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        throw new Error('SESSION_EXPIRED');
       }
 
-      const result = await response.json();
+      const saveAction = async () => {
+        // 1. Preparar dados do PDF
+        const pdfData = {
+          referenceMonth: formData.referenceMonth,
+          referenceYear: formData.referenceYear,
+          tenantName: formData.tenantName,
+          tenantCpf: formData.tenantCpf,
+          propertyName: formData.propertyName,
+          propertyAddress: formData.propertyAddress,
+          rentValue: formData.rentValue,
+          condoValue: formData.condoValue,
+          iptuValue: formData.iptuValue,
+          otherValue: formData.otherValue,
+          totalValue: `R$ ${calculateTotal().toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`,
+          paymentDate: (formData.paymentDate || new Date()).toISOString(),
+          observations: formData.observations,
+        };
 
-      if (!result.success) {
-        throw new Error(result.error || 'Erro ao gerar PDF');
-      }
-
-      const { pdfUrl, pdfBuffer } = result;
-      setCurrentPdfUrl(pdfUrl);
-
-      // 3. Salvar no banco com URL do PDF
-      const { error } = await supabase
-        .from('comprovantes')
-        .insert({
-          inquilino_id: formData.tenantId,
-          imovel_id: formData.propertyId,
-          tipo: 'pagamento',
-          mes_referencia: `${formData.referenceYear}-${formData.referenceMonth.padStart(2, '0')}-01`,
-          valor: calculateTotal(),
-          descricao: formData.observations,
-          pdf_url: pdfUrl,
-          created_at: new Date().toISOString()
+        // 2. Chamar API para gerar PDF
+        const response = await fetch('/api/pdf/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: pdfData,
+            userId: user.id,
+            propertyId: formData.propertyId,
+            tenantId: formData.tenantId,
+          }),
         });
 
-      if (error) throw error;
+        if (!response.ok) {
+          throw new Error('Erro ao gerar PDF');
+        }
 
-      toast.success("Comprovante gerado com sucesso!", {
-        description: "O PDF foi gerado e salvo no histórico.",
-      });
+        const result = await response.json();
 
-      // 4. Auto-download do PDF
-      const blob = new Blob([new Uint8Array(pdfBuffer)], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `comprovante-${formData.tenantName}-${months[parseInt(formData.referenceMonth) - 1]}-${formData.referenceYear}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+        if (!result.success) {
+          throw new Error(result.error || 'Erro ao gerar PDF');
+        }
+
+        const { pdfUrl, pdfBuffer } = result;
+        setCurrentPdfUrl(pdfUrl);
+
+        // 3. Salvar no banco com URL do PDF
+        const { error } = await supabase
+          .from('comprovantes')
+          .insert({
+            inquilino_id: formData.tenantId,
+            imovel_id: formData.propertyId,
+            tipo: 'pagamento',
+            mes_referencia: `${formData.referenceYear}-${formData.referenceMonth.padStart(2, '0')}-01`,
+            valor: calculateTotal(),
+            descricao: formData.observations,
+            pdf_url: pdfUrl,
+            created_at: new Date().toISOString()
+          });
+
+        if (error) throw error;
+
+        toast.success("Comprovante gerado com sucesso!", {
+          description: "O PDF foi gerado e salvo no histórico.",
+        });
+
+        // 4. Auto-download do PDF
+        const blob = new Blob([new Uint8Array(pdfBuffer)], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `comprovante-${formData.tenantName}-${months[parseInt(formData.referenceMonth) - 1]}-${formData.referenceYear}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      };
+
+      await Promise.race([saveAction(), timeoutPromise]);
 
       setTimeout(() => {
         router.push("/dashboard/comprovantes");
       }, 1500);
     } catch (error: any) {
       console.error('Erro ao salvar comprovante:', error);
-      toast.error('Erro ao salvar comprovante', {
-        description: error.message || 'Ocorreu um erro inesperado.'
-      });
+
+      if (error.message === 'TIMEOUT_EXCEEDED') {
+        toast.error('A conexão está lenta e o tempo limite foi atingido.', {
+          description: 'O PDF pode demorar um pouco mais para gerar. Tente novamente.'
+        });
+      } else if (error.message === 'SESSION_EXPIRED') {
+        toast.error('Sua sessão expirou por inatividade.', {
+          description: 'Por favor, recarregue a página ou faça login novamente.'
+        });
+      } else {
+        toast.error('Erro ao salvar comprovante', {
+          description: error.message || 'Ocorreu um erro inesperado.'
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }

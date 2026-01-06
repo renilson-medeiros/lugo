@@ -225,89 +225,106 @@ export default function TenantForm() {
 
     setIsSubmitting(true);
 
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('TIMEOUT_EXCEEDED')), 20000)
+    );
+
     try {
-      const rentAmount = parseFloat(formData.rentValue.replace(/\D/g, "")) / 100 || 0;
-      const tenantData = {
-        nome_completo: formData.name,
-        cpf: formData.cpf.replace(/\D/g, ""),
-        telefone: formData.phone.replace(/\D/g, ""),
-        email: formData.email,
-        dia_vencimento: parseInt(formData.rentDay),
-        data_inicio: formData.startDate ? new Date(formData.startDate.getTime() - (formData.startDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : null,
-        data_fim: formData.endDate ? new Date(formData.endDate.getTime() - (formData.endDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : null,
-        valor_aluguel: rentAmount,
-        rg: formData.rg,
-        observacoes: formData.observations,
-        status: 'ativo',
-        fotos_contrato: [] as string[]
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        throw new Error('SESSION_EXPIRED');
+      }
+
+      const saveAction = async () => {
+        const rentAmount = parseFloat(formData.rentValue.replace(/\D/g, "")) / 100 || 0;
+        const tenantData = {
+          nome_completo: formData.name,
+          cpf: formData.cpf.replace(/\D/g, ""),
+          telefone: formData.phone.replace(/\D/g, ""),
+          email: formData.email,
+          dia_vencimento: parseInt(formData.rentDay),
+          data_inicio: formData.startDate ? new Date(formData.startDate.getTime() - (formData.startDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : null,
+          data_fim: formData.endDate ? new Date(formData.endDate.getTime() - (formData.endDate.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : null,
+          valor_aluguel: rentAmount,
+          rg: formData.rg,
+          observacoes: formData.observations,
+          status: 'ativo',
+          fotos_contrato: [] as string[]
+        };
+
+        // Upload de fotos do contrato
+        const uploadedContractUrls: string[] = [];
+        if (user && propertyId) {
+          for (const photo of contractPhotos) {
+            const fileExt = photo.name.split('.').pop();
+            const fileName = `${user.id}/${propertyId}/contracts/${Date.now()}-${Math.random()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+              .from('imoveis-fotos')
+              .upload(fileName, photo);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+              .from('imoveis-fotos')
+              .getPublicUrl(fileName);
+
+            uploadedContractUrls.push(publicUrl);
+          }
+        }
+
+        tenantData.fotos_contrato = [...existingContractPhotos, ...uploadedContractUrls];
+
+        if (isEditMode && tenantId) {
+          const { error: updateError } = await supabase
+            .from('inquilinos')
+            .update(tenantData)
+            .eq('id', tenantId);
+
+          if (updateError) throw updateError;
+
+          toast.success("Inquilino atualizado com sucesso!");
+        } else {
+          const { data: tenant, error: tenantError } = await supabase
+            .from('inquilinos')
+            .insert({
+              ...tenantData,
+              imovel_id: propertyId,
+            })
+            .select()
+            .single();
+
+          if (tenantError) throw tenantError;
+
+          const { error: propertyError } = await supabase
+            .from('imoveis')
+            .update({ status: 'alugado' })
+            .eq('id', propertyId);
+
+          if (propertyError) throw propertyError;
+
+          toast.success("Inquilino cadastrado com sucesso!", {
+            description: "O inquilino foi vinculado ao imóvel.",
+          });
+        }
       };
 
-      // Upload de fotos do contrato
-      const uploadedContractUrls: string[] = [];
-      if (user && propertyId) {
-        // Se estiver trocando de inquilino ou editando e adicionando novas fotos, 
-        // o ideal seria limpar o que existe se o usuário pediu, mas por agora vamos focar no upload estruturado.
-
-        for (const photo of contractPhotos) {
-          const fileExt = photo.name.split('.').pop();
-          const fileName = `${user.id}/${propertyId}/contracts/${Date.now()}-${Math.random()}.${fileExt}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('imoveis-fotos') // Reutilizando o bucket, mas em pasta diferente
-            .upload(fileName, photo);
-
-          if (uploadError) throw uploadError;
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('imoveis-fotos')
-            .getPublicUrl(fileName);
-
-          uploadedContractUrls.push(publicUrl);
-        }
-      }
-
-      tenantData.fotos_contrato = [...existingContractPhotos, ...uploadedContractUrls];
-
-      if (isEditMode && tenantId) {
-        // Atualizar inquilino existente
-        const { error: updateError } = await supabase
-          .from('inquilinos')
-          .update(tenantData)
-          .eq('id', tenantId);
-
-        if (updateError) throw updateError;
-
-        toast.success("Inquilino atualizado com sucesso!");
-      } else {
-        // Criar novo inquilino
-        const { data: tenant, error: tenantError } = await supabase
-          .from('inquilinos')
-          .insert({
-            ...tenantData,
-            imovel_id: propertyId,
-          })
-          .select()
-          .single();
-
-        if (tenantError) throw tenantError;
-
-        // Atualizar o status do imóvel para 'alugado'
-        const { error: propertyError } = await supabase
-          .from('imoveis')
-          .update({ status: 'alugado' })
-          .eq('id', propertyId);
-
-        if (propertyError) throw propertyError;
-
-        toast.success("Inquilino cadastrado com sucesso!", {
-          description: "O inquilino foi vinculado ao imóvel.",
-        });
-      }
-
+      await Promise.race([saveAction(), timeoutPromise]);
       router.push("/dashboard/inquilinos");
     } catch (error: any) {
       console.error('Erro ao salvar inquilino:', error);
-      toast.error('Erro ao salvar inquilino. Tente novamente.');
+      
+      if (error.message === 'TIMEOUT_EXCEEDED') {
+        toast.error('A conexão está lenta e o tempo limite foi atingido.', {
+          description: 'Verifique sua internet ou tente novamente.'
+        });
+      } else if (error.message === 'SESSION_EXPIRED') {
+        toast.error('Sua sessão expirou por inatividade.', {
+          description: 'Por favor, recarregue a página ou faça login novamente.'
+        });
+      } else {
+        toast.error('Erro ao salvar inquilino. Tente novamente.');
+      }
     } finally {
       setIsSubmitting(false);
     }

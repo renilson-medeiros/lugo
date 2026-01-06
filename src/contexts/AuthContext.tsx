@@ -47,6 +47,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     init();
 
+    // Verificador proativo de sessão (roda a cada 10 minutos)
+    // Isso evita que o token expire enquanto o usuário preenche formulários longos
+    const sessionCheckInterval = setInterval(async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        console.debug('[Auth] Sessão validada/renovada proativamente');
+      }
+    }, 10 * 60 * 1000);
+
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user || null;
@@ -58,12 +67,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfile(null);
         }
 
-        // Só remove o loading após a primeira tentativa de carregar o perfil
         setLoading(false);
       }
     );
 
     return () => {
+      clearInterval(sessionCheckInterval);
       listener.subscription.unsubscribe();
     };
   }, []);

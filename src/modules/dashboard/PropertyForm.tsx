@@ -300,12 +300,93 @@ export default function PropertyForm() {
 
     setIsSubmitting(true);
 
-    try {
-      let propertyId = id;
+    // 1. Criar um Timer de Segurança (Timeout de 20 segundos)
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('TIMEOUT_EXCEEDED')), 20000)
+    );
 
-      // Se não for edição, precisamos criar o registro primeiro para ter o ID
-      if (!isEditing) {
-        const initialPropertyData = {
+    try {
+      // 2. Validação proativa de sessão antes de começar
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        throw new Error('SESSION_EXPIRED');
+      }
+
+      // Função principal de salvamento envolta em Promise para o race
+      const saveAction = async () => {
+        let propertyId = id;
+
+        // Se não for edição, precisamos criar o registro primeiro para ter o ID
+        if (!isEditing) {
+          const initialPropertyData = {
+            proprietario_id: user.id,
+            endereco_cep: formData.cep,
+            endereco_rua: formData.street,
+            endereco_numero: formData.number,
+            endereco_complemento: formData.complement || null,
+            endereco_bairro: formData.neighborhood,
+            endereco_cidade: formData.city,
+            endereco_estado: formData.state,
+            titulo: formData.title,
+            tipo: formData.type as 'casa' | 'apartamento' | 'comercial' | 'terreno',
+            comodos: formData.rooms,
+            max_pessoas: formData.maxPeople ? parseInt(formData.maxPeople) : null,
+            aceita_pets: formData.acceptsPets,
+            tem_garagem: formData.hasGarage,
+            aceita_criancas: formData.acceptsChildren,
+            valor_aluguel: parseCurrencyToNumber(formData.rentValue),
+            valor_condominio: formData.condoValue ? parseCurrencyToNumber(formData.condoValue) : null,
+            valor_iptu: formData.iptuValue ? parseCurrencyToNumber(formData.iptuValue) : null,
+            valor_taxa_servico: formData.serviceValue ? parseCurrencyToNumber(formData.serviceValue) : null,
+            inclui_agua: formData.includesWater,
+            inclui_luz: formData.includesElectricity,
+            inclui_internet: formData.includesInternet,
+            inclui_gas: formData.includesGas,
+            descricao: formData.observations || null,
+            status: 'disponivel' as 'disponivel' | 'alugado' | 'manutencao',
+            fotos: [], // Temporário
+          };
+
+          const { data: newProperty, error: insertError } = await supabase
+            .from('imoveis')
+            .insert([initialPropertyData])
+            .select()
+            .single();
+
+          if (insertError) throw insertError;
+          propertyId = newProperty.id;
+        }
+
+        // Upload de novas fotos
+        const uploadedPhotosUrls: string[] = [];
+
+        for (const photo of photos) {
+          const fileExt = photo.name.split('.').pop();
+          const fileName = `${user.id}/${propertyId}/photos/${Date.now()}-${Math.random()}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('imoveis-fotos')
+            .upload(fileName, photo);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('imoveis-fotos')
+            .getPublicUrl(fileName);
+
+          uploadedPhotosUrls.push(publicUrl);
+        }
+
+        // Combinar fotos existentes com as novas
+        const allPhotos = [...existingPhotos, ...uploadedPhotosUrls];
+
+        // Validar quantidade de fotos
+        if (allPhotos.length < 3) {
+          toast.error('Mínimo de 3 fotos necessárias');
+          throw new Error('MIN_PHOTOS_REQUIRED');
+        }
+
+        const finalPropertyData = {
           proprietario_id: user.id,
           endereco_cep: formData.cep,
           endereco_rua: formData.street,
@@ -330,87 +411,20 @@ export default function PropertyForm() {
           inclui_internet: formData.includesInternet,
           inclui_gas: formData.includesGas,
           descricao: formData.observations || null,
-          status: 'disponivel' as 'disponivel' | 'alugado' | 'manutencao',
-          fotos: [], // Temporário
+          fotos: allPhotos,
         };
 
-        const { data: newProperty, error: insertError } = await supabase
+        // Atualizar o registro final
+        const { error: updateError } = await supabase
           .from('imoveis')
-          .insert([initialPropertyData])
-          .select()
-          .single();
+          .update(finalPropertyData)
+          .eq('id', propertyId);
 
-        if (insertError) throw insertError;
-        propertyId = newProperty.id;
-      }
-
-      // Upload de novas fotos
-      const uploadedPhotosUrls: string[] = [];
-
-      for (const photo of photos) {
-        const fileExt = photo.name.split('.').pop();
-        const fileName = `${user.id}/${propertyId}/photos/${Date.now()}-${Math.random()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('imoveis-fotos')
-          .upload(fileName, photo);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('imoveis-fotos')
-          .getPublicUrl(fileName);
-
-        uploadedPhotosUrls.push(publicUrl);
-      }
-
-      // Combinar fotos existentes com as novas
-      const allPhotos = [...existingPhotos, ...uploadedPhotosUrls];
-
-      // Validar quantidade de fotos
-      if (allPhotos.length < 3) {
-        toast.error('Mínimo de 3 fotos necessárias');
-        // Se criou o registro agora mas deu erro nas fotos, poderíamos deletar, 
-        // mas é melhor apenas avisar o usuário que precisa adicionar mais fotos.
-        setIsSubmitting(false);
-        return;
-      }
-
-      const finalPropertyData = {
-        proprietario_id: user.id,
-        endereco_cep: formData.cep,
-        endereco_rua: formData.street,
-        endereco_numero: formData.number,
-        endereco_complemento: formData.complement || null,
-        endereco_bairro: formData.neighborhood,
-        endereco_cidade: formData.city,
-        endereco_estado: formData.state,
-        titulo: formData.title,
-        tipo: formData.type as 'casa' | 'apartamento' | 'comercial' | 'terreno',
-        comodos: formData.rooms,
-        max_pessoas: formData.maxPeople ? parseInt(formData.maxPeople) : null,
-        aceita_pets: formData.acceptsPets,
-        tem_garagem: formData.hasGarage,
-        aceita_criancas: formData.acceptsChildren,
-        valor_aluguel: parseCurrencyToNumber(formData.rentValue),
-        valor_condominio: formData.condoValue ? parseCurrencyToNumber(formData.condoValue) : null,
-        valor_iptu: formData.iptuValue ? parseCurrencyToNumber(formData.iptuValue) : null,
-        valor_taxa_servico: formData.serviceValue ? parseCurrencyToNumber(formData.serviceValue) : null,
-        inclui_agua: formData.includesWater,
-        inclui_luz: formData.includesElectricity,
-        inclui_internet: formData.includesInternet,
-        inclui_gas: formData.includesGas,
-        descricao: formData.observations || null,
-        fotos: allPhotos,
+        if (updateError) throw updateError;
       };
 
-      // Atualizar o registro (seja o que acabamos de criar ou o existente)
-      const { error: updateError } = await supabase
-        .from('imoveis')
-        .update(finalPropertyData)
-        .eq('id', propertyId);
-
-      if (updateError) throw updateError;
+      // 3. Corrida contra o tempo
+      await Promise.race([saveAction(), timeoutPromise]);
 
       if (isEditing) {
         toast.success("Imóvel atualizado com sucesso!");
@@ -423,7 +437,20 @@ export default function PropertyForm() {
       router.push("/dashboard/imoveis");
     } catch (error: any) {
       console.error('Erro ao salvar imóvel:', error);
-      toast.error('Erro ao salvar imóvel. Tente novamente.');
+
+      if (error.message === 'TIMEOUT_EXCEEDED') {
+        toast.error('A conexão está lenta e o tempo limite foi atingido.', {
+          description: 'Verifique sua internet ou tente novamente.'
+        });
+      } else if (error.message === 'SESSION_EXPIRED') {
+        toast.error('Sua sessão expirou por inatividade.', {
+          description: 'Por favor, recarregue a página ou faça login novamente.'
+        });
+      } else if (error.message === 'MIN_PHOTOS_REQUIRED') {
+        // Já disparou toast acima
+      } else {
+        toast.error('Erro ao salvar imóvel. Tente novamente.');
+      }
     } finally {
       setIsSubmitting(false);
     }
