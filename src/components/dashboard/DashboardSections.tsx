@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, TrendingUp, AlertCircle, Clock, Plus } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import CombinedDashboardClient from "./CombinedDashboardClient";
 
 // --- Stats Section ---
 export async function StatsSection({ userId }: { userId: string }) {
@@ -57,6 +58,21 @@ export async function StatsSection({ userId }: { userId: string }) {
 import { Users, Receipt } from "lucide-react";
 const UsersSectionIcon = Users;
 const ReceiptSectionIcon = Receipt;
+
+// --- Combined Revenue & Occupancy Section ---
+export async function CombinedRevenueOccupancySection({ userId }: { userId: string }) {
+    const [revenueData, occupancyData] = await Promise.all([
+        fetchRevenueData(userId),
+        fetchOccupancyData(userId)
+    ]);
+
+    return (
+        <CombinedDashboardClient 
+            revenueData={revenueData} 
+            occupancyData={occupancyData} 
+        />
+    );
+}
 
 // --- Revenue Section (Original Chart) ---
 export async function RevenueSection({ userId }: { userId: string }) {
@@ -130,6 +146,25 @@ async function fetchRevenueData(userId: string) {
     });
 
     return Object.entries(months).map(([month, total]) => ({ month, total }));
+}
+
+async function fetchOccupancyData(userId: string) {
+    const supabase = await createClient();
+    const { data: imoveis } = await supabase
+        .from('imoveis')
+        .select('status')
+        .eq('proprietario_id', userId);
+
+    const total = imoveis?.length || 0;
+    const stats = {
+        total,
+        alugado: imoveis?.filter(i => i.status === 'alugado').length || 0,
+        disponivel: imoveis?.filter(i => i.status === 'disponivel').length || 0,
+        manutencao: imoveis?.filter(i => i.status === 'manutencao').length || 0,
+        rate: total > 0 ? Math.round((imoveis?.filter(i => i.status === 'alugado').length || 0) / total * 100) : 0
+    };
+
+    return stats;
 }
 
 // --- Occupancy Rate Section ---

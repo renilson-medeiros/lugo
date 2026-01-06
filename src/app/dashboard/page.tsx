@@ -4,10 +4,9 @@ import { Suspense } from "react";
 import DashboardClientShell from "./DashboardClientShell";
 import { 
     StatsSection, 
-    RevenueSection, 
+    CombinedRevenueOccupancySection, 
     AlertsSection, 
-    PropertiesPreviewSection,
-    OccupancyRateSection
+    PropertiesPreviewSection
 } from "@/components/dashboard/DashboardSections";
 import { 
     StatsSkeleton, 
@@ -36,14 +35,11 @@ export default async function DashboardPage() {
 
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                 <Suspense fallback={<RevenueSkeleton />}>
-                    <RevenueSection userId={user.id} />
+                    <CombinedRevenueOccupancySection userId={user.id} />
                 </Suspense>
 
                 <div className="space-y-6">
                     <CardDica />
-                    <Suspense fallback={<OccupancyRateSkeleton />}>
-                        <OccupancyRateSection userId={user.id} />
-                    </Suspense>
                     <Suspense fallback={<AlertsSkeleton />}>
                         <AlertsSection userId={user.id} />
                     </Suspense>

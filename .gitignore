@@ -23,17 +23,6 @@
 /build
 build.log
 
-# documentation & marketing
-/docs/
-/supabase/migrations/README.md
-GUIA_USO.md
-SUPABASE_EMAIL_CONFIG.md
-SECURITY_AUDIT.md
-DIAGNOSTICO_FORMS.md
-
-# data & tests
-*.txt
-
 # misc
 .DS_Store
 *.pem
