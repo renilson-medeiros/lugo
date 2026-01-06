@@ -448,7 +448,7 @@ const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate }: 
         </span>
       </div>
       <CardContent className="p-4">
-        <h3 className="font-display font-semibold">{property.title}</h3>
+        <h3 className="font-display font-semibold text-ellipsis truncate">{property.title}</h3>
         <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
           <MapPin className="h-3 w-3" aria-hidden="true" />
           <span className="line-clamp-1">{property.address}</span>
