@@ -63,7 +63,7 @@ export default function Landing() {
 
             <main className="flex-1 ">
                 {/* Hero Section */}
-                <section className="relative overflow-hidden bg-linear-to-b from-accent/50 to-blue-50/25 py-20 lg:py-32 min-h-[80vh]">
+                <section className="relative flex flex-col items-center justify-center overflow-hidden bg-linear-to-b from-accent/50 to-blue-50/25 py-20 lg:py-32 md:min-h-screen">
                     <div className="container px-6">
                         <div className="mx-auto max-w-3xl text-center">
                             <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
@@ -112,11 +112,11 @@ export default function Landing() {
                             {features.map((feature, index) => (
                                 <Card
                                     key={feature.title}
-                                    className="group border-border/50 bg-card/50 transition-all duration-300 hover:border-blue-100 hover:shadow-lg hover:shadow-primary/5"
+                                    className="group border-border bg-card/50 transition-all duration-300 hover:border-blue-100 hover:shadow-sm"
                                     style={{ animationDelay: `${index * 100}ms` }}
                                 >
                                     <CardContent className="p-6">
-                                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-primary/10">
+                                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-blue-500/10">
                                             <feature.icon className="h-6 w-6 text-blue-600 " aria-hidden="true" />
                                         </div>
                                         <h3 className="font-display text-lg font-semibold">{feature.title}</h3>
@@ -189,7 +189,7 @@ export default function Landing() {
                                 Junte-se a proprietários que já estão transformando sua rotina com o Lugo.
                             </p>
                             <Link href="/registro" className="mt-8 inline-block">
-                                <Button size="lg" className="gap-2 text-base bg-blue-600 hover:bg-blue-600">
+                                <Button size="lg" className="gap-2 text-base bg-blue-600 hover:bg-blue-500">
                                     Criar minha conta
                                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                                 </Button>
