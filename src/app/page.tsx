@@ -86,7 +86,7 @@ export default function Landing() {
                                 </Link>
                             </div>
                             <p className="mt-4 text-sm text-muted-foreground animate-fade-in [animation-delay:300ms]">
-                                Plano Profissional • <span className="font-semibold text-primary">R$ 29,90/mês</span>
+                                Plano Profissional • <span className="font-semibold text-primary">R$ 9,90/mês</span>
                             </p>
                         </div>
                     </div>
@@ -156,7 +156,7 @@ export default function Landing() {
                                             <p className="text-sm font-medium text-muted/80 uppercase tracking-wider">Acesso Profissional</p>
                                             <div className="mt-2 flex items-baseline justify-center gap-1">
                                                 <span className="text-sm text-muted/80">R$</span>
-                                                <span className="font-display text-5xl font-bold text-background">29,90</span>
+                                                <span className="font-display text-5xl font-bold text-background">9,90</span>
                                                 <span className="text-muted/80">/mês</span>
                                             </div>
                                             <p className="mt-4 text-sm text-muted/80">

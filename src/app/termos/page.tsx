@@ -34,7 +34,7 @@ export default function TermsPage() {
                             <ul className="space-y-2 text-sm text-blue-900/80">
                                 <li>• O Lugo é uma ferramenta de gestão, não uma imobiliária.</li>
                                 <li>• Você é o único responsável pelos seus imóveis e negociações.</li>
-                                <li>• A plataforma funciona via assinatura (R$ 29,90/mês), sem comissões sobre o aluguel.</li>
+                                <li>• A plataforma funciona via assinatura (R$ 9,90/mês), sem comissões sobre o aluguel.</li>
                                 <li>• Seus dados são protegidos, mas as informações públicas do imóvel são acessíveis via link.</li>
                             </ul>
                         </div>

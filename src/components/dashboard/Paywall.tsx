@@ -27,7 +27,7 @@ export function Paywall() {
                 <CardContent className="p-8">
                     <div className="grid md:grid-cols-2 gap-8 items-center">
                         <div className="space-y-4">
-                            <h3 className="font-bold text-lg">Continue gerenciando seus imóveis por apenas R$ 29,90/mês</h3>
+                            <h3 className="font-bold text-lg">Continue gerenciando seus imóveis por apenas R$ 9,90/mês</h3>
                             <ul className="space-y-3">
                                 {[
                                     "Imóveis Ilimitados",

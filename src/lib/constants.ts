@@ -1,5 +1,5 @@
-export const PLAN_PRICE = 29.90;
-export const PLAN_PRICE_FORMATTED = "R$ 29,90/mês";
+export const PLAN_PRICE = 9.90;
+export const PLAN_PRICE_FORMATTED = "R$ 9,90/mês";
 export const TRIAL_DAYS = 7;
 
 export const LINKS = {

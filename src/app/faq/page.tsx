@@ -34,7 +34,7 @@ export default function FAQPage() {
         },
         {
             question: "Como funciona o pagamento?",
-            answer: "A plataforma funciona com uma assinatura mensal simples de R$ 29,90. Cobramos apenas pelo uso das ferramentas de gestão, sem nenhuma taxa ou comissão sobre o valor do seu aluguel."
+            answer: "A plataforma funciona com uma assinatura mensal simples de R$ 9,90. Cobramos apenas pelo uso das ferramentas de gestão, sem nenhuma taxa ou comissão sobre o valor do seu aluguel."
         },
         {
             question: "Preciso baixar algum aplicativo?",

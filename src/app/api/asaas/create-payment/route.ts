@@ -43,7 +43,7 @@ export async function POST() {
             return NextResponse.json({ error: `Erro na API do Asaas (Cliente): ${asaasError.message}` }, { status: 502 });
         }
 
-        // 3. Cria pagamento PIX (R$ 29,90)
+        // 3. Cria pagamento PIX (R$ 9,90)
         console.log('[CreatePayment] Criando cobrança PIX para customer:', customer.id);
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 3);
@@ -53,7 +53,7 @@ export async function POST() {
             payment = await createPixPayment({
                 customer: customer.id,
                 billingType: 'PIX',
-                value: 29.90,
+                value: 9.90,
                 dueDate: dueDate.toISOString().split('T')[0],
                 description: 'Assinatura Lugo Profissional',
                 externalReference: user.id

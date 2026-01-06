@@ -220,7 +220,7 @@ export default function CheckoutClient() {
                                 <CardContent className="space-y-4">
                                     <div className="flex items-center justify-between py-2 border-b border-border/50">
                                         <span className="text-muted-foreground">Assinatura Mensal</span>
-                                        <span className="font-semibold text-lg">R$ 29,90</span>
+                                        <span className="font-semibold text-lg">R$ 9,90</span>
                                     </div>
                                     <div className="space-y-2">
                                         {[
@@ -238,7 +238,7 @@ export default function CheckoutClient() {
                                     </div>
                                     <div className="pt-4 flex items-center justify-between text-xl font-bold text-blue-600">
                                         <span>Total</span>
-                                        <span>R$ 29,90</span>
+                                        <span>R$ 9,90</span>
                                     </div>
                                 </CardContent>
                             </Card>

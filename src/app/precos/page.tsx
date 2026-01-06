@@ -60,7 +60,7 @@ export default function PricingPage() {
                                 <h3 className="font-display text-2xl font-bold">Profissional</h3>
                                 <p className="text-blue-100 mt-2">A solução completa para quem busca escala e controle total.</p>
                                 <div className="mt-6 flex items-baseline">
-                                    <span className="text-4xl font-bold">R$ 29,90</span>
+                                    <span className="text-4xl font-bold">R$ 9,90</span>
                                     <span className="ml-2 text-blue-200">/mês</span>
                                 </div>
                             </div>
