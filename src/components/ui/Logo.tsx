@@ -17,7 +17,7 @@ export function Logo({ className, iconOnly = false, size = "md" }: LogoProps) {
             text: "text-xl",
         },
         lg: {
-            box: "h-12 w-12 rounded-xl text-2xl",
+            box: "h-12 w-12 rounded-lg text-2xl",
             text: "text-2xl",
         },
     };

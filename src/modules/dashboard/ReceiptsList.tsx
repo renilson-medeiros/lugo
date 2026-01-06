@@ -323,7 +323,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-600">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-blue-600">
                         <Receipt className="h-6 w-6" aria-hidden="true" />
                       </div>
                       <div>

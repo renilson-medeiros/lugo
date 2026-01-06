@@ -9,7 +9,7 @@ export function StatsSkeleton() {
       {[1, 2, 3].map((i) => (
         <Card key={i}>
           <CardContent className="flex items-center gap-4 p-4 sm:p-6">
-            <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl" />
+            <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg" />
             <div className="space-y-2">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-6 w-12" />
@@ -109,7 +109,7 @@ export function DashboardSkeleton() {
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         <RevenueSkeleton />
         <div className="space-y-6">
-          <Skeleton className="h-24 w-full rounded-xl" />
+          <Skeleton className="h-24 w-full rounded-lg" />
           <AlertsSkeleton />
         </div>
       </div>

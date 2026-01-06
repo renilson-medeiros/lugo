@@ -450,7 +450,7 @@ export default function PropertyDetailClient() {
                 <section className="container px-4 pb-8" aria-label="Galeria de fotos">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-[300px] md:h-[500px] lg:h-[580px]">
                         {/* Main Carousel (Left) */}
-                        <div className="lg:col-span-3 relative rounded-2xl overflow-hidden bg-muted shadow-xl border border-black/5 h-full">
+                        <div className="lg:col-span-3 relative rounded-lg overflow-hidden bg-muted shadow-sm border border-black/5 h-full">
                             <Carousel
                                 setApi={setMainApi}
                                 className="w-full h-full group"
@@ -527,7 +527,7 @@ export default function PropertyDetailClient() {
                                             onClick={() => mainApi?.scrollTo(index)}
                                         >
                                             <div className={cn(
-                                                "relative h-full w-full overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer",
+                                                "relative h-full w-full overflow-hidden rounded-lg border-2 transition-all duration-300 cursor-pointer",
                                                 selectedIndex === index
                                                     ? "border-blue-500 shadow-lg opacity-100"
                                                     : "border-transparent opacity-40 hover:opacity-100"
@@ -579,7 +579,7 @@ export default function PropertyDetailClient() {
                                             <img
                                                 src={image}
                                                 alt={`Foto ${index + 1} ampliada`}
-                                                className="max-h-[85vh] max-w-[95vw] rounded-xl object-contain select-none shadow-2xl"
+                                                className="max-h-[85vh] max-w-[95vw] rounded-lg object-contain select-none shadow-2xl"
                                             />
                                         </div>
                                     </CarouselItem>
@@ -777,7 +777,7 @@ export default function PropertyDetailClient() {
                                                         Carregando histórico...
                                                     </div>
                                                 ) : tenants.length > 0 ? (
-                                                    <div className="rounded-xl border border-border overflow-hidden">
+                                                    <div className="rounded-lg border border-border overflow-hidden">
                                                         <div className="overflow-x-auto">
                                                             <table className="w-full text-sm text-left">
                                                                 <thead className="bg-muted/50 text-muted-foreground border-b border-border">
@@ -810,7 +810,7 @@ export default function PropertyDetailClient() {
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
+                                                    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
                                                         <Users className="h-8 w-8 mb-2 opacity-50" />
                                                         <p>Nenhum histórico encontrado para este imóvel.</p>
                                                     </div>
@@ -824,7 +824,7 @@ export default function PropertyDetailClient() {
 
                         {/* Sidebar (Pricing & Actions) */}
                         <div className="space-y-6 lg:col-span-1">
-                            <Card className="border-blue-100 shadow-xl overflow-hidden sticky top-24">
+                            <Card className="border-primary/10 shadow-sm overflow-hidden sticky top-24">
                                 <CardContent className="p-6">
                                     <div className="mb-6">
                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Valor total mensal</p>

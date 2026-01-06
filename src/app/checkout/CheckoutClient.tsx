@@ -269,7 +269,7 @@ export default function CheckoutClient() {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
-                                    <div className="flex flex-col items-center justify-center p-6 bg-accent/30 rounded-xl border-2 border-dashed border-border/60 min-h-[300px]">
+                                    <div className="flex flex-col items-center justify-center p-6 bg-accent/30 rounded-lg border-2 border-dashed border-border/60 min-h-[300px]">
                                         {/* QR Code Real */}
                                         <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
                                             <div className="w-48 h-48 bg-gray-50 flex items-center justify-center relative overflow-hidden">

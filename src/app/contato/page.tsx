@@ -63,7 +63,7 @@ export default function ContactPage() {
                                 </div>
                             </div>
 
-                            <div className="p-6 bg-accent/50 rounded-2xl border border-border">
+                            <div className="p-6 bg-accent/50 rounded-lg border border-border">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Building2 className="h-5 w-5 text-blue-600" />
                                     <span className="font-bold">Sede Virtual</span>
@@ -76,7 +76,7 @@ export default function ContactPage() {
 
                         {/* Form Section */}
                         <div className="flex-1">
-                            <div className="bg-background border border-border rounded-2xl p-8 shadow-sm">
+                            <div className="bg-background border border-border rounded-lg p-8 shadow-sm">
                                 <h2 className="text-2xl font-bold mb-6">Mande uma mensagem</h2>
                                 <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                                     <div className="space-y-2">

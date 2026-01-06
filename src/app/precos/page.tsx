@@ -21,7 +21,7 @@ export default function PricingPage() {
 
                     <div className="grid gap-8 md:grid-cols-2 lg:max-w-4xl mx-auto">
                         {/* Free Plan */}
-                        <div className="flex flex-col p-8 bg-background border border-border rounded-2xl shadow-sm relative overflow-hidden">
+                        <div className="flex flex-col p-8 bg-background border border-border rounded-lg shadow-sm relative overflow-hidden">
                             <div className="mb-8">
                                 <h3 className="font-display text-2xl font-bold">Essencial</h3>
                                 <p className="text-muted-foreground mt-2">Ideal para quem está começando a organizar seus imóveis.</p>
@@ -51,7 +51,7 @@ export default function PricingPage() {
                         </div>
 
                         {/* Pro Plan */}
-                        <div className="flex flex-col p-8 bg-blue-600 text-white border border-blue-600 rounded-2xl shadow-xl relative overflow-hidden">
+                        <div className="flex flex-col p-8 bg-blue-600 text-white border border-blue-600 rounded-lg shadow-xl relative overflow-hidden">
                             <div className="absolute top-4 right-4 bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                                 Recomendado
                             </div>

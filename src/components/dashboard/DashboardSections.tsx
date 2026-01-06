@@ -32,9 +32,9 @@ export async function StatsSection() {
         <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
             {statsData.map((stat) => (
                 <Link key={stat.label} href={stat.href}>
-                    <Card className="group transition-all duration-300 hover:border-blue-600/30 hover:shadow-lg">
+                    <Card className="group transition-all duration-300 hover:border-blue-600/30">
                         <CardContent className="flex items-center gap-4 p-4 sm:p-6">
-                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-accent transition-colors group-hover:bg-primary/10">
+                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-blue-500/10">
                                 <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                             </div>
                             <div>

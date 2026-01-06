@@ -16,7 +16,7 @@ export default function TermsPage() {
                 <section className="container px-4 py-16 md:py-24">
                     <div className="max-w-3xl mx-auto">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-blue-600">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-blue-600">
                                 <FileText className="h-6 w-6" />
                             </div>
                             <h1 className="font-display text-4xl font-bold tracking-tight">Termos de Uso</h1>
@@ -26,7 +26,7 @@ export default function TermsPage() {
                             Última atualização: {lastUpdate}
                         </p>
 
-                        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-12">
+                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 mb-12">
                             <h2 className="text-blue-950 font-bold mb-3 flex items-center gap-2">
                                 <FileText className="h-5 w-5" />
                                 Resumo Simplificado

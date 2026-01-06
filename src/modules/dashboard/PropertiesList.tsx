@@ -426,7 +426,7 @@ interface PropertyCardProps {
 const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate }: PropertyCardProps) => {
   return (
     <Card
-      className="group overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in"
+      className="group overflow-hidden transition-all duration-300 hover:shadow-sm animate-fade-in"
       style={{ animationDelay: `${index * 100}ms` }}
     >
       <div className="relative aspect-video overflow-hidden">

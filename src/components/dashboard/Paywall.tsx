@@ -14,7 +14,7 @@ export function Paywall() {
                         <Zap size={150} />
                     </div>
                     <div className="relative z-10 flex items-center gap-4">
-                        <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
+                        <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm">
                             <Lock className="h-8 w-8 text-white" />
                         </div>
                         <div>
