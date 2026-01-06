@@ -301,7 +301,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
         </div>
 
         {/* Search and Filters */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex bg-blue-500 py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -356,7 +356,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
                   setNeighborhoodFilter("todos");
                   setSearchQuery("");
                 }}
-                className="text-red-500 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto col-span-1 sm:col-span-2 lg:col-span-1"
+                className="text-white py-6 bg-red-600 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto col-span-1 sm:col-span-2 lg:col-span-1"
               >
                 <XCircle className="h-4 w-4 mr-1" />
                 Limpar

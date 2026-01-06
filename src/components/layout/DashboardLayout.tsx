@@ -63,10 +63,10 @@ function NavItem({
       href={item.href}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+        "flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-all duration-200",
         isActive
           ? "bg-blue-50 text-blue-600"
-          : "text-muted-foreground hover:bg-blue-50 hover:text-accent-foreground"
+          : "text-muted-foreground hover:bg-blue-50 hover:text-blue-600"
       )}
       aria-current={isActive ? "page" : undefined}
     >
@@ -101,7 +101,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const isSettingsPage = pathname === "/dashboard/configuracoes";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-blue-50/25">
       {/* Desktop Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 border-r border-border/40 bg-card lg:block">
         <div className="flex h-full flex-col">
@@ -109,7 +109,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <Logo />
           </div>
 
-          <nav className="flex-1 space-y-1 p-4" aria-label="Menu do painel">
+          <nav className="flex-1 space-y-2   p-4" aria-label="Menu do painel">
             {menuItems.map((item) => {
               const isDisabled = isExpired && item.href !== "/dashboard/configuracoes" && item.href !== "/dashboard";
               return (
@@ -126,7 +126,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="border-t border-border/40 p-4">
             <Button
               variant="ghost"
-              className="w-full justify-start text-red-400 hover:text-red-500 hover:bg-red-50"
+              className="w-full justify-start text-red-600 hover:text-white hover:bg-red-500"
               onClick={handleLogout}
             >
               <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
@@ -149,7 +149,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
+            <SheetContent side="left" className="w-96 p-0">
               <div className="flex h-full flex-col">
                 <div className="flex h-16 items-center gap-2 border-b border-border/40 px-6">
                   <span className="font-display text-lg font-semibold">Menu</span>
@@ -173,7 +173,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <div className="border-t border-border/40 p-4">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-red-400"
+                    className="w-full justify-start text-red-600"
                     onClick={handleLogout}
                   >
                     <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
