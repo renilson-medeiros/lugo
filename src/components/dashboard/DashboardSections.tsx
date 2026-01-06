@@ -251,6 +251,8 @@ export async function AlertsSection({ userId }: { userId: string }) {
 }
 
 // --- Properties Preview Section ---
+import PropertiesPreviewClient from "./PropertiesPreviewClient";
+
 export async function PropertiesPreviewSection({ userId }: { userId: string }) {
     const supabase = await createClient();
     const { data: imoveisRecentes } = await supabase
@@ -258,7 +260,7 @@ export async function PropertiesPreviewSection({ userId }: { userId: string }) {
         .select('id, endereco_rua, endereco_numero, status, created_at, inquilinos(nome_completo)')
         .eq('proprietario_id', userId)
         .order('created_at', { ascending: false })
-        .range(0, 2);
+        .range(0, 11); 
 
     const formattedProperties = imoveisRecentes?.map((imovel: any) => ({
         id: imovel.id,
@@ -268,44 +270,5 @@ export async function PropertiesPreviewSection({ userId }: { userId: string }) {
         inquilino_nome: imovel.inquilinos?.[0]?.nome_completo || null,
     })) || [];
 
-    return (
-        <Card>
-            <CardHeader className="pb-2">
-                <CardTitle className="font-display text-lg">Seus imóveis recentes</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {formattedProperties.length > 0 ? (
-                    <div className="space-y-4">
-                        {formattedProperties.map((property) => (
-                            <div key={property.id} className="flex items-center justify-between p-3 border rounded-lg bg-card">
-                                <div className="flex items-center gap-3">
-                                    <Building2 className="h-5 w-5 text-blue-600" />
-                                    <div>
-                                        <p className="font-medium text-sm">{property.endereco_rua}, {property.endereco_numero}</p>
-                                        <p className="text-xs text-muted-foreground">{property.inquilino_nome || "Sem inquilino"}</p>
-                                    </div>
-                                </div>
-                                <span className={cn(
-                                    "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase",
-                                    property.status === "alugado" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
-                                )}>
-                                    {property.status === "alugado" ? "Ocupado" : "Livre"}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center text-center py-6">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent mb-4">
-                            <Building2 className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
-                        </div>
-                        <p className="text-sm font-medium">Nenhum imóvel cadastrado</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Cadastre seu primeiro imóvel para começar.
-                        </p>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    );
+    return <PropertiesPreviewClient properties={formattedProperties} />;
 }
