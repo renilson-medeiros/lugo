@@ -32,8 +32,8 @@ export default function ContactPage() {
 
                             <div className="space-y-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="h-10 w-10 rounded-lg bg-blue-600/10 flex items-center justify-center shrink-0">
-                                        <Mail className="h-5 w-5 text-blue-600" />
+                                    <div className="h-10 w-10 rounded-lg bg-tertiary/10 flex items-center justify-center shrink-0">
+                                        <Mail className="h-5 w-5 text-tertiary" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold">E-mail</h3>
@@ -103,7 +103,7 @@ export default function ContactPage() {
                                         />
                                     </div>
 
-                                    <Button className="w-full bg-blue-600 hover:bg-blue-500 gap-2 h-12 text-base">
+                                    <Button className="w-full bg-tertiary hover:bg-tertiary/90 gap-2 h-12 text-base">
                                         Enviar Mensagem
                                         <Send className="h-4 w-4" />
                                     </Button>

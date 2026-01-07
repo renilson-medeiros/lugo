@@ -67,7 +67,7 @@ function RevenueChartComponent({ data }: RevenueChartProps) {
                         {data.map((entry, index) => (
                             <Cell
                                 key={`cell-${index}`}
-                                fill={index === data.length - 1 ? '#2563eb' : '#2563eb66'}
+                                fill={index === data.length - 1 ? '#2c3d90' : '#2c3d9066'}
                             />
                         ))}
                     </Bar>

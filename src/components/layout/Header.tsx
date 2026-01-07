@@ -29,7 +29,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <nav className="container px-4 flex h-16 items-center justify-between" aria-label="Navegação principal">
         <Link
           href="/"
@@ -46,7 +46,7 @@ export function Header() {
               {user ? (
                 <div className="flex items-center gap-3">
                   <Link href="/dashboard">
-                    <Button className="font-medium bg-blue-600 hover:bg-blue-500 gap-2">
+                    <Button className="font-medium bg-tertiary hover:bg-tertiary/90 gap-2">
                       <LayoutDashboard className="h-4 w-4" />
                       Dashboard
                     </Button>
@@ -67,7 +67,7 @@ export function Header() {
                     </Button>
                   </Link>
                   <Link href="/registro">
-                    <Button className="font-medium bg-blue-600 hover:bg-blue-500">
+                    <Button className="font-medium bg-tertiary hover:bg-tertiary/90">
                       Começar agora
                     </Button>
                   </Link>
@@ -96,7 +96,7 @@ export function Header() {
                       {user ? (
                         <div className="flex flex-col gap-3">
                           <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full font-medium bg-blue-600 hover:bg-blue-500 gap-2">
+                            <Button className="w-full font-medium bg-tertiary hover:bg-tertiary/90 gap-2">
                               <LayoutDashboard className="h-4 w-4" />
                               Dashboard
                             </Button>
@@ -117,7 +117,7 @@ export function Header() {
                             </Button>
                           </Link>
                           <Link href="/registro" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full font-medium bg-blue-600 hover:bg-blue-500">
+                            <Button className="w-full font-medium bg-tertiary hover:bg-tertiary/90">
                               Começar agora
                             </Button>
                           </Link>

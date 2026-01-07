@@ -67,14 +67,14 @@ export default function Landing() {
                     <div className="container px-6">
                         <div className="mx-auto max-w-3xl text-center">
                             <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                                Sua gestão de aluguéis, <span className="text-blue-600">simples e direta</span>
+                                Sua gestão de aluguéis, <span className="text-tertiary">simples e direta</span>
                             </h1>
                             <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
                                 O Lugo oferece autonomia total para proprietários, eliminando intermediários e automatizando a rotina de gestão de imóveis, inquilinos e pagamentos.
                             </p>
                             <div className="mt-10 flex flex-col items-center justify-center gap-4 animate-fade-in [animation-delay:200ms] sm:flex-row">
                                 <Link href="/registro">
-                                    <Button size="lg" className="w-full gap-2 text-base sm:w-auto bg-blue-600 hover:bg-blue-600">
+                                    <Button size="lg" className="w-full gap-2 text-base sm:w-auto bg-tertiary hover:bg-tertiary">
                                         Começar 7 dias grátis
                                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
                                     </Button>
@@ -86,7 +86,7 @@ export default function Landing() {
                                 </Link>
                             </div>
                             <p className="mt-4 text-sm text-muted-foreground animate-fade-in [animation-delay:300ms]">
-                                Plano Profissional • <span className="font-semibold text-primary">R$ 9,90/mês</span>
+                                Plano Profissional • <span className="font-semibold text-tertiary">R$ 9,90/mês</span>
                             </p>
                         </div>
                     </div>
@@ -116,8 +116,8 @@ export default function Landing() {
                                     style={{ animationDelay: `${index * 100}ms` }}
                                 >
                                     <CardContent className="p-6">
-                                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-blue-500/10">
-                                            <feature.icon className="h-6 w-6 text-blue-600 " aria-hidden="true" />
+                                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-tertiary/10">
+                                            <feature.icon className="h-6 w-6 text-primary " aria-hidden="true" />
                                         </div>
                                         <h3 className="font-display text-lg font-semibold">{feature.title}</h3>
                                         <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
@@ -129,7 +129,7 @@ export default function Landing() {
                 </section>
 
                 {/* Pricing Section */}
-                <section className="bg-secondary/30 py-20 lg:py-28" aria-labelledby="pricing-heading">
+                <section className="bg-secondary/5 py-20 lg:py-28" aria-labelledby="pricing-heading">
                     <div className="container px-4">
                         <div className="mx-auto max-w-4xl">
                             <div className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
@@ -143,14 +143,14 @@ export default function Landing() {
                                     <ul className="mt-8 space-y-3" role="list">
                                         {benefits.map((benefit) => (
                                             <li key={benefit} className="flex items-center gap-3">
-                                                <CheckCircle2 className="h-5 w-5 shrink-0 text-blue-600" aria-hidden="true" />
+                                                <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
                                                 <span className="text-foreground">{benefit}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
 
-                                <Card className="border-blue-600/20 bg-linear-to-t from-blue-600 to-blue-600/90 shadow-xl">
+                                <Card className="border-tertiary/20 bg-linear-to-t from-tertiary to-tertiary/90 shadow-xl">
                                     <CardContent className="p-8">
                                         <div className="text-center">
                                             <p className="text-sm font-medium text-muted/80 uppercase tracking-wider">Acesso Profissional</p>
@@ -163,7 +163,7 @@ export default function Landing() {
                                                 7 Dias de Teste Grátis • Cancele quando quiser
                                             </p>
                                             <Link href="/registro" className="mt-6 block">
-                                                <Button size="lg" className="w-full text-blue-600 bg-background hover:bg-blue-50">
+                                                <Button size="lg" className="w-full text-tertiary bg-background hover:bg-blue-50">
                                                     Assinar com 7 dias grátis
                                                 </Button>
                                             </Link>
@@ -189,7 +189,7 @@ export default function Landing() {
                                 Junte-se a proprietários que já estão transformando sua rotina com o Lugo.
                             </p>
                             <Link href="/registro" className="mt-8 inline-block">
-                                <Button size="lg" className="gap-2 text-base bg-blue-600 hover:bg-blue-500">
+                                <Button size="lg" className="gap-2 text-base bg-tertiary hover:bg-tertiary/90">
                                     Criar minha conta
                                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                                 </Button>

@@ -137,11 +137,42 @@ export default function TenantDetails() {
       } else {
         // Transformar os dados para o formato esperado
         const transformedComprovantes = (comprovantesData || []).map(comp => {
-          const [mes, ano] = comp.mes_referencia.split('/');
+          let mes = 0;
+          let ano = 0;
+
+          if (comp.mes_referencia) {
+            if (comp.mes_referencia.includes('/')) {
+              const parts = comp.mes_referencia.split('/');
+              mes = parseInt(parts[0]);
+              ano = parseInt(parts[1]);
+            } else if (comp.mes_referencia.includes('-')) {
+              // Assume YYYY-MM-DD or YYYY-MM
+              const date = new Date(comp.mes_referencia);
+              if (!isNaN(date.getTime())) {
+                mes = date.getMonth() + 1; // getMonth is 0-indexed
+                ano = date.getFullYear();
+              } else {
+                 // Try explicit split if YYYY-MM
+                 const parts = comp.mes_referencia.split('-');
+                 if (parts.length >= 2) {
+                     ano = parseInt(parts[0]);
+                     mes = parseInt(parts[1]);
+                 }
+              }
+            } else {
+                // Try parsing as date object directly
+                 const date = new Date(comp.mes_referencia);
+                 if (!isNaN(date.getTime())) {
+                    mes = date.getMonth() + 1;
+                    ano = date.getFullYear();
+                 }
+            }
+          }
+
           return {
             id: comp.id,
-            mes: parseInt(mes),
-            ano: parseInt(ano),
+            mes: mes || 0,
+            ano: ano || 0,
             valor_pago: comp.valor || 0,
             data_pagamento: comp.created_at,
             created_at: comp.created_at
@@ -259,7 +290,7 @@ export default function TenantDetails() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando dados...</p>
         </div>
       </div>
@@ -326,7 +357,7 @@ export default function TenantDetails() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-blue-600" />
+                <User className="h-5 w-5 text-tertiary" />
                 Informações Pessoais
               </CardTitle>
               <Badge
@@ -344,25 +375,25 @@ export default function TenantDetails() {
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-sm font-medium text-primary">Nome Completo</p>
+                <p className="text-sm font-medium text-secondary">Nome Completo</p>
                 <p className="text-sm text-muted-foreground">{tenant.nome_completo}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-primary">CPF</p>
+                <p className="text-sm font-medium text-secondary">CPF</p>
                 <p className="text-sm text-muted-foreground">{formatCPF(tenant.cpf)}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-primary">Telefone</p>
+                <p className="text-sm font-medium text-secondary">Telefone</p>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-blue-600" />
+                  <Phone className="h-4 w-4 text-tertiary" />
                   {formatPhone(tenant.telefone)}
                 </p>
               </div>
               {tenant.email && (
                 <div>
-                  <p className="text-sm font-medium text-primary">E-mail</p>
+                  <p className="text-sm font-medium text-secondary">E-mail</p>
                   <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-blue-600" />
+                    <Mail className="h-4 w-4 text-tertiary" />
                     {tenant.email}
                   </p>
                 </div>
@@ -375,7 +406,7 @@ export default function TenantDetails() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-blue-600" />
+              <Building2 className="h-5 w-5 text-tertiary" />
               Imóvel
             </CardTitle>
           </CardHeader>
@@ -383,11 +414,11 @@ export default function TenantDetails() {
             {tenant.imoveis ? (
               <>
                 <div>
-                  <p className="text-sm font-medium text-primary">Título</p>
+                  <p className="text-sm font-medium text-secondary">Título</p>
                   <p className="text-sm text-muted-foreground">{tenant.imoveis.titulo}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-primary">Endereço</p>
+                  <p className="text-sm font-medium text-secondary">Endereço</p>
                   <p className="text-sm text-muted-foreground">
                     {tenant.imoveis.endereco_rua}, {tenant.imoveis.endereco_numero} - {tenant.imoveis.endereco_bairro}, {tenant.imoveis.endereco_cidade}
                   </p>
@@ -403,24 +434,24 @@ export default function TenantDetails() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-blue-600" />
+              <Calendar className="h-5 w-5 text-tertiary" />
               Informações da Locação
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <p className="text-sm font-medium text-primary">Data de Início</p>
+                <p className="text-sm font-medium text-secondary">Data de Início</p>
                 <p className="text-sm text-muted-foreground">{formatDate(tenant.data_inicio)}</p>
               </div>
               {tenant.data_fim && (
                 <div>
-                  <p className="text-sm font-medium text-primary">Data de Término</p>
+                  <p className="text-sm font-medium text-secondary">Data de Término</p>
                   <p className="text-sm text-muted-foreground">{formatDate(tenant.data_fim)}</p>
                 </div>
               )}
               <div>
-                <p className="text-sm font-medium text-primary">Dia de Vencimento</p>
+                <p className="text-sm font-medium text-secondary">Dia de Vencimento</p>
                 <p className="text-sm text-muted-foreground">Dia {tenant.dia_vencimento}</p>
               </div>
             </div>
@@ -432,12 +463,12 @@ export default function TenantDetails() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-blue-600" />
+                <FileText className="h-5 w-5 text-tertiary" />
                 Histórico de Comprovantes
               </CardTitle>
               {tenant.status === 'ativo' && (
                 <Link href={`/dashboard/comprovantes/novo?inquilino=${tenant.id}`}>
-                  <Button size="sm" className="gap-2 bg-blue-600 hover:bg-blue-500">
+                  <Button size="sm" className="gap-2 bg-tertiary hover:bg-tertiary/90">
                     <Receipt className="h-4 w-4" />
                     Gerar Comprovante
                   </Button>

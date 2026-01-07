@@ -221,7 +221,7 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando inquilinos...</p>
         </div>
       </div>
@@ -260,7 +260,7 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
           </div>
         </div>
 
-        <div className="flex bg-blue-500 py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex bg-tertiary py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -368,8 +368,8 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
       <CardContent className="p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
-              <Users className="h-6 w-6 text-blue-600" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent">
+              <Users className="h-6 w-6 text-primary" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -388,15 +388,15 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
 
               <div className="mt-3 flex flex-wrap gap-4 text-sm">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Building2 className="h-4 w-4 text-blue-600" />
+                  <Building2 className="h-4 w-4 text-primary" />
                   <span>{tenant.imoveis?.titulo || 'Imóvel não encontrado'}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Calendar className="h-4 w-4 text-blue-600" />
+                  <Calendar className="h-4 w-4 text-primary" />
                   <span>Dia {tenant.dia_vencimento}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Phone className="h-4 w-4 text-blue-600" />
+                  <Phone className="h-4 w-4 text-primary" />
                   <span>{formatPhone(tenant.telefone)}</span>
                 </div>
               </div>
@@ -405,7 +405,7 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
 
           <div className="flex items-center gap-2 text-muted-foreground ">
             <Link href={`/dashboard/comprovantes/novo?inquilino=${tenant.id}`}>
-              <Button variant="outline" size="sm" className="gap-1.5 border-blue-600 hover:border-blue-500 bg-blue-600 hover:bg-blue-500 text-white hover:text-white">
+              <Button variant="outline" size="sm" className="gap-1.5 border-tertiary hover:border-tertiary/90 bg-tertiary hover:bg-tertiary/90 text-white hover:text-white">
                 <Receipt className="h-4 w-4" />
                 Gerar comprovante
               </Button>
@@ -419,7 +419,7 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
               <DropdownMenuContent align="end" className="bg-popover">
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/inquilinos/${tenant.id}`} className="cursor-pointer">
-                    <Eye className="mr-2 h-4 w-4 text-blue-600" />
+                    <Eye className="mr-2 h-4 w-4 text-primary" />
                     Ver detalhes
                   </Link>
                 </DropdownMenuItem>

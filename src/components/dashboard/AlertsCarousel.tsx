@@ -49,7 +49,7 @@ export default function AlertsCarousel({ alerts }: AlertsCarouselProps) {
             <Card>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-blue-600" />
+                        <AlertCircle className="h-4 w-4 text-tertiary" />
                         Avisos e Pendências
                     </CardTitle>
                 </CardHeader>
@@ -72,7 +72,7 @@ export default function AlertsCarousel({ alerts }: AlertsCarouselProps) {
         <Card>
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    <AlertCircle className="h-4 w-4 text-tertiary" />
                     Avisos e Pendências
                 </CardTitle>
                 {alerts.length > 1 && (
@@ -144,7 +144,7 @@ export default function AlertsCarousel({ alerts }: AlertsCarouselProps) {
                                     className={cn(
                                         "h-1 rounded-full transition-all duration-300",
                                         index === selectedIndex
-                                            ? "w-4 bg-blue-600"
+                                            ? "w-4 bg-tertiary"
                                             : "w-1 bg-gray-300"
                                     )}
                                 />

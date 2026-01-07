@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 
-const inter = Inter({
+const poppins = Poppins({
     subsets: ["latin"],
+    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
     variable: "--font-sans",
-});
-
-const outfit = Outfit({
-    subsets: ["latin"],
-    variable: "--font-display",
 });
 
 export const metadata: Metadata = {
@@ -81,7 +77,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="pt-BR">
-            <body>
+<body className={`${poppins.variable} font-sans antialiased`}>
                 <GoogleAnalytics />
                 <Providers>{children}</Providers>
             </body>

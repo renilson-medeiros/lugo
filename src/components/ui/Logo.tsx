@@ -28,7 +28,7 @@ export function Logo({ className, iconOnly = false, size = "md" }: LogoProps) {
         <div className={cn("flex items-center gap-2.5", className)}>
             <div
                 className={cn(
-                    "flex items-center justify-center bg-blue-600 font-bold text-white shadow-sm",
+                    "flex items-center justify-center bg-tertiary font-bold text-white shadow-sm",
                     currentSize.box
                 )}
             >

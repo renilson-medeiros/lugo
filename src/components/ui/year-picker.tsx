@@ -24,7 +24,7 @@ export function YearPicker({
     value,
     onChange,
     startYear = 2020,
-    endYear = 2099,
+    endYear = 2049,
     placeholder = "Selecione o ano",
     disabled,
     className
@@ -43,13 +43,13 @@ export function YearPicker({
                 <Button
                     variant={"outline"}
                     className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full py-6 justify-start text-left font-normal",
                         !value && "text-muted-foreground",
                         className
                     )}
                     disabled={disabled}
                 >
-                    <CalendarIcon className="h-4 w-4 text-blue-600" />
+                    <CalendarIcon className="h-4 w-4 text-primary" />
                     {value ? value : <span>{placeholder}</span>}
                 </Button>
             </PopoverTrigger>

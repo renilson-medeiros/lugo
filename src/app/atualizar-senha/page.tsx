@@ -81,7 +81,7 @@ export default function UpdatePassword() {
                                         Sua senha foi alterada com sucesso. Você será redirecionado para o dashboard em instantes...
                                     </p>
                                 </div>
-                                <Button asChild className="w-full bg-blue-600 hover:bg-blue-500">
+                                <Button asChild className="w-full bg-tertiary hover:bg-tertiary/90">
                                     <Link href="/dashboard">Ir para o Dashboard</Link>
                                 </Button>
                             </div>
@@ -142,7 +142,7 @@ export default function UpdatePassword() {
 
                                 <Button
                                     type="submit"
-                                    className="h-11 w-full text-base bg-blue-600 hover:bg-blue-500"
+                                    className="h-11 w-full text-base bg-tertiary hover:bg-tertiary/90"
                                     disabled={loading}
                                 >
                                     {loading ? (

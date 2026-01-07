@@ -74,7 +74,7 @@ export default function CombinedDashboardClient({
                         <div className="flex flex-col">
                             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Receita este mês</span>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-2xl md:text-3xl font-bold font-display text-blue-600">
+                                <span className="text-2xl md:text-3xl font-bold font-display text-tertiary">
                                     R$ {currentMonthRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
@@ -89,7 +89,7 @@ export default function CombinedDashboardClient({
                         <div className="flex flex-col">
                             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Taxa de Ocupação</span>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-2xl md:text-4xl font-bold font-display text-blue-600 tracking-tighter">
+                                <span className="text-2xl md:text-4xl font-bold font-display text-tertiary tracking-tighter">
                                     {occupancyData.rate}%
                                 </span>
                                 <span className="text-sm text-muted-foreground font-medium">da carteira alugada</span>
@@ -105,7 +105,7 @@ export default function CombinedDashboardClient({
                             <div className="h-4 w-full flex rounded-full overflow-hidden bg-primary/5 p-1 gap-0.5">
                                 {occupancyData.alugado > 0 && (
                                     <div 
-                                        className="h-full bg-blue-600 rounded-l-full transition-all duration-1000 ease-out"
+                                        className="h-full bg-tertiary rounded-l-full transition-all duration-1000 ease-out"
                                         style={{ width: `${(occupancyData.alugado / occupancyData.total) * 100}%` }}
                                     />
                                 )}
@@ -130,7 +130,7 @@ export default function CombinedDashboardClient({
                                 label="Alugado" 
                                 count={occupancyData.alugado} 
                                 total={occupancyData.total}
-                                color="bg-blue-500/10 text-blue-600"
+                                color="bg-tertiary/10 text-tertiary"
                                 desc="Contratos ativos e gerando receita"
                                 icon={Handshake}
                             />

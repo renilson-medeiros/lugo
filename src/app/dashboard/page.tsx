@@ -59,14 +59,14 @@ import { TrendingUp } from "lucide-react";
 
 function CardDica() {
     return (
-        <Card className="border-blue-600 bg-blue-600">
+        <Card className="border-tertiary bg-tertiary">
             <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500">
-                    <TrendingUp className="h-5 w-5 text-white" aria-hidden="true" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/10">
+                    <TrendingUp className="h-6 w-6 text-white" aria-hidden="true" />
                 </div>
                 <div className="flex-1">
                     <p className="font-medium text-white">Dica: Compartilhe</p>
-                    <p className="text-sm text-white/80">
+                    <p className="text-sm text-white/70">
                         Gere links únicos para cada imóvel e compartilhe.
                     </p>
                 </div>

@@ -16,7 +16,7 @@ export default function PrivacyPage() {
                 <section className="container px-4 py-16 md:py-24">
                     <div className="max-w-3xl mx-auto">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-blue-600">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-tertiary">
                                 <Shield className="h-6 w-6" />
                             </div>
                             <h1 className="font-display text-4xl font-bold tracking-tight">Política de Privacidade</h1>

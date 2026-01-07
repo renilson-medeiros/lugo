@@ -293,7 +293,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
             <p className="text-muted-foreground">Gerencie seus imóveis cadastrados</p>
           </div>
           <Link href="/dashboard/imoveis/novo">
-            <Button className="gap-2 w-full md:w-fit bg-blue-600 hover:bg-blue-500">
+            <Button size="lg" className="gap-2 w-full md:w-fit bg-tertiary hover:bg-tertiary/90">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Novo imóvel
             </Button>
@@ -301,7 +301,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
         </div>
 
         {/* Search and Filters */}
-        <div className="flex bg-blue-500 py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex bg-tertiary py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -407,7 +407,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
               </p>
               {!searchQuery && (
                 <Link href="/dashboard/imoveis/novo" className="mt-4">
-                  <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
+                  <Button className="gap-2 bg-tertiary hover:bg-tertiary/90">
                     <Plus className="h-4 w-4" aria-hidden="true" />
                     Cadastrar imóvel
                   </Button>
@@ -502,30 +502,30 @@ const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate, on
               onClick={() => onShare(property)}
               aria-label="Compartilhar imóvel"
             >
-              <Share2 className="h-4 w-4 text-blue-600" />
+              <Share2 className="h-4 w-4 text-primary" />
             </Button>
             <Link href={`/imovel/${property.id}`}>
               <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Ver imóvel">
-                <Eye className="h-4 w-4 text-blue-600" />
+                <Eye className="h-4 w-4 text-primary" />
               </Button>
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Mais opções">
-                  <MoreHorizontal className="h-4 w-4 text-blue-600" />
+                  <MoreHorizontal className="h-4 w-4 text-primary" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-popover">
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/imoveis/${property.id}/editar`} className="cursor-pointer">
-                    <Edit className="mr-2 h-4 w-4 text-blue-600" />
+                    <Edit className="mr-2 h-4 w-4 text-primary" />
                     Editar
                   </Link>
                 </DropdownMenuItem>
                 {property.status === "disponível" && (
                   <DropdownMenuItem asChild>
                     <Link href={`/dashboard/imoveis/${property.id}/inquilino`} className="cursor-pointer">
-                      <Plus className="mr-2 h-4 w-4 text-blue-600" />
+                      <Plus className="mr-2 h-4 w-4 text-primary" />
                       Cadastrar inquilino
                     </Link>
                   </DropdownMenuItem>
@@ -545,7 +545,7 @@ const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate, on
                     onClick={() => onChangeStatus(property.id, 'manutencao')}
                   >
                     <Settings2 className="mr-2 h-4 w-4 text-orange-600" />
-                    Marcar como em manutenção
+                    Manutenção
                   </DropdownMenuItem>
                 )}
                 {property.status === "manutenção" && (

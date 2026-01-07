@@ -63,10 +63,10 @@ function NavItem({
       href={item.href}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-all duration-200",
+        "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200",
         isActive
-          ? "bg-blue-50 text-blue-600"
-          : "text-muted-foreground hover:bg-blue-50 hover:text-blue-600"
+          ? "bg-blue-50 text-tertiary"
+          : "text-tertiary/90 hover:bg-tertiary hover:text-white"
       )}
       aria-current={isActive ? "page" : undefined}
     >
@@ -109,7 +109,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <Logo />
           </div>
 
-          <nav className="flex-1 space-y-2   p-4" aria-label="Menu do painel">
+          <nav className="flex-1 space-y-2 p-4" aria-label="Menu do painel">
             {menuItems.map((item) => {
               const isDisabled = isExpired && item.href !== "/dashboard/configuracoes" && item.href !== "/dashboard";
               return (

@@ -37,10 +37,10 @@ export async function StatsSection({ userId }: { userId: string }) {
         <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
             {statsData.map((stat) => (
                 <Link key={stat.label} href={stat.href}>
-                    <Card className="group transition-all duration-300 hover:border-blue-600/30">
+                    <Card className="group transition-all duration-300 hover:border-tertiary/30">
                         <CardContent className="flex items-center gap-4 p-4 sm:p-6">
-                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-blue-500/10">
-                                <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-tertiary/10">
+                                <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                             </div>
                             <div>
                                 <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
@@ -187,7 +187,7 @@ export async function OccupancyRateSection({ userId }: { userId: string }) {
         <Card>
             <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                    <ChartPie className="h-4 w-4 text-blue-600" />
+                    <ChartPie className="h-4 w-4 text-tertiary" />
                     Taxa de Ocupação
                 </CardTitle>
             </CardHeader>
@@ -198,7 +198,7 @@ export async function OccupancyRateSection({ userId }: { userId: string }) {
                 </div>
                 <div className="mt-4 h-2 w-full bg-accent rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                        className="h-full bg-tertiary rounded-full transition-all duration-500"
                         style={{ width: `${occupancyRate}%` }}
                     />
                 </div>

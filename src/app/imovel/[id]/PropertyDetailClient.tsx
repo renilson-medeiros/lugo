@@ -386,7 +386,7 @@ export default function PropertyDetailClient() {
                 <Header />
                 <main className="flex-1 flex items-center justify-center">
                     <div className="text-center py-16">
-                        <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+                        <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
                         <p className="text-muted-foreground">Carregando imóvel...</p>
                     </div>
                 </main>
@@ -408,7 +408,7 @@ export default function PropertyDetailClient() {
                             O imóvel que você procura não existe ou foi removido.
                         </p>
                         <Button
-                            className="bg-blue-600 hover:bg-blue-600"
+                            className="bg-tertiary hover:bg-tertiary/90"
                             onClick={() => router.back()}
                         >
                             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -440,7 +440,7 @@ export default function PropertyDetailClient() {
                         </button>
                     ) : (
                         <div className="flex items-center gap-2 text-muted-foreground py-2">
-                            <Info className="w-4 h-4 text-blue-600" />
+                            <Info className="w-4 h-4 text-tertiary" />
                             <span>Informações do Imóvel de {property.owner.name}</span>
                         </div>
                     )}
@@ -489,7 +489,7 @@ export default function PropertyDetailClient() {
                                                 className={cn(
                                                     "h-1.5 rounded-full transition-all duration-300",
                                                     selectedIndex === index
-                                                        ? "w-6 bg-blue-600 shadow-sm"
+                                                        ? "w-6 bg-tertiary shadow-sm"
                                                         : "w-1.5 bg-white/50 hover:bg-white/80"
                                                 )}
                                                 aria-label={`Ir para slide ${index + 1}`}
@@ -529,7 +529,7 @@ export default function PropertyDetailClient() {
                                             <div className={cn(
                                                 "relative h-full w-full overflow-hidden rounded-lg border-2 transition-all duration-300 cursor-pointer",
                                                 selectedIndex === index
-                                                    ? "border-blue-600 shadow-lg opacity-100"
+                                                    ? "border-tertiary shadow-lg opacity-100"
                                                     : "border-transparent opacity-40 hover:opacity-100"
                                             )}>
                                                 <img
@@ -558,7 +558,7 @@ export default function PropertyDetailClient() {
                         {/* Close Button */}
                         <button
                             onClick={() => setIsLightboxOpen(false)}
-                            className="absolute cursor-pointer right-4 top-4 z-160 rounded-full bg-blue-600 p-2 text-white/70 backdrop-blur-sm transition-colors hover:bg-blue-600 hover:text-white sm:right-8 sm:top-8"
+                            className="absolute cursor-pointer right-4 top-4 z-160 rounded-full bg-tertiary p-2 text-white/70 backdrop-blur-sm transition-colors hover:bg-tertiary hover:text-white sm:right-8 sm:top-8"
                             aria-label="Fechar galeria"
                         >
                             <X className="h-6 w-6" />
@@ -589,10 +589,10 @@ export default function PropertyDetailClient() {
                             {property.images.length > 1 && (
                                 <>
                                     <CarouselPrevious
-                                        className="fixed left-2 sm:left-4 top-1/2 -translate-y-1/2 h-12 w-12 border-none bg-background text-blue-600 hover:text-blue-600 hover:bg-background/80 z-160 active:scale-95 transition-all"
+                                        className="fixed left-2 sm:left-4 top-1/2 -translate-y-1/2 h-12 w-12 border-none bg-background text-tertiary hover:text-tertiary hover:bg-background/80 z-160 active:scale-95 transition-all"
                                     />
                                     <CarouselNext
-                                        className="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 h-12 w-12 border-none bg-background text-blue-600 hover:text-blue-600 hover:bg-background/80 z-160 active:scale-95 transition-all"
+                                        className="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 h-12 w-12 border-none bg-background text-tertiary hover:text-tertiary hover:bg-background/80 z-160 active:scale-95 transition-all"
                                     />
                                 </>
                             )}
@@ -605,7 +605,7 @@ export default function PropertyDetailClient() {
                                     key={index}
                                     className={cn(
                                         "h-1.5 rounded-full transition-all duration-300 shadow-sm",
-                                        selectedIndex === index ? "bg-blue-600 w-6" : "w-1.5 bg-white/40"
+                                        selectedIndex === index ? "bg-tertiary w-6" : "w-1.5 bg-white/40"
                                     )}
                                 />
                             ))}
@@ -623,7 +623,7 @@ export default function PropertyDetailClient() {
                                     {property.title}
                                 </h1>
                                 <div className="mt-2 flex items-baseline gap-2 text-muted-foreground">
-                                    <MapPin className="h-4 w-4 text-blue-600" aria-hidden="true" />
+                                    <MapPin className="h-4 w-4 text-tertiary" aria-hidden="true" />
                                     <span>
                                         {property.address.street}, {property.address.number}
                                         {property.address.complement && ` - ${property.address.complement}`}, {property.address.neighborhood}, {property.address.city} - {property.address.state}
@@ -683,14 +683,14 @@ export default function PropertyDetailClient() {
                                     <h2 className="font-display text-xl font-semibold">Regras e políticas</h2>
                                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.details.acceptsPets ? 'bg-blue-600/10' : 'bg-red-600/10'}`}>
-                                                <PawPrint className={`h-5 w-5 ${property.details.acceptsPets ? 'text-blue-600' : 'text-red-600'}`} aria-hidden="true" />
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.details.acceptsPets ? 'bg-tertiary/10' : 'bg-red-600/10'}`}>
+                                                <PawPrint className={`h-5 w-5 ${property.details.acceptsPets ? 'text-tertiary' : 'text-red-600'}`} aria-hidden="true" />
                                             </div>
                                             <span>{property.details.acceptsPets ? 'Aceita pets' : 'Não aceita pets'}</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.details.acceptsChildren ? 'bg-blue-600/10' : 'bg-red-600/10'}`}>
-                                                <Baby className={`h-5 w-5 ${property.details.acceptsChildren ? 'text-blue-600' : 'text-red-600'}`} aria-hidden="true" />
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.details.acceptsChildren ? 'bg-tertiary/10' : 'bg-red-600/10'}`}>
+                                                <Baby className={`h-5 w-5 ${property.details.acceptsChildren ? 'text-tertiary' : 'text-red-600'}`} aria-hidden="true" />
                                             </div>
                                             <span>{property.details.acceptsChildren ? 'Aceita crianças' : 'Não aceita crianças'}</span>
                                         </div>
@@ -712,32 +712,32 @@ export default function PropertyDetailClient() {
                                     <h2 className="font-display text-xl font-semibold">Incluso no valor</h2>
                                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.water ? 'bg-blue-600/10' : 'bg-red-600/10'}`}>
-                                                <Droplets className={`h-5 w-5 ${property.included.water ? 'text-blue-600' : 'text-red-600'}`} aria-hidden="true" />
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.water ? 'bg-tertiary/10' : 'bg-red-600/10'}`}>
+                                                <Droplets className={`h-5 w-5 ${property.included.water ? 'text-tertiary' : 'text-red-600'}`} aria-hidden="true" />
                                             </div>
                                             <span className={property.included.water ? '' : 'text-muted-foreground'}>
                                                 Água {property.included.water ? 'inclusa' : 'não inclusa'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.electricity ? 'bg-blue-600/10' : 'bg-red-600/10'}`}>
-                                                <Zap className={`h-5 w-5 ${property.included.electricity ? 'text-blue-600' : 'text-red-600'}`} aria-hidden="true" />
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.electricity ? 'bg-tertiary/10' : 'bg-red-600/10'}`}>
+                                                <Zap className={`h-5 w-5 ${property.included.electricity ? 'text-tertiary' : 'text-red-600'}`} aria-hidden="true" />
                                             </div>
                                             <span className={property.included.electricity ? '' : 'text-muted-foreground'}>
                                                 Luz {property.included.electricity ? 'inclusa' : 'não inclusa'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.internet ? 'bg-blue-600/10' : 'bg-red-600/10'}`}>
-                                                <Wifi className={`h-5 w-5 ${property.included.internet ? 'text-blue-600' : 'text-red-600'}`} aria-hidden="true" />
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.internet ? 'bg-tertiary/10' : 'bg-red-600/10'}`}>
+                                                <Wifi className={`h-5 w-5 ${property.included.internet ? 'text-tertiary' : 'text-red-600'}`} aria-hidden="true" />
                                             </div>
                                             <span className={property.included.internet ? '' : 'text-muted-foreground'}>
                                                 Internet {property.included.internet ? 'inclusa' : 'não inclusa'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.gas ? 'bg-blue-600/10' : 'bg-red-600/10'}`}>
-                                                <Flame className={`h-5 w-5 ${property.included.gas ? 'text-blue-600' : 'text-red-600'}`} aria-hidden="true" />
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${property.included.gas ? 'bg-tertiary/10' : 'bg-red-600/10'}`}>
+                                                <Flame className={`h-5 w-5 ${property.included.gas ? 'text-tertiary' : 'text-red-600'}`} aria-hidden="true" />
                                             </div>
                                             <span className={property.included.gas ? '' : 'text-muted-foreground'}>
                                                 Gás {property.included.gas ? 'incluso' : 'não incluso'}
@@ -863,7 +863,7 @@ export default function PropertyDetailClient() {
                                         {user?.id === property.owner.id ? (
                                             <>
                                                 <Button
-                                                    className={`w-full h-12 text-base ${property.status === 'alugado' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-600'}`}
+                                                    className={`w-full h-12 text-base ${property.status === 'alugado' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-tertiary hover:bg-tertiary/90'}`}
                                                     onClick={() => {
                                                         if (property.status === 'alugado') {
                                                             setShowTerminateDialog(true);
@@ -927,7 +927,7 @@ export default function PropertyDetailClient() {
                             {user?.id !== property.owner.id && (
                                 <Card>
                                     <CardContent className="p-6 flex items-center gap-4">
-                                        <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                                        <div className="h-12 w-12 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary font-bold text-lg">
                                             {property.owner.name.charAt(0)}
                                         </div>
                                         <div>

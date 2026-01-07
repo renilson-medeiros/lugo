@@ -65,7 +65,7 @@ export default function ForgotPassword() {
                                         Verifique sua caixa de entrada (e spam) para encontrar o link de redefinição de senha enviado para <strong>{email}</strong>.
                                     </p>
                                 </div>
-                                <Button asChild className="w-full bg-blue-600 hover:bg-blue-500">
+                                <Button asChild className="w-full bg-tertiary hover:bg-tertiary/90">
                                     <Link href="/login">Voltar para o Login</Link>
                                 </Button>
                             </div>
@@ -101,7 +101,7 @@ export default function ForgotPassword() {
 
                                 <Button
                                     type="submit"
-                                    className="h-11 w-full text-base bg-blue-600 hover:bg-blue-500"
+                                    className="h-11 w-full text-base bg-tertiary hover:bg-tertiary/90"
                                     disabled={loading}
                                 >
                                     {loading ? (

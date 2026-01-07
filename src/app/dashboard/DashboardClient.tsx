@@ -180,14 +180,14 @@ export default function DashboardClient({
                 </div>
                 {isExpired ? (
                     <Link href="/dashboard/configuracoes">
-                        <Button className="gap-2 w-full md:w-fit bg-amber-600 hover:bg-amber-500">
+                        <Button size="lg" className="gap-2 w-full md:w-fit bg-amber-600 hover:bg-amber-500">
                             <Plus className="h-4 w-4" aria-hidden="true" />
                             Assinar para adicionar mais
                         </Button>
                     </Link>
                 ) : (
                     <Link href="/dashboard/imoveis/novo">
-                        <Button className="gap-2 w-full md:w-fit bg-blue-600 hover:bg-blue-500">
+                        <Button size="lg" className="gap-2 w-full md:w-fit bg-tertiary hover:bg-tertiary/90">
                             <Plus className="h-4 w-4" aria-hidden="true" />
                             Novo imóvel
                         </Button>
@@ -243,7 +243,7 @@ export default function DashboardClient({
                 <div className="space-y-6">
                     <Card className="border-blue-600 bg-blue-600">
                         <CardContent className="flex items-center gap-4 p-6">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-tertiary">
                                 <TrendingUp className="h-5 w-5 text-white" aria-hidden="true" />
                             </div>
                             <div className="flex-1">
@@ -506,7 +506,7 @@ export default function DashboardClient({
                                         Comece cadastrando seu primeiro imóvel para gerenciar aluguéis e inquilinos.
                                     </p>
                                     <Link href="/dashboard/imoveis/novo">
-                                        <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
+                                        <Button className="gap-2 bg-tertiary hover:bg-tertiary/90">
                                             <Plus className="h-4 w-4" aria-hidden="true" />
                                             Cadastrar primeiro imóvel
                                         </Button>

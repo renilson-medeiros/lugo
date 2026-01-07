@@ -178,7 +178,7 @@ export default function Register() {
                                     <Label htmlFor="phone">WhatsApp</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <button type="button" className="inline-flex cursor-pointer items-center text-blue-600">
+                                            <button type="button" className="inline-flex cursor-pointer items-center text-tertiary">
                                                 <Info className="h-3.5 w-3.5" />
                                             </button>
                                         </PopoverTrigger>
@@ -268,9 +268,9 @@ export default function Register() {
                                     />
                                     <Label htmlFor="terms" className="text-sm font-normal leading-tight text-muted-foreground">
                                         Aceito os{" "}
-                                        <Link href={LINKS.TERMS_OF_USE} className="text-blue-600 hover:underline">termos de uso</Link>
+                                        <Link href={LINKS.TERMS_OF_USE} className="text-tertiary hover:underline">termos de uso</Link>
                                         {" "}e a{" "}
-                                        <Link href={LINKS.PRIVACY_POLICY} className="text-blue-600 hover:underline">política de privacidade</Link>
+                                        <Link href={LINKS.PRIVACY_POLICY} className="text-tertiary hover:underline">política de privacidade</Link>
                                     </Label>
                                 </div>
                             </div>

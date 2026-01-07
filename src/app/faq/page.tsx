@@ -49,7 +49,7 @@ export default function FAQPage() {
                 <section className="container px-4 py-16 md:py-24">
                     <div className="max-w-3xl mx-auto">
                         <div className="text-center mb-16">
-                            <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-accent text-blue-600 mx-auto mb-6">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-accent text-tertiary mx-auto mb-6">
                                 <HelpCircle className="h-8 w-8" />
                             </div>
                             <h1 className="font-display text-4xl font-bold tracking-tight mb-4">Perguntas Frequentes</h1>
@@ -63,9 +63,9 @@ export default function FAQPage() {
                                 <AccordionItem
                                     key={index}
                                     value={`item-${index}`}
-                                    className="bg-background hover:bg-blue-50/50 transition-colors border border-border hover:border-blue-600 rounded-lg px-6"
+                                    className="bg-background hover:bg-tertiary/5 transition-colors border border-border hover:border-tertiary rounded-lg px-6"
                                 >
-                                    <AccordionTrigger className="text-left cursor-pointer font-semibold hover:no-underline hover:text-blue-600 py-6">
+                                    <AccordionTrigger className="text-left cursor-pointer font-semibold hover:no-underline hover:text-tertiary py-6">
                                         {faq.question}
                                     </AccordionTrigger>
                                     <AccordionContent className="text-muted-foreground pb-6 leading-relaxed">
@@ -80,7 +80,7 @@ export default function FAQPage() {
                             <p className="text-primary/80 mb-6">Estamos aqui para ajudar você a ter a melhor experiência possível.</p>
                             <a
                                 href="/contato"
-                                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-8 py-3 text-sm font-medium text-white shadow transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-700"
+                                className="inline-flex items-center justify-center rounded-md bg-tertiary px-8 py-3 text-sm font-medium text-white shadow transition-colors hover:bg-tertiary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tertiary"
                             >
                                 Fale Conosco
                             </a>

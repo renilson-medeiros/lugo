@@ -183,7 +183,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando comprovantes...</p>
         </div>
       </div>
@@ -222,7 +222,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
             </p>
           </div>
           <Link href="/dashboard/comprovantes/novo">
-            <Button className="gap-2 w-full md:w-fit bg-blue-600 hover:bg-blue-500">
+            <Button className="gap-2 w-full md:w-fit bg-tertiary hover:bg-tertiary/90">
               <Plus className="h-4 w-4 " aria-hidden="true" />
               Novo comprovante
             </Button>
@@ -230,7 +230,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
         </div>
 
         {/* Search and Filters */}
-        <div className="flex bg-blue-500 py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex bg-tertiary py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -323,7 +323,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-blue-600">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-primary">
                         <Receipt className="h-6 w-6" aria-hidden="true" />
                       </div>
                       <div>
@@ -338,15 +338,15 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
 
                         <div className="mt-2 flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1.5">
-                            <User className="h-4 w-4" aria-hidden="true" />
+                            <User className="h-4 w-4 text-primary" aria-hidden="true" />
                             <span>{receipt.inquilinos?.nome_completo || 'Inquilino não encontrado'}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Building2 className="h-4 w-4" aria-hidden="true" />
+                            <Building2 className="h-4 w-4 text-primary" aria-hidden="true" />
                             <span>{receipt.imoveis?.titulo || 'Imóvel não encontrado'}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Calendar className="h-4 w-4" aria-hidden="true" />
+                            <Calendar className="h-4 w-4 text-primary" aria-hidden="true" />
                             <span>{new Date(receipt.created_at).toLocaleDateString('pt-BR')}</span>
                           </div>
                         </div>
@@ -355,14 +355,14 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
 
                     <div className="flex items-center gap-4">
                       {receipt.valor && (
-                        <p className="font-display text-xl font-bold text-primary">
+                        <p className="font-display text-xl font-bold text-success">
                           R$ {receipt.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </p>
                       )}
                       <div className="flex items-center gap-1">
                         <Link href={`/dashboard/comprovantes/${receipt.id}`}>
                           <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Ver comprovante">
-                            <Eye className="h-4 w-4 text-blue-600" />
+                            <Eye className="h-4 w-4 text-primary" />
                           </Button>
                         </Link>
                         {receipt.pdf_url && (
@@ -373,7 +373,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
                             aria-label="Baixar comprovante"
                             onClick={() => handleDownload(receipt.pdf_url)}
                           >
-                            <Download className="h-4 w-4 text-blue-600" />
+                            <Download className="h-4 w-4 text-primary" />
                           </Button>
                         )}
                       </div>
@@ -397,7 +397,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
               </p>
               {!searchQuery && (
                 <Link href="/dashboard/comprovantes/novo" className="mt-4">
-                  <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
+                  <Button className="gap-2 bg-tertiary hover:bg-tertiary/90">
                     <Plus className="h-4 w-4" aria-hidden="true" />
                     Gerar comprovante
                   </Button>

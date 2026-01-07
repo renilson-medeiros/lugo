@@ -60,7 +60,7 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(prev => prev - 1)}
                         >
-                            <ChevronLeft className="h-4 w-4 text-blue-600" />
+                            <ChevronLeft className="h-4 w-4 text-primary" />
                         </Button>
                         <span className="text-[10px] text-muted-foreground font-medium min-w-12 text-center">
                             {currentPage} de {totalPages}
@@ -72,7 +72,7 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
                             disabled={currentPage === totalPages}
                             onClick={() => setCurrentPage(prev => prev + 1)}
                         >
-                            <ChevronRight className="h-4 w-4 text-blue-600" />
+                            <ChevronRight className="h-4 w-4 text-primary" />
                         </Button>
                     </div>
                 )}
@@ -82,8 +82,8 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
                     {paginatedProperties.map((property) => (
                         <div key={property.id} className="flex items-center justify-between p-3 border rounded-lg bg-card/50 hover:bg-accent/30 transition-colors">
                             <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                                    <Building2 className="h-4 w-4 text-blue-600" />
+                                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <Building2 className="h-4 w-4 text-primary" />
                                 </div>
                                 <div className="min-w-0">
                                     <p className="font-medium text-sm truncate max-w-[150px] sm:max-w-[200px]">

@@ -37,13 +37,13 @@ export function DatePicker({
                 <Button
                     variant={"outline"}
                     className={cn(
-                        "w-full justify-start overflow-hidden text-left font-normal",
+                        "w-full justify-start py-6 overflow-hidden text-left font-normal",
                         !date && "text-muted-foreground",
                         className
                     )}
                     disabled={disabled}
                 >
-                    <CalendarIcon className="text-blue-600 h-4 w-4" />
+                    <CalendarIcon className="text-primary h-4 w-4" />
                     {date ? format(date, "PP", { locale: ptBR }) : <span>{placeholder}</span>}
                 </Button>
             </PopoverTrigger>
