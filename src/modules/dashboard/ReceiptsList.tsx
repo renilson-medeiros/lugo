@@ -222,7 +222,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
             </p>
           </div>
           <Link href="/dashboard/comprovantes/novo">
-            <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
+            <Button className="gap-2 w-full md:w-fit bg-blue-600 hover:bg-blue-500">
               <Plus className="h-4 w-4 " aria-hidden="true" />
               Novo comprovante
             </Button>

@@ -293,7 +293,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
             <p className="text-muted-foreground">Gerencie seus imóveis cadastrados</p>
           </div>
           <Link href="/dashboard/imoveis/novo">
-            <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
+            <Button className="gap-2 w-full md:w-fit bg-blue-600 hover:bg-blue-500">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Novo imóvel
             </Button>
@@ -569,9 +569,13 @@ const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate, on
             </DropdownMenu>
           </div>
         </div>
-        {property.tenant && (
-          <p className="mt-2 text-sm text-muted-foreground">
+        {property.tenant ? (
+          <p className="mt-2 border-t border-border pt-2 text-xs text-muted-foreground">
             Inquilino: {property.tenant}
+          </p>
+        ) : (
+          <p className="mt-2 border-t border-border pt-2 text-xs text-muted-foreground">
+            Inquilino não cadastrado
           </p>
         )}
       </CardContent>
