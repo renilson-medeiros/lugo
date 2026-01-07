@@ -43,7 +43,7 @@ export default function CombinedDashboardClient({
 
     return (
         <Card className="lg:col-span-2 overflow-hidden bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4 space-y-0 flex flex-row items-center justify-between">
+            <CardHeader className="pb-4 space-y-0 flex flex-row items-start justify-between">
                 <div className="space-y-1">
                     <CardTitle className="text-xl font-display font-semibold tracking-tight">
                         {view === "revenue" ? "Visão Financeira" : "Ocupação dos Imóveis"}

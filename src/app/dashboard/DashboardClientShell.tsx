@@ -39,14 +39,14 @@ export default function DashboardClientShell() {
             </div>
             {isExpired ? (
                 <Link href="/dashboard/configuracoes">
-                    <Button className="gap-2 bg-amber-600 hover:bg-amber-500">
+                    <Button className="gap-2 w-full md:w-fit bg-amber-600 hover:bg-amber-500">
                         <Plus className="h-4 w-4" aria-hidden="true" />
                         Assinar para adicionar mais
                     </Button>
                 </Link>
             ) : (
                 <Link href="/dashboard/imoveis/novo">
-                    <Button className="gap-2 bg-blue-600 hover:bg-blue-500">
+                    <Button className="gap-2 w-full md:w-fit bg-blue-600 hover:bg-blue-500">
                         <Plus className="h-4 w-4" aria-hidden="true" />
                         Novo imóvel
                     </Button>

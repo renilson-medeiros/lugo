@@ -67,7 +67,7 @@ function RevenueChartComponent({ data }: RevenueChartProps) {
                         {data.map((entry, index) => (
                             <Cell
                                 key={`cell-${index}`}
-                                fill={index === data.length - 1 ? 'hsl(var(--primary))' : 'hsl(var(--primary) / 0.4)'}
+                                fill={index === data.length - 1 ? '#2563eb' : '#2563eb66'}
                             />
                         ))}
                     </Bar>
