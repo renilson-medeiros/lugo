@@ -65,7 +65,7 @@ function NavItem({
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200",
         isActive
-          ? "bg-blue-50 text-tertiary"
+          ? "bg-primary/10 text-tertiary"
           : "text-tertiary/90 hover:bg-tertiary hover:text-white"
       )}
       aria-current={isActive ? "page" : undefined}
@@ -85,7 +85,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const handleLogout = async () => {
     try {
       await signOut();
-      router.push("/");
+      router.refresh(); // Limpa cache do roteador
+      router.push("/login");
     } catch (error) {
       console.error("Erro ao sair:", error);
     }
@@ -101,7 +102,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const isSettingsPage = pathname === "/dashboard/configuracoes";
 
   return (
-    <div className="min-h-screen bg-blue-50/25">
+    <div className="min-h-screen bg-primary/5">
       {/* Desktop Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 border-r border-border/40 bg-card lg:block">
         <div className="flex h-full flex-col">

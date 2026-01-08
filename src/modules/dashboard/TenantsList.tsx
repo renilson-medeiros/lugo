@@ -336,7 +336,7 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
         ) : (
           <Card className="py-12">
             <CardContent className="flex flex-col items-center justify-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <Users className="h-8 w-8 text-muted-foreground" />
               </div>
               <h3 className="mt-4 font-display text-lg font-semibold">Nenhum inquilino encontrado</h3>
@@ -368,7 +368,7 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
       <CardContent className="p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <Users className="h-6 w-6 text-primary" />
             </div>
             <div>

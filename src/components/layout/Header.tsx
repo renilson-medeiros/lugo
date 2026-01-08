@@ -22,7 +22,8 @@ export function Header() {
     try {
       await signOut();
       setIsOpen(false);
-      router.push("/");
+      router.refresh(); // Limpa cache do roteador
+      router.push("/login");
     } catch (error) {
       console.error("Erro ao sair:", error);
     }

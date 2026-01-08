@@ -42,7 +42,7 @@ export default function CombinedDashboardClient({
         : 0;
 
     return (
-        <Card className="lg:col-span-2 overflow-hidden bg-card/50 backdrop-blur-sm">
+        <Card className="lg:col-span-2 overflow-hidden bg-card backdrop-blur-sm">
             <CardHeader className="pb-4 space-y-0 flex flex-row items-start justify-between">
                 <div className="space-y-1">
                     <CardTitle className="text-xl font-display font-semibold tracking-tight">
@@ -130,7 +130,7 @@ export default function CombinedDashboardClient({
                                 label="Alugado" 
                                 count={occupancyData.alugado} 
                                 total={occupancyData.total}
-                                color="bg-tertiary/10 text-tertiary"
+                                color="bg-primary/10 text-tertiary"
                                 desc="Contratos ativos e gerando receita"
                                 icon={Handshake}
                             />

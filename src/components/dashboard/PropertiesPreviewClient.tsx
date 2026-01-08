@@ -56,7 +56,7 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 cursor-pointer bg-accent hover:bg-accent/80"
+                            className="h-8 w-8 cursor-pointer bg-primary/10 hover:bg-primary/20"
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(prev => prev - 1)}
                         >
@@ -68,7 +68,7 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 cursor-pointer bg-accent hover:bg-accent/80"
+                            className="h-8 w-8 cursor-pointer bg-primary/10 hover:bg-primary/20"
                             disabled={currentPage === totalPages}
                             onClick={() => setCurrentPage(prev => prev + 1)}
                         >

@@ -540,7 +540,7 @@ export default function PropertyForm() {
   if (isLoading) {
     return (
       <>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
             <p className="text-muted-foreground">Carregando dados...</p>

@@ -39,7 +39,7 @@ export async function StatsSection({ userId }: { userId: string }) {
                 <Link key={stat.label} href={stat.href}>
                     <Card className="group transition-all duration-300 hover:border-tertiary/30">
                         <CardContent className="flex items-center gap-4 p-4 sm:p-6">
-                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-accent transition-colors group-hover:bg-tertiary/10">
+                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-tertiary/10">
                                 <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                             </div>
                             <div>
