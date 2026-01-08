@@ -5,18 +5,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Header } from "@/components/layout/Header";
 import { useState } from "react";
-import { Eye, EyeOff, CreditCard, AlertCircle, Check, X, Info } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Info, ArrowLeft } from "lucide-react";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
-import { Logo } from "@/components/ui/Logo";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormData } from "@/lib/schemas";
@@ -47,7 +44,7 @@ export default function Register() {
             confirmPassword: "",
             acceptTerms: false
         },
-        mode: "onChange" // Enable realtime validation for password strength feedback
+        mode: "onChange"
     });
 
     const password = watch("password");
@@ -96,223 +93,221 @@ export default function Register() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col bg-linear-to-b from-accent/30 to-background">
-            <Header />
+        <div className="flex min-h-screen w-full bg-background text-foreground">
+            {/* Left Side - Image/Creative Area */}
+            <div className="hidden lg:flex w-1/2 relative bg-tertiary flex-col items-start justify-end p-16 overflow-hidden">
+                <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/60 z-10" />
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay" />
+                
+                <div className="relative z-20 max-w-lg space-y-6">
+                    <h2 className="font-display text-4xl font-semibold leading-tight text-white">
+                        Construa seu império imobiliário com a Lugo.
+                    </h2>
+                    <p className="text-zinc-200 text-lg">
+                        Comece a gerenciar seus imóveis hoje com a plataforma mais completa do mercado.
+                    </p>
+                    <div className="pt-4">
+                        <cite className="not-italic text-sm text-zinc-300 font-medium">— Plataforma Lugo</cite>
+                    </div>
+                </div>
+            </div>
 
-            <main className="flex flex-1 items-center justify-center px-4 py-12">
-                <Card className="w-full max-w-md animate-fade-in border-border/50 shadow-xl">
-                    <CardHeader className="space-y-1 text-center">
-                        <div className="mx-auto mb-4 flex items-center justify-center">
-                            <Logo iconOnly size="lg" />
-                        </div>
-                        <CardTitle className="font-display text-2xl">Criar conta</CardTitle>
-                        <CardDescription>
-                            Comece a gerenciar seus imóveis hoje mesmo
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                            {/* Mensagem de Erro Geral */}
-                            {authError && (
-                                <div className="rounded-lg bg-red-50 border border-red-200 p-3 flex items-start gap-2">
-                                    <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
-                                    <div className="flex-1">
-                                        <p className="text-sm text-red-800 font-medium">Erro no cadastro</p>
-                                        <p className="text-sm text-red-700 mt-0.5">{authError}</p>
-                                    </div>
-                                </div>
-                            )}
+            {/* Right Side - Form */}
+            <div className="flex w-full lg:w-1/2 flex-col justify-center items-center bg-background p-8 sm:p-12 lg:p-12 overflow-y-auto">
+                <div className="w-full max-w-sm space-y-8 py-8">
+                    <div className="space-y-2">
+                        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Voltar para home
+                        </Link>
+                        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
+                            Criar nova conta
+                        </h1>
+                        <p className="text-muted-foreground">
+                            Preencha seus dados para começar gratuitamente.
+                        </p>
+                    </div>
 
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                        {authError && (
+                            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive flex items-start gap-2">
+                                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                                <span>{authError}</span>
+                            </div>
+                        )}
+
+                        <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Nome completo</Label>
+                                <Label htmlFor="name" className="text-foreground">Nome completo</Label>
                                 <Input
                                     id="name"
                                     type="text"
                                     placeholder="Seu nome"
                                     autoComplete="name"
-                                    className={`h-11 ${errors.name ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                    disabled={isSubmitting}
+                                    className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-11"
                                     {...register("name")}
+                                    disabled={isSubmitting}
                                 />
                                 {errors.name && (
-                                    <p className="text-xs text-red-500">{errors.name.message}</p>
+                                    <p className="text-xs text-destructive">{errors.name.message}</p>
                                 )}
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="cpf">CPF</Label>
-                                <Input
-                                    id="cpf"
-                                    type="text"
-                                    placeholder="000.000.000-00"
-                                    maxLength={14}
-                                    className={`h-11 ${errors.cpf ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                    disabled={isSubmitting}
-                                    {...register("cpf", {
-                                        onChange: handleCPFChange
-                                    })}
-                                />
-                                {errors.cpf && (
-                                    <p className="text-xs text-red-500">{errors.cpf.message}</p>
-                                )}
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="cpf" className="text-foreground">CPF</Label>
+                                    <Input
+                                        id="cpf"
+                                        type="text"
+                                        placeholder="000.000.000-00"
+                                        maxLength={14}
+                                        className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-11"
+                                        {...register("cpf", { onChange: handleCPFChange })}
+                                        disabled={isSubmitting}
+                                    />
+                                    {errors.cpf && (
+                                        <p className="text-xs text-destructive">{errors.cpf.message}</p>
+                                    )}
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-1.5">
+                                        <Label htmlFor="phone" className="text-foreground">WhatsApp</Label>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <button type="button" className="inline-flex cursor-pointer items-center text-primary hover:text-foreground">
+                                                    <Info className="h-3.5 w-3.5" />
+                                                </button>
+                                            </PopoverTrigger>
+                                            <PopoverContent side="top" className="w-60 p-3 text-xs leading-relaxed">
+                                                <p>Use seu número principal para contato.</p>
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        placeholder="(00) 00000-0000"
+                                        maxLength={15}
+                                        className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-11"
+                                        {...register("phone", { onChange: handlePhoneChange })}
+                                        disabled={isSubmitting}
+                                    />
+                                    {errors.phone && (
+                                        <p className="text-xs text-destructive">{errors.phone.message}</p>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="email">E-mail</Label>
+                                <Label htmlFor="email" className="text-foreground">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     placeholder="seu@email.com"
                                     autoComplete="email"
-                                    className={`h-11 ${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                    disabled={isSubmitting}
+                                    className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-11"
                                     {...register("email")}
+                                    disabled={isSubmitting}
                                 />
                                 {errors.email && (
-                                    <p className="text-xs text-red-500">{errors.email.message}</p>
+                                    <p className="text-xs text-destructive">{errors.email.message}</p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <div className="flex items-center gap-1.5">
-                                    <Label htmlFor="phone">WhatsApp</Label>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <button type="button" className="inline-flex cursor-pointer items-center text-tertiary">
-                                                <Info className="h-3.5 w-3.5" />
-                                            </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent side="right" className="w-60 p-3 text-xs leading-relaxed">
-                                            <p>
-                                                Use seu número de contato principal para
-                                                que os interessados possam falar com você diretamente.
-                                            </p>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-                                <Input
-                                    id="phone"
-                                    type="tel"
-                                    placeholder="(00) 00000-0000"
-                                    maxLength={15}
-                                    autoComplete="tel"
-                                    className={`h-11 ${errors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                    disabled={isSubmitting}
-                                    {...register("phone", {
-                                        onChange: handlePhoneChange
-                                    })}
-                                />
-                                {errors.phone && (
-                                    <p className="text-xs text-red-500">{errors.phone.message}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="password">Senha</Label>
+                                <Label htmlFor="password" className="text-foreground">Senha</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         placeholder="Mínimo 8 caracteres"
                                         autoComplete="new-password"
-                                        className={`h-11 pr-10 ${errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                        disabled={isSubmitting}
+                                        className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-11 pr-10"
                                         {...register("password")}
+                                        disabled={isSubmitting}
                                     />
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="icon"
-                                        className="absolute right-0 top-0 h-11 w-11 text-muted-foreground hover:text-foreground"
+                                        className="absolute right-0 top-0 h-11 w-11 text-muted-foreground hover:text-foreground hover:bg-transparent"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                                         disabled={isSubmitting}
                                     >
-                                        {showPassword ? (
-                                            <EyeOff className="h-4 w-4" />
-                                        ) : (
-                                            <Eye className="h-4 w-4" />
-                                        )}
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </Button>
                                 </div>
-                                {errors.password && (
-                                    <p className="text-xs text-red-500">{errors.password.message}</p>
-                                )}
-
-                                {/* Password Strength Indicators */}
+                                {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
                                 <PasswordStrengthMeter password={password} />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+                                <Label htmlFor="confirmPassword" className="text-foreground">Confirmar Senha</Label>
                                 <Input
                                     id="confirmPassword"
                                     type="password"
                                     placeholder="Digite a senha novamente"
                                     autoComplete="new-password"
-                                    className={`h-11 ${errors.confirmPassword ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                    disabled={isSubmitting}
+                                    className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-11"
                                     {...register("confirmPassword")}
+                                    disabled={isSubmitting}
                                 />
                                 {errors.confirmPassword && (
-                                    <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
+                                    <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
                                 )}
                             </div>
+                        </div>
 
-                            <div className="flex items-end space-x-2">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="terms"
-                                        onCheckedChange={(checked) => setValue("acceptTerms", checked === true, { shouldValidate: true })}
-                                        disabled={isSubmitting}
-                                    />
-                                    <Label htmlFor="terms" className="text-sm font-normal leading-tight text-muted-foreground">
-                                        Aceito os{" "}
-                                        <Link href={LINKS.TERMS_OF_USE} className="text-tertiary hover:underline">termos de uso</Link>
-                                        {" "}e a{" "}
-                                        <Link href={LINKS.PRIVACY_POLICY} className="text-tertiary hover:underline">política de privacidade</Link>
-                                    </Label>
-                                </div>
-                            </div>
-                            {errors.acceptTerms && (
-                                <p className="text-xs text-red-500">{errors.acceptTerms.message}</p>
-                            )}
-
-                            <div className="rounded-lg bg-accent/50 p-4">
-                                <div className="flex items-center gap-3">
-                                    <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" />
-                                    <div>
-                                        <p className="text-sm font-medium">Plano Profissional: {PLAN_PRICE_FORMATTED}</p>
-                                        <p className="text-xs text-muted-foreground">{TRIAL_DAYS} dias de teste grátis • Cancele quando quiser</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="h-11 w-full text-base bg-blue-600 hover:bg-blue-600"
+                        <div className="flex items-start md:items-center space-x-2 pt-2">
+                            <Checkbox
+                                id="terms"
+                                className="mt-1"
+                                onCheckedChange={(checked) => setValue("acceptTerms", checked === true, { shouldValidate: true })}
                                 disabled={isSubmitting}
-                            >
-                                {isSubmitting ? (
-                                    <div className="flex items-center gap-2">
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                        <span>Criando conta...</span>
-                                    </div>
-                                ) : (
-                                    "Criar conta e assinar"
-                                )}
-                            </Button>
-                        </form>
+                            />
+                            <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground leading-tight cursor-pointer">
+                                Aceito os{" "}
+                                <Link href={LINKS.TERMS_OF_USE} className="text-tertiary hover:underline">termos de uso</Link>
+                                {" "}e a{" "}
+                                <Link href={LINKS.PRIVACY_POLICY} className="text-tertiary hover:underline">política de privacidade</Link>
+                            </Label>
+                        </div>
+                        {errors.acceptTerms && (
+                            <p className="text-xs text-destructive">{errors.acceptTerms.message}</p>
+                        )}
+                        
+                        <div className="rounded-lg bg-muted/50 border border-green-600 p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-green-600 mb-1">Plano Profissional</p>
+                                    <p className="text-xs text-green-600">{PLAN_PRICE_FORMATTED}</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="inline-block px-2 py-1 rounded bg-green-600/10 text-green-600 text-xs font-medium">
+                                        {TRIAL_DAYS} dias grátis
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-                        <div className="mt-6 text-center text-sm">
-                            <span className="text-muted-foreground">Já tem uma conta? </span>
-                            <Link href="/login" className="font-medium text-blue-600 hover:underline">
+                        <Button
+                            type="submit"
+                            className="w-full h-11 bg-tertiary text-white hover:bg-tertiary/90 transition-colors font-medium text-base rounded-lg shadow-sm"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Criando conta..." : "Criar conta e assinar"}
+                        </Button>
+
+                        <div className="text-center text-sm text-muted-foreground">
+                            Já tem uma conta?{" "}
+                            <Link href="/login" className="text-tertiary hover:underline font-medium">
                                 Fazer login
                             </Link>
                         </div>
-                    </CardContent>
-                </Card>
-            </main>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 }
