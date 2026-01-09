@@ -321,26 +321,34 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <CardContent className="p-6">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-primary">
-                        <Receipt className="h-6 w-6" aria-hidden="true" />
-                      </div>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-display font-semibold capitalize">
-                            {formatReferenceMonth(receipt.mes_referencia)}
-                          </h3>
-                          <Badge variant="outline" className="bg-success/10 text-success font-normal border-success/20">
-                            {receipt.tipo === 'pagamento' ? 'Pagamento' : 'Residência'}
-                          </Badge>
+
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-primary">
+                            <Receipt className="h-6 w-6" aria-hidden="true" />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-display font-semibold capitalize">
+                                {formatReferenceMonth(receipt.mes_referencia)}
+                              </h3>
+
+                              <Badge variant="outline" className="bg-success/10 text-success font-normal border-success/20">
+                                {receipt.tipo === 'pagamento' ? 'Pagamento' : 'Residência'}
+                              </Badge>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                              <span>{receipt.inquilinos?.nome_completo || 'Inquilino não encontrado'}</span>
+                            </div>
+
+                          </div>
                         </div>
 
-                        <div className="mt-2 flex flex-wrap gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1.5">
-                            <User className="h-4 w-4 text-primary" aria-hidden="true" />
-                            <span>{receipt.inquilinos?.nome_completo || 'Inquilino não encontrado'}</span>
-                          </div>
+                        <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1.5">
                             <Building2 className="h-4 w-4 text-primary" aria-hidden="true" />
                             <span>{receipt.imoveis?.titulo || 'Imóvel não encontrado'}</span>
@@ -350,12 +358,13 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
                             <span>{new Date(receipt.created_at).toLocaleDateString('pt-BR')}</span>
                           </div>
                         </div>
+
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 w-full md:w-auto">
                       {receipt.valor && (
-                        <p className="font-display text-xl font-bold text-success">
+                        <p className="font-display text-xl font-bold text-success w-full md:w-auto">
                           R$ {receipt.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </p>
                       )}
@@ -378,6 +387,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
                         )}
                       </div>
                     </div>
+
                   </div>
                 </CardContent>
               </Card>

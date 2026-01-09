@@ -367,44 +367,52 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
     >
       <CardContent className="p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-display font-semibold">{tenant.nome_completo}</h3>
-                <Badge
-                  variant="outline"
-                  className={`text-xs font-normal ${tenant.status === "ativo"
-                    ? "bg-green-50 text-green-500 border-green-200"
-                    : "bg-red-50 text-red-500 border-red-200"
-                    }`}
-                >
-                  {tenant.status === "ativo" ? "Ativo" : "Inativo"}
-                </Badge>
-              </div>
-              <p className="text-sm text-muted-foreground">CPF: {formatCPF(tenant.cpf)}</p>
+          <div className="flex flex-col items-start">
 
-              <div className="mt-3 flex flex-wrap gap-4 text-sm">
+            <div className="flex gap-4">
+              {/* avatar */}
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
+
+              {/* name and status */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display font-semibold">{tenant.nome_completo}</h3>
+                  <Badge
+                    variant="outline"
+                    className={`text-xs font-normal ${tenant.status === "ativo"
+                      ? "bg-green-50 text-green-500 border-green-200"
+                      : "bg-red-50 text-red-500 border-red-200"
+                      }`}
+                  >
+                    {tenant.status === "ativo" ? "Ativo" : "Inativo"}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">CPF: {formatCPF(tenant.cpf)}</p>
+              </div>
+              
+            </div>
+
+            <div className="mt-4 flex flex-col md:flex-row gap-4 text-sm">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Building2 className="h-4 w-4 text-primary" />
                   <span>{tenant.imoveis?.titulo || 'Imóvel não encontrado'}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Calendar className="h-4 w-4 text-primary" />
-                  <span>Dia {tenant.dia_vencimento}</span>
+                  <span>Pagamento dia {tenant.dia_vencimento}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Phone className="h-4 w-4 text-primary" />
                   <span>{formatPhone(tenant.telefone)}</span>
                 </div>
               </div>
-            </div>
+
           </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground ">
-            <Link href={`/dashboard/comprovantes/novo?inquilino=${tenant.id}`}>
+          <div className="flex items-center gap-2 text-muted-foreground w-full md:w-auto">
+            <Link href={`/dashboard/comprovantes/novo?inquilino=${tenant.id}`} className="w-full md:w-auto">
               <Button variant="outline" size="sm" className="gap-1.5 border-tertiary hover:border-tertiary/90 bg-tertiary hover:bg-tertiary/90 text-white hover:text-white">
                 <Receipt className="h-4 w-4" />
                 Gerar comprovante
