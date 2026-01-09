@@ -900,7 +900,7 @@ export default function PropertyDetailClient() {
                                                 <Button
                                                     variant="outline"
                                                     className="w-full h-12"
-                                                    onClick={() => router.push(`/dashboard/imoveis/editar/${property.id}`)}
+                                                    onClick={() => router.push(`/dashboard/imoveis/${property.id}/editar`)}
                                                 >
                                                     <Settings className="h-4 w-4 mr-2" />
                                                     Editar Imóvel
