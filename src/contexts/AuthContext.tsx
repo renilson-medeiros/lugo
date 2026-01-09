@@ -161,11 +161,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // LOGOUT
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-
-    setUser(null);
-    setProfile(null);
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Erro no logout do Supabase:', error);
+    } finally {
+      setUser(null);
+      setProfile(null);
+      // Opcional: limpar localStorage ou outros estados se houver
+    }
   };
 
   // PASSWORD RESET

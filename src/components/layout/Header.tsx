@@ -19,14 +19,10 @@ export function Header() {
   const showNav = user || (!isPropertyPublicPage && !isAuthPage);
 
   const handleSignOut = async () => {
-    try {
-      await signOut();
-      setIsOpen(false);
-      router.refresh(); // Limpa cache do roteador
-      router.push("/login");
-    } catch (error) {
-      console.error("Erro ao sair:", error);
-    }
+    await signOut();
+    setIsOpen(false);
+    router.refresh();
+    router.replace("/login");
   };
 
   return (

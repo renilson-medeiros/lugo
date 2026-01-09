@@ -83,13 +83,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { signOut, profile } = useAuth();
 
   const handleLogout = async () => {
-    try {
-      await signOut();
-      router.refresh(); // Limpa cache do roteador
-      router.push("/login");
-    } catch (error) {
-      console.error("Erro ao sair:", error);
-    }
+    await signOut();
+    router.refresh();
+    router.replace("/login");
   };
 
   // Verificação de Trial Expirado (Paywall)
