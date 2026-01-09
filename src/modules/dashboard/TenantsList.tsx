@@ -369,16 +369,17 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col items-start">
 
-            <div className="flex gap-4">
+            <div className="flex flex-1 w-full gap-4">
               {/* avatar */}
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                 <Users className="h-6 w-6 text-primary" />
               </div>
 
               {/* name and status */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
+              <div className="flex w-full flex-1 flex-col gap-1">
+                <div className="flex  items-center justify-between md:justify-start gap-4">
                   <h3 className="font-display font-semibold">{tenant.nome_completo}</h3>
+
                   <Badge
                     variant="outline"
                     className={`text-xs font-normal ${tenant.status === "ativo"
