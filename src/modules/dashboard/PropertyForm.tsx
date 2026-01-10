@@ -763,7 +763,7 @@ export default function PropertyForm() {
 
             {/* Fotos */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 md:flex-row items-start md:items-center justify-start md:justify-between">
                 <Label>
                   Fotos do imóvel
                   <span className="ml-2 text-xs text-muted-foreground">
@@ -794,7 +794,7 @@ export default function PropertyForm() {
                     <button
                       type="button"
                       onClick={() => removeExistingPhoto(index)}
-                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-400 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-destructive-foreground opacity-100 transition-opacity group-hover:opacity-100"
                       aria-label="Remover foto"
                     >
                       <X className="h-4 w-4" />
@@ -813,7 +813,7 @@ export default function PropertyForm() {
                     <button
                       type="button"
                       onClick={() => removePhoto(index)}
-                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-400 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                      className="cursor-pointer absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-destructive-foreground opacity-100 md:opacity-0 transition-opacity group-hover:opacity-100"
                       aria-label="Remover foto"
                     >
                       <X className="h-4 w-4" />
@@ -869,13 +869,13 @@ export default function PropertyForm() {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="h-10 w-10 rounded-r-none"
+                      className="h-10 w-10 rounded-r-none py-6"
                       onClick={() => setRoomQuantity(Math.max(1, roomQuantity - 1))}
                       aria-label="Diminuir quantidade"
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <div className="flex h-10 w-12 items-center justify-center border-x text-sm font-medium">
+                    <div className="flex h-12 w-12 items-center justify-center border-x text-sm font-medium">
                       {roomQuantity}
                     </div>
                     <Button
