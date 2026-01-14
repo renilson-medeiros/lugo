@@ -38,6 +38,14 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-4 md:flex">
+          {pathname === "/" && (
+            <div className="flex items-center gap-6 mr-2">
+              <a href="#funcionalidades" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Funcionalidades</a>
+              <a href="#como-funciona" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Como funciona</a>
+              <a href="#precos" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Preços</a>
+            </div>
+          )}
+          
           {showNav && !isAuthPage && (
             <>
               {user ? (
@@ -59,12 +67,12 @@ export function Header() {
               ) : (
                 <>
                   <Link href="/login">
-                    <Button variant="ghost" className="font-medium">
+                    <Button variant="ghost" className="font-medium text-muted-foreground hover:text-primary">
                       Entrar
                     </Button>
                   </Link>
                   <Link href="/registro">
-                    <Button className="font-medium bg-tertiary hover:bg-tertiary/90">
+                    <Button className="font-medium bg-tertiary hover:bg-tertiary/90 text-white shadow-sm shadow-blue-900/20">
                       Começar agora
                     </Button>
                   </Link>
@@ -88,12 +96,20 @@ export function Header() {
                   <span className="font-display text-lg font-semibold">Menu</span>
                 </div>
                 <nav className="flex flex-col gap-3" aria-label="Menu mobile">
+                  {pathname === "/" && (
+                    <div className="flex flex-col gap-3 mb-2 border-b border-border pb-4">
+                      <a href="#funcionalidades" onClick={() => setIsOpen(false)} className="px-4 py-2 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">Funcionalidades</a>
+                      <a href="#como-funciona" onClick={() => setIsOpen(false)} className="px-4 py-2 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">Como funciona</a>
+                      <a href="#precos" onClick={() => setIsOpen(false)} className="px-4 py-2 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">Preços</a>
+                    </div>
+                  )}
+                  
                   {!isAuthPage && (
                     <>
                       {user ? (
                         <div className="flex flex-col gap-3">
                           <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full font-medium bg-tertiary hover:bg-tertiary/90 gap-2">
+                            <Button className="w-full font-medium bg-tertiary hover:bg-tertiary/90 gap-2 text-white">
                               <LayoutDashboard className="h-4 w-4" />
                               Dashboard
                             </Button>
@@ -109,12 +125,12 @@ export function Header() {
                       ) : (
                         <>
                           <Link href="/login" onClick={() => setIsOpen(false)}>
-                            <Button variant="ghost" className="w-full justify-start font-medium">
+                            <Button variant="ghost" className="w-full justify-start font-medium text-muted-foreground">
                               Entrar
                             </Button>
                           </Link>
                           <Link href="/registro" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full font-medium bg-tertiary hover:bg-tertiary/90">
+                            <Button className="w-full font-medium bg-tertiary hover:bg-tertiary/90 text-white shadow-sm shadow-blue-900/20">
                               Começar agora
                             </Button>
                           </Link>
