@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 
-const poppins = Poppins({
+const plusJakartaSans = Plus_Jakarta_Sans({
     subsets: ["latin"],
-    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+    weight: ["200", "300", "400", "500", "600", "700", "800"],
     variable: "--font-sans",
 });
 
@@ -77,7 +78,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="pt-BR">
-<body className={`${poppins.variable} font-sans antialiased`}>
+<body className={`${plusJakartaSans.variable} font-sans antialiased`}>
                 <GoogleAnalytics />
                 <Providers>{children}</Providers>
             </body>
