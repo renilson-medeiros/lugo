@@ -7,6 +7,7 @@ import { Building2, TrendingUp, AlertCircle, Clock, Plus } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import CombinedDashboardClient from "./CombinedDashboardClient";
+import StatsCards from "./StatsCards";
 
 // --- Stats Section ---
 export async function StatsSection({ userId }: { userId: string }) {
@@ -27,37 +28,9 @@ export async function StatsSection({ userId }: { userId: string }) {
         comprovantesGerados: receiptsRes.count || 0,
     };
 
-    const statsData = [
-        { label: "Imóveis cadastrados", value: stats.totalImoveis.toString(), icon: Building2, href: "/dashboard/imoveis" },
-        { label: "Inquilinos ativos", value: stats.inquilinosAtivos.toString(), icon: UsersSectionIcon, href: "/dashboard/inquilinos" },
-        { label: "Comprovantes gerados", value: stats.comprovantesGerados.toString(), icon: ReceiptSectionIcon, href: "/dashboard/comprovantes" },
-    ];
-
-    return (
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-            {statsData.map((stat) => (
-                <Link key={stat.label} href={stat.href}>
-                    <Card className="group transition-all duration-300 hover:border-tertiary/30">
-                        <CardContent className="flex items-center gap-4 p-4 sm:p-6">
-                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-tertiary/10">
-                                <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                            </div>
-                            <div>
-                                <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
-                                <p className="font-display text-xl sm:text-2xl font-bold">{stat.value}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </Link>
-            ))}
-        </div>
-    );
+    return <StatsCards stats={stats} />;
 }
 
-// Icons for Stats (Local helpers to avoid importing the whole lucide-react in every sub-component)
-import { Users, Receipt } from "lucide-react";
-const UsersSectionIcon = Users;
-const ReceiptSectionIcon = Receipt;
 
 // --- Combined Revenue & Occupancy Section ---
 export async function CombinedRevenueOccupancySection({ userId }: { userId: string }) {

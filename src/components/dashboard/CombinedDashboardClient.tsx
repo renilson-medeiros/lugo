@@ -35,7 +35,7 @@ export default function CombinedDashboardClient({
     revenueData, 
     occupancyData 
 }: CombinedDashboardClientProps) {
-    const [view, setView] = useState<"revenue" | "occupancy">("revenue");
+    const [view, setView] = useState<"revenue" | "occupancy">("occupancy");
 
     const currentMonthRevenue = revenueData.length > 0 
         ? revenueData[revenueData.length - 1].total 
@@ -46,12 +46,12 @@ export default function CombinedDashboardClient({
             <CardHeader className="pb-4 space-y-0 flex flex-row items-start justify-between">
                 <div className="space-y-1">
                     <CardTitle className="text-xl font-display font-semibold tracking-tight">
-                        {view === "revenue" ? "Visão Financeira" : "Ocupação dos Imóveis"}
+                        {view === "occupancy" ? "Ocupação dos Imóveis" : "Visão Financeira"}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                        {view === "revenue" 
-                            ? "Receita bruta dos últimos 6 meses" 
-                            : `${occupancyData.total} imóveis cadastrados`}
+                        {view === "occupancy" 
+                            ? `${occupancyData.total} imóveis cadastrados` 
+                            : "Receita bruta dos últimos 6 meses"}
                     </p>
                 </div>
                 <Select
@@ -62,8 +62,8 @@ export default function CombinedDashboardClient({
                         <SelectValue placeholder="Selecione a visão" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="revenue">Financeiro</SelectItem>
                         <SelectItem value="occupancy">Ocupação</SelectItem>
+                        <SelectItem value="revenue">Financeiro</SelectItem>
                     </SelectContent>
                 </Select>
             </CardHeader>
