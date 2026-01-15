@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const price = imovel.valor_aluguel.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const description = `🏠 ${imovel.tipo === 'apartamento' ? 'Apartamento' : 'Casa'} incrível em ${imovel.endereco_cidade}. Com ${imovel.quartos || 'vários'} quartos, por apenas ${price}/mês. Confira fotos e agende uma visita no Lugo!`;
 
-    const firstImage = imovel.fotos?.[0] || 'https://aluguefacil.vercel.app/og-image.png';
-    const baseUrl = 'https://aluguefacil.vercel.app';
+    const firstImage = imovel.fotos?.[0] || 'https://lugo.vercel.app/og-image.png';
+    const baseUrl = 'https://lugo.vercel.app';
     const canonicalUrl = `${baseUrl}/imovel/${id}`;
 
     return {
@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: `${title} | Lugo`,
             description,
             images: [firstImage],
-            creator: '@aluguefacil',
+            creator: '@lugo',
         },
     };
 }

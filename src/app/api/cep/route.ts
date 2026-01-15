@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         try {
             const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`, {
                 signal: controller.signal,
-                headers: { 'User-Agent': 'AlugueFacil/1.0' }
+                headers: { 'User-Agent': 'Lugo/1.0' }
             });
             clearTimeout(timeoutId);
 
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
         try {
             const response = await fetch(`https://brasilapi.com.br/api/cep/v1/${cleanCep}`, {
                 signal: controller.signal,
-                headers: { 'User-Agent': 'AlugueFacil/1.0' }
+                headers: { 'User-Agent': 'Lugo/1.0' }
             });
             clearTimeout(timeoutId);
 

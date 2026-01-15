@@ -13,7 +13,8 @@ import {
   LogOut,
   Menu,
   Plus,
-  Lock
+  Lock,
+  User
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -121,6 +122,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
 
           <div className="border-t border-border/40 p-4">
+
+            <div className="flex items-center gap-2 py-4">
+
+              <span className="text-xl rounded-lg bg-primary/10 text-tertiary w-10 h-10 flex items-center justify-center font-bold">
+                {profile?.nome_completo[0]}
+              </span>
+
+              <div className="flex flex-col items-start gap-1">
+                <p className="text-sm text-secondary font-medium truncate max-w-40">{profile?.nome_completo}</p>
+                <p className="text-xs text-secondary/70 font-medium truncate max-w-40">{profile?.email}</p>
+              </div>
+            </div>
+
             <Button
               variant="ghost"
               className="w-full justify-start text-red-600 hover:text-white hover:bg-red-500"
@@ -168,6 +182,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </nav>
 
                 <div className="border-t border-border/40 p-4">
+                  <div className="flex items-center gap-2 py-4">
+
+                    <span className="text-xl rounded-lg bg-primary/10 text-tertiary w-10 h-10 flex items-center justify-center font-bold">
+                      {profile?.nome_completo[0]}
+                    </span>
+
+                    <div className="flex flex-col items-start gap-1">
+                      <p className="text-sm text-secondary font-medium truncate">{profile?.nome_completo}</p>
+                      <p className="text-xs text-secondary/70 font-medium truncate">{profile?.email}</p>
+                    </div>
+                  </div>
+                  
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-red-600"
