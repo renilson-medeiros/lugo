@@ -48,31 +48,31 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
     }
 
     return (
-        <Card className="flex flex-col h-full">
+        <Card className="flex bg-tertiary flex-col h-full">
             <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="font-display text-lg">Seus imóveis recentes</CardTitle>
+                <CardTitle className="font-display text-white text-lg">Seus imóveis recentes</CardTitle>
                 {totalPages > 1 && (
                     <div className="flex items-center gap-1">
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 cursor-pointer bg-primary/10 hover:bg-primary/20"
+                            className="h-8 w-8 cursor-pointer bg-white/10 hover:bg-white/20"
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(prev => prev - 1)}
                         >
-                            <ChevronLeft className="h-4 w-4 text-primary" />
+                            <ChevronLeft className="h-4 w-4 text-white" />
                         </Button>
-                        <span className="text-[10px] text-muted-foreground font-medium min-w-12 text-center">
+                        <span className="text-[10px] text-white font-medium min-w-12 text-center">
                             {currentPage} de {totalPages}
                         </span>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 cursor-pointer bg-primary/10 hover:bg-primary/20"
+                            className="h-8 w-8 cursor-pointer bg-white/10 hover:bg-white/20"
                             disabled={currentPage === totalPages}
                             onClick={() => setCurrentPage(prev => prev + 1)}
                         >
-                            <ChevronRight className="h-4 w-4 text-primary" />
+                            <ChevronRight className="h-4 w-4 text-white" />
                         </Button>
                     </div>
                 )}
@@ -80,7 +80,7 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
             <CardContent className="flex-1 flex flex-col pt-2">
                 <div className="space-y-4 flex-1">
                     {paginatedProperties.map((property) => (
-                        <div key={property.id} className="flex items-center justify-between p-3 border rounded-lg bg-card/50 hover:bg-accent/30 transition-colors">
+                        <div key={property.id} className="flex items-center justify-between p-3 border border-primary rounded-lg bg-white hover:bg-white/90 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <Building2 className="h-4 w-4 text-primary" />
