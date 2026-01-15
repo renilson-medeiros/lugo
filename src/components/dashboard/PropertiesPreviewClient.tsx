@@ -28,17 +28,17 @@ export default function PropertiesPreviewClient({ properties }: PropertiesPrevie
 
     if (properties.length === 0) {
         return (
-            <Card>
+            <Card className="bg-tertiary">
                 <CardHeader className="pb-2">
-                    <CardTitle className="font-display text-lg">Seus imóveis recentes</CardTitle>
+                    <CardTitle className="font-display text-white text-lg">Seus imóveis recentes</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col items-center justify-center text-center py-6">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent mb-4">
                             <Building2 className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
                         </div>
-                        <p className="text-sm font-medium">Nenhum imóvel cadastrado</p>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-sm text-white/90 font-medium">Nenhum imóvel cadastrado</p>
+                        <p className="text-xs text-white/70 mt-1">
                             Cadastre seu primeiro imóvel para começar.
                         </p>
                     </div>
