@@ -24,7 +24,7 @@ export default function PricingPage() {
                         <div className="flex flex-col p-8 bg-background border border-border rounded-lg shadow-sm relative overflow-hidden">
                             <div className="mb-8">
                                 <h3 className="font-display text-2xl font-bold">Essencial</h3>
-                                <p className="text-muted-foreground mt-2">Ideal para quem está começando a organizar seus imóveis.</p>
+                                <p className="text-muted-foreground mt-2">Ideal para quem quer começar a gerenciar seus imóveis.</p>
                                 <div className="mt-6 flex items-baseline">
                                     <span className="text-4xl font-bold">Grátis</span>
                                 </div>
@@ -32,11 +32,10 @@ export default function PricingPage() {
 
                             <ul className="space-y-4 mb-8 flex-1">
                                 {[
-                                    "Até 3 imóveis cadastrados",
+                                    "7 dias grátis para testar",
                                     "Gestão ativa de inquilinos",
                                     "Página pública de divulgação",
-                                    "Geração de comprovantes (PDF)",
-                                    "Suporte via e-mail"
+                                    "Geração de comprovantes (PDF)"
                                 ].map((feature, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm">
                                         <Check className="h-4 w-4 text-tertiary" />

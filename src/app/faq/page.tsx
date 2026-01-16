@@ -75,7 +75,7 @@ export default function FAQPage() {
                             ))}
                         </Accordion>
 
-                        <div className="mt-16 p-8 bg-blue-50 rounded-lg border border-blue-100 text-center">
+                        <div className="mt-16 p-8 bg-primary/5 rounded-lg border border-primary text-center">
                             <h3 className="font-bold text-primary mb-2">Ainda tem dúvidas?</h3>
                             <p className="text-primary/80 mb-6">Estamos aqui para ajudar você a ter a melhor experiência possível.</p>
                             <a

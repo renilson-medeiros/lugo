@@ -26,12 +26,12 @@ export default function PrivacyPage() {
                             Última atualização: {lastUpdate}
                         </p>
 
-                        <div className="bg-green-50 border border-green-100 rounded-lg p-6 mb-12">
-                            <h2 className="text-green-950 font-bold mb-3 flex items-center gap-2">
+                        <div className="bg-primary/5 border border-primary rounded-lg p-6 mb-12">
+                            <h2 className="text-primary font-bold mb-3 flex items-center gap-2">
                                 <Shield className="h-5 w-5" />
                                 Resumo de Privacidade
                             </h2>
-                            <ul className="space-y-2 text-sm text-green-900/80">
+                            <ul className="space-y-2 text-sm text-primary">
                                 <li>• Seus dados e os de seus inquilinos são privados e protegidos.</li>
                                 <li>• Não vendemos ou compartilhamos seus dados com terceiros para fins comerciais.</li>
                                 <li>• Apenas dados necessários para o contato (WhatsApp) são públicos na sua página do imóvel.</li>

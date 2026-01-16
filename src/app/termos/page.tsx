@@ -26,13 +26,13 @@ export default function TermsPage() {
                             Última atualização: {lastUpdate}
                         </p>
 
-                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 mb-12">
-                            <h2 className="text-blue-950 font-bold mb-3 flex items-center gap-2">
+                        <div className="bg-primary/5 border border-primary rounded-lg p-6 mb-12">
+                            <h2 className="text-primary font-bold mb-3 flex items-center gap-2">
                                 <FileText className="h-5 w-5" />
                                 Resumo Simplificado
                             </h2>
-                            <ul className="space-y-2 text-sm text-blue-900/80">
-                                <li>• O Lugo é uma ferramenta de gestão, não uma imobiliária.</li>
+                            <ul className="space-y-2 text-sm text-primary">
+                                <li>• A Lugo é uma ferramenta de gestão, não uma imobiliária.</li>
                                 <li>• Você é o único responsável pelos seus imóveis e negociações.</li>
                                 <li>• A plataforma funciona via assinatura (R$ 9,90/mês), sem comissões sobre o aluguel.</li>
                                 <li>• Seus dados são protegidos, mas as informações públicas do imóvel são acessíveis via link.</li>

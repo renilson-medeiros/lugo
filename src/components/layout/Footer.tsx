@@ -21,16 +21,14 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/como-funciona" className="transition-colors hover:text-tertiary">Como funciona</Link></li>
               <li><Link href="/precos" className="transition-colors hover:text-tertiary">Preços</Link></li>
-              <li><Link href="/como-funciona" className="transition-colors hover:text-tertiary">Para proprietários</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="mb-4 font-display font-semibold">Suporte</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/faq" className="transition-colors hover:text-tertiary">Central de ajuda</Link></li>
-              <li><Link href="/contato" className="transition-colors hover:text-tertiary">Contato</Link></li>
               <li><Link href="/faq" className="transition-colors hover:text-tertiary">FAQ</Link></li>
+              <li><Link href="/contato" className="transition-colors hover:text-tertiary">Contato</Link></li>
             </ul>
           </div>
 
