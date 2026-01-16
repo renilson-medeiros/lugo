@@ -2,25 +2,19 @@
 
 import Link from "next/link";
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Users,
-  Plus,
-  Search,
-  Phone,
-  Mail,
   Building2,
   Calendar,
   MoreHorizontal,
   Receipt,
   Eye,
-  Loader2,
   AlertCircle,
-  UserMinus
+  UserMinus,
+  Phone
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -35,10 +29,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Filter, XCircle } from "lucide-react";
+import { Filter } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { FilterBar } from "@/components/dashboard/FilterBar";
+import { EmptyState } from "@/components/dashboard/EmptyState";
+import { PageLoader } from "@/components/dashboard/PageLoader";
+import { useFormFormatting } from "@/lib/hooks/useFormFormatting";
 
 interface Tenant {
   id: string;
@@ -63,24 +62,9 @@ interface TenantsListProps {
   initialLoading?: boolean;
 }
 
-const formatCPF = (cpf: string) => {
-  const numbers = cpf.replace(/\D/g, '');
-  if (numbers.length !== 11) return cpf;
-  return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-};
-
-const formatPhone = (phone: string) => {
-  const numbers = phone.replace(/\D/g, '');
-  if (numbers.length === 11) {
-    return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-  } else if (numbers.length === 10) {
-    return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-  }
-  return phone;
-};
-
 export default function TenantsList({ initialData = [], initialLoading = true }: TenantsListProps) {
   const { user } = useAuth();
+  const { formatarCPF, formatarTelefone } = useFormFormatting();
   const [searchQuery, setSearchQuery] = useState("");
   const [tenants, setTenants] = useState<Tenant[]>(initialData);
   const [isLoading, setIsLoading] = useState(initialLoading);
@@ -88,13 +72,8 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
   const [statusFilter, setStatusFilter] = useState("todos");
   const [propertyFilter, setPropertyFilter] = useState("todos");
 
-  useEffect(() => {
-    if (user && initialLoading) {
-      loadTenants();
-    }
-  }, [user]);
-
   const loadTenants = useCallback(async () => {
+    if (!user) return;
     try {
       setIsLoading(true);
       setError(null);
@@ -119,7 +98,7 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
             proprietario_id
           )
         `)
-        .eq('imoveis.proprietario_id', user?.id)
+        .eq('imoveis.proprietario_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -140,7 +119,13 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]);
+  }, [user]);
+
+  useEffect(() => {
+    if (user && initialLoading) {
+      loadTenants();
+    }
+  }, [user, initialLoading, loadTenants]);
 
   const handleTerminateLease = useCallback(async (tenant: Tenant) => {
     try {
@@ -218,14 +203,7 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
   }, [tenants]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
-          <p className="text-muted-foreground">Carregando inquilinos...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader message="Carregando inquilinos..." />;
   }
 
   if (error) {
@@ -248,79 +226,57 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
   return (
     <>
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold sm:text-3xl">Inquilinos</h1>
-            <p className="text-muted-foreground">
-              {tenants.length === 0
-                ? 'Nenhum inquilino cadastrado'
-                : `${tenants.length} inquilino${tenants.length !== 1 ? 's' : ''} cadastrado${tenants.length !== 1 ? 's' : ''}`
-              }
-            </p>
-          </div>
-        </div>
+        <DashboardHeader 
+          title="Inquilinos" 
+          subtitle={
+            tenants.length === 0
+              ? 'Nenhum inquilino cadastrado'
+              : `${tenants.length} inquilino${tenants.length !== 1 ? 's' : ''} cadastrado${tenants.length !== 1 ? 's' : ''}`
+          }
+        />
 
-        <div className="flex bg-tertiary py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Buscar inquilino..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+        <FilterBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Buscar inquilino..."
+          showClear={statusFilter !== "todos" || propertyFilter !== "todos" || searchQuery !== ""}
+          onClear={() => {
+            setStatusFilter("todos");
+            setPropertyFilter("todos");
+            setSearchQuery("");
+          }}
+        >
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full lg:w-[160px]">
+              <div className="flex items-center gap-2">
+                <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Status" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Status</SelectItem>
+              <SelectItem value="ativo">Ativo</SelectItem>
+              <SelectItem value="inativo">Inativo</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full lg:w-[160px]">
-                <div className="flex items-center gap-2">
-                  <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Status" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Status</SelectItem>
-                <SelectItem value="ativo">Ativo</SelectItem>
-                <SelectItem value="inativo">Inativo</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-              <SelectTrigger className="w-full lg:w-[200px]">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Imóvel" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Imóveis</SelectItem>
-                {propertiesOptions.map(title => (
-                  <SelectItem key={title} value={title || ''}>
-                    {title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {(statusFilter !== "todos" || propertyFilter !== "todos" || searchQuery !== "") && (
-              <Button
-                variant="ghost"
-                size="default"
-                onClick={() => {
-                  setStatusFilter("todos");
-                  setPropertyFilter("todos");
-                  setSearchQuery("");
-                }}
-                className="text-white py-6 bg-red-600 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto"
-              >
-                <XCircle className="h-4 w-4 mr-1" />
-                Limpar
-              </Button>
-            )}
-          </div>
-        </div>
+          <Select value={propertyFilter} onValueChange={setPropertyFilter}>
+            <SelectTrigger className="w-full lg:w-[200px]">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Imóvel" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Imóveis</SelectItem>
+              {propertiesOptions.map(title => (
+                <SelectItem key={title} value={title || ''}>
+                  {title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FilterBar>
 
         {filteredTenants.length > 0 ? (
           <div className="grid gap-4">
@@ -330,23 +286,19 @@ export default function TenantsList({ initialData = [], initialLoading = true }:
                 tenant={tenant}
                 index={index}
                 onTerminate={handleTerminateLease}
+                formatarCPF={formatarCPF}
+                formatarTelefone={formatarTelefone}
               />
             ))}
           </div>
         ) : (
-          <Card className="py-12">
-            <CardContent className="flex flex-col items-center justify-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Users className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="mt-4 font-display text-lg font-semibold">Nenhum inquilino encontrado</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {searchQuery
-                  ? "Tente buscar com outros termos"
-                  : "Você ainda não tem inquilinos cadastrados."}
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={<Users className="h-8 w-8 text-muted-foreground" />}
+            title="Nenhum inquilino encontrado"
+            description={searchQuery
+              ? "Tente buscar com outros termos"
+              : "Você ainda não tem inquilinos cadastrados."}
+          />
         )}
       </div>
     </>
@@ -357,9 +309,11 @@ interface TenantCardProps {
   tenant: Tenant;
   index: number;
   onTerminate: (tenant: Tenant) => void;
+  formatarCPF: (cpf: string) => string;
+  formatarTelefone: (phone: string) => string;
 }
 
-const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
+const TenantCard = memo(({ tenant, index, onTerminate, formatarCPF, formatarTelefone }: TenantCardProps) => {
   return (
     <Card
       className="transition-all duration-300 hover:shadow-md animate-fade-in"
@@ -390,7 +344,7 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
                     {tenant.status === "ativo" ? "Ativo" : "Inativo"}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">CPF: {formatCPF(tenant.cpf)}</p>
+                <p className="text-sm text-muted-foreground">CPF: {formatarCPF(tenant.cpf)}</p>
               </div>
               
             </div>
@@ -406,7 +360,7 @@ const TenantCard = memo(({ tenant, index, onTerminate }: TenantCardProps) => {
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Phone className="h-4 w-4 text-primary" />
-                  <span>{formatPhone(tenant.telefone)}</span>
+                  <span>{formatarTelefone(tenant.telefone)}</span>
                 </div>
               </div>
 

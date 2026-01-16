@@ -1,17 +1,12 @@
 "use client";
 
-// src/pages/dashboard/PropertiesList.tsx
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Building2,
-  Plus,
-  Search,
   Share2,
   Eye,
   Edit,
@@ -20,7 +15,9 @@ import {
   Trash2,
   UserMinus,
   Settings2,
-  Check
+  Check,
+  Plus,
+  Filter
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -36,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Filter, XCircle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +45,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { FilterBar } from "@/components/dashboard/FilterBar";
+import { EmptyState } from "@/components/dashboard/EmptyState";
+import { PageLoader } from "@/components/dashboard/PageLoader";
+import { useFormFormatting } from "@/lib/hooks/useFormFormatting";
 
 interface Property {
   id: string;
@@ -68,6 +69,7 @@ interface PropertiesListProps {
 }
 
 export default function PropertiesList({ initialData = [], initialLoading = true }: PropertiesListProps) {
+  const { formatarMoeda } = useFormFormatting();
   const [searchQuery, setSearchQuery] = useState("");
   const [properties, setProperties] = useState<Property[]>(initialData);
   const [loading, setLoading] = useState(initialLoading);
@@ -76,14 +78,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
   const [statusFilter, setStatusFilter] = useState("todos");
   const [neighborhoodFilter, setNeighborhoodFilter] = useState("todos");
 
-  // Carregar imóveis do banco
-  useEffect(() => {
-    if (initialLoading) {
-      loadProperties();
-    }
-  }, []);
-
-  const loadProperties = async () => {
+  const loadProperties = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -133,7 +128,14 @@ export default function PropertiesList({ initialData = [], initialLoading = true
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Carregar imóveis do banco
+  useEffect(() => {
+    if (initialLoading) {
+      loadProperties();
+    }
+  }, [initialLoading, loadProperties]);
 
   // Usar useMemo para evitar recalcular filteredProperties em cada render
   const filteredProperties = useMemo(() => {
@@ -211,7 +213,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
       setDeleting(false);
       setDeleteId(null);
     }
-  }, [deleteId]);
+  }, [deleteId, loadProperties]);
 
   const handleChangeStatus = useCallback(async (propertyId: string, newStatus: 'disponivel' | 'manutencao') => {
     try {
@@ -237,7 +239,7 @@ export default function PropertiesList({ initialData = [], initialLoading = true
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadProperties]);
 
   const handleTerminateLease = useCallback(async (propertyId: string) => {
     try {
@@ -281,105 +283,69 @@ export default function PropertiesList({ initialData = [], initialLoading = true
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadProperties]);
+
+  if (loading) {
+    return <PageLoader message="Carregando imóveis..." />;
+  }
 
   return (
     <>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold sm:text-3xl">Imóveis</h1>
-            <p className="text-muted-foreground">Gerencie seus imóveis cadastrados</p>
-          </div>
-          <Link href="/dashboard/imoveis/novo">
-            <Button size="lg" className="gap-2 w-full md:w-fit bg-tertiary hover:bg-tertiary/90">
-              <Plus className="h-4 w-4" aria-hidden="true" />
-              Novo imóvel
-            </Button>
-          </Link>
-        </div>
+        <DashboardHeader 
+          title="Imóveis" 
+          subtitle="Gerencie seus imóveis cadastrados"
+          action={{
+            label: "Novo imóvel",
+            href: "/dashboard/imoveis/novo"
+          }}
+        />
 
-        {/* Search and Filters */}
-        <div className="flex bg-tertiary py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-            <Input
-              type="search"
-              placeholder="Buscar imóvel..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-              aria-label="Buscar imóvel"
-            />
-          </div>
+        <FilterBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Buscar imóvel..."
+          showClear={statusFilter !== "todos" || neighborhoodFilter !== "todos" || searchQuery !== ""}
+          onClear={() => {
+            setStatusFilter("todos");
+            setNeighborhoodFilter("todos");
+            setSearchQuery("");
+          }}
+        >
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full lg:w-[160px]">
+              <div className="flex items-center gap-2">
+                <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Status" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Status</SelectItem>
+              <SelectItem value="disponível">Disponível</SelectItem>
+              <SelectItem value="ocupado">Ocupado</SelectItem>
+              <SelectItem value="manutenção">Manutenção</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full lg:w-[160px]">
-                <div className="flex items-center gap-2">
-                  <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Status" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Status</SelectItem>
-                <SelectItem value="disponível">Disponível</SelectItem>
-                <SelectItem value="ocupado">Ocupado</SelectItem>
-                <SelectItem value="manutenção">Manutenção</SelectItem>
-              </SelectContent>
-            </Select>
+          <Select value={neighborhoodFilter} onValueChange={setNeighborhoodFilter}>
+            <SelectTrigger className="w-full lg:w-[180px]">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Bairro" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Bairros</SelectItem>
+              {neighborhoods.map(neighborhood => (
+                <SelectItem key={neighborhood} value={neighborhood}>
+                  {neighborhood}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FilterBar>
 
-            <Select value={neighborhoodFilter} onValueChange={setNeighborhoodFilter}>
-              <SelectTrigger className="w-full lg:w-[180px]">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Bairro" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Bairros</SelectItem>
-                {neighborhoods.map(neighborhood => (
-                  <SelectItem key={neighborhood} value={neighborhood}>
-                    {neighborhood}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {(statusFilter !== "todos" || neighborhoodFilter !== "todos" || searchQuery !== "") && (
-              <Button
-                variant="ghost"
-                size="default"
-                onClick={() => {
-                  setStatusFilter("todos");
-                  setNeighborhoodFilter("todos");
-                  setSearchQuery("");
-                }}
-                className="text-white py-6 bg-red-600 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto col-span-1 sm:col-span-2 lg:col-span-1"
-              >
-                <XCircle className="h-4 w-4 mr-1" />
-                Limpar
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Properties Grid - Loading */}
-        {loading ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Card key={index} className="overflow-hidden animate-pulse">
-                <div className="aspect-video bg-accent" />
-                <CardContent className="p-4 space-y-3">
-                  <div className="h-4 bg-accent rounded w-3/4" />
-                  <div className="h-3 bg-accent rounded w-full" />
-                  <div className="h-4 bg-accent rounded w-1/2" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : filteredProperties.length > 0 ? (
+        {filteredProperties.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredProperties.map((property, index) => (
               <PropertyCard
@@ -390,31 +356,22 @@ export default function PropertiesList({ initialData = [], initialLoading = true
                 onDelete={setDeleteId}
                 onTerminate={handleTerminateLease}
                 onChangeStatus={handleChangeStatus}
+                formatarMoeda={formatarMoeda}
               />
             ))}
           </div>
         ) : (
-          <Card className="py-12">
-            <CardContent className="flex flex-col items-center justify-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent">
-                <Building2 className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-              </div>
-              <h3 className="mt-4 font-display text-lg font-semibold">Nenhum imóvel encontrado</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {searchQuery
-                  ? "Tente buscar com outros termos"
-                  : "Cadastre seu primeiro imóvel para começar"}
-              </p>
-              {!searchQuery && (
-                <Link href="/dashboard/imoveis/novo" className="mt-4">
-                  <Button className="gap-2 bg-tertiary hover:bg-tertiary/90">
-                    <Plus className="h-4 w-4" aria-hidden="true" />
-                    Cadastrar imóvel
-                  </Button>
-                </Link>
-              )}
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={<Building2 className="h-8 w-8 text-muted-foreground" aria-hidden="true" />}
+            title="Nenhum imóvel encontrado"
+            description={searchQuery
+              ? "Tente buscar com outros termos"
+              : "Cadastre seu primeiro imóvel para começar"}
+            action={!searchQuery ? {
+              label: "Cadastrar imóvel",
+              href: "/dashboard/imoveis/novo"
+            } : undefined}
+          />
         )}
       </div>
 
@@ -451,9 +408,10 @@ interface PropertyCardProps {
   onDelete: (id: string) => void;
   onTerminate: (id: string) => void;
   onChangeStatus: (id: string, status: 'disponivel' | 'manutencao') => void;
+  formatarMoeda: (value: string) => string;
 }
 
-const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate, onChangeStatus }: PropertyCardProps) => {
+const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate, onChangeStatus, formatarMoeda }: PropertyCardProps) => {
   return (
     <Card
       className="group overflow-hidden transition-all duration-300 hover:shadow-sm animate-fade-in"
@@ -492,7 +450,7 @@ const PropertyCard = memo(({ property, index, onShare, onDelete, onTerminate, on
         </div>
         <div className="mt-3 flex items-center justify-between">
           <p className="font-semibold text-tertiary">
-            R$ {property.rent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
+            {formatarMoeda((property.rent * 100).toString())}/mês
           </p>
           <div className="flex items-center gap-1">
             <Button

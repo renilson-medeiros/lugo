@@ -1,3 +1,6 @@
+"use client";
+
+// src/modules/dashboard/TenantForm.tsx
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useParams, usePathname } from "next/navigation";
@@ -27,6 +30,9 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { MaskedInput } from "@/components/dashboard/MaskedInput";
+import { CurrencyInput } from "@/components/dashboard/CurrencyInput";
+import { useFormFormatting } from "@/lib/hooks/useFormFormatting";
 
 interface TenantFormData {
   name: string;
@@ -67,6 +73,7 @@ export default function TenantForm() {
   const params = useParams();
   const pathname = usePathname();
   const id = params?.id as string;
+  const { formatarCPF, formatarTelefone, formatarMoeda, parseMoeda } = useFormFormatting();
 
   // Determinar o modo baseado na URL
   const isEditMode = pathname?.includes("/editar");
@@ -74,7 +81,7 @@ export default function TenantForm() {
 
   const [formData, setFormData] = useState<TenantFormData>(initialFormData);
   const [property, setProperty] = useState<PropertyData | null>(null);
-  const [tenantId, setTenantId] = useState<string | null>(isEditMode ? id : null);
+  const [tenantId, _setTenantId] = useState<string | null>(isEditMode ? id : null);
   const [propertyId, setPropertyId] = useState<string | null>(isRegistrationMode ? id : null);
 
   const [contractPhotos, setContractPhotos] = useState<File[]>([]);
@@ -105,13 +112,13 @@ export default function TenantForm() {
       if (data) {
         setFormData({
           name: data.nome_completo,
-          cpf: formatCPF(data.cpf),
-          phone: formatPhone(data.telefone),
+          cpf: formatarCPF(data.cpf),
+          phone: formatarTelefone(data.telefone),
           email: data.email || "",
           rentDay: data.dia_vencimento.toString(),
           startDate: data.data_inicio ? new Date(data.data_inicio) : undefined,
           endDate: data.data_fim ? new Date(data.data_fim) : undefined,
-          rentValue: formatCurrency((data.valor_aluguel * 100).toString()),
+          rentValue: formatarMoeda((data.valor_aluguel * 100).toString()),
           rg: data.rg || "",
           observations: data.observacoes || "",
         });
@@ -119,6 +126,11 @@ export default function TenantForm() {
         if (data.imoveis) {
           setProperty(Array.isArray(data.imoveis) ? data.imoveis[0] : data.imoveis);
           setPropertyId(data.imovel_id);
+        }
+        
+        if (data.fotos_contrato) {
+          setExistingContractPhotos(data.fotos_contrato);
+          setContractPreviews(data.fotos_contrato);
         }
       }
     } catch (error) {
@@ -142,10 +154,10 @@ export default function TenantForm() {
       if (data) {
         setProperty(data);
         setPropertyId(data.id);
-        // Pre-preencher o valor do aluguel se estiver disponível com máscara
+        // Pre-preencher o valor do aluguel se estiver disponível
         setFormData(prev => ({
           ...prev,
-          rentValue: formatCurrency((data.valor_aluguel * 100).toString())
+          rentValue: formatarMoeda((data.valor_aluguel * 100).toString())
         }));
       }
     } catch (error) {
@@ -158,33 +170,6 @@ export default function TenantForm() {
 
   const handleInputChange = (field: keyof TenantFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    return numbers
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
-      .slice(0, 14);
-  };
-
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    return numbers
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{5})(\d{4})$/, "$1-$2")
-      .slice(0, 15);
-  };
-
-  const formatCurrency = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (!numbers) return "";
-    const formatted = (parseInt(numbers) / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-    return formatted;
   };
 
   const handleContractUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,7 +221,7 @@ export default function TenantForm() {
       }
 
       const saveAction = async () => {
-        const rentAmount = parseFloat(formData.rentValue.replace(/\D/g, "")) / 100 || 0;
+        const rentAmount = parseMoeda(formData.rentValue);
         const tenantData = {
           nome_completo: formData.name,
           cpf: formData.cpf.replace(/\D/g, ""),
@@ -285,7 +270,7 @@ export default function TenantForm() {
 
           toast.success("Inquilino atualizado com sucesso!");
         } else {
-          const { data: tenant, error: tenantError } = await supabase
+          const { data: _tenant, error: tenantError } = await supabase
             .from('inquilinos')
             .insert({
               ...tenantData,
@@ -332,6 +317,17 @@ export default function TenantForm() {
 
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando dados...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -366,12 +362,7 @@ export default function TenantForm() {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Carregando dados...</span>
-              </div>
-            ) : property ? (
+            {property ? (
               <div className="space-y-1">
                 <p className="font-medium text-blue-50">{property.titulo || `${property.endereco_rua}, ${property.endereco_numero}`}</p>
                 <p className="text-sm text-blue-200">{property.endereco_rua}, {property.endereco_numero}</p>
@@ -405,23 +396,23 @@ export default function TenantForm() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cpf">CPF</Label>
-                <Input
+                <MaskedInput
                   id="cpf"
+                  mask="cpf"
                   placeholder="000.000.000-00"
                   value={formData.cpf}
-                  onChange={(e) => handleInputChange("cpf", formatCPF(e.target.value))}
-                  maxLength={14}
+                  onValueChange={(val) => handleInputChange("cpf", val)}
                   required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefone</Label>
-                <Input
+                <MaskedInput
                   id="phone"
+                  mask="phone"
                   placeholder="(00) 00000-0000"
                   value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", formatPhone(e.target.value))}
-                  maxLength={15}
+                  onValueChange={(val) => handleInputChange("phone", val)}
                 />
               </div>
               <div className="space-y-2 sm:col-span-2">
@@ -460,11 +451,10 @@ export default function TenantForm() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
                 <Label htmlFor="rentValue">Valor do Aluguel</Label>
-                <Input
+                <CurrencyInput
                   id="rentValue"
-                  placeholder="R$ 0,00"
                   value={formData.rentValue}
-                  onChange={(e) => handleInputChange("rentValue", formatCurrency(e.target.value))}
+                  onValueChange={(val) => handleInputChange("rentValue", val)}
                   required
                 />
               </div>
@@ -536,7 +526,7 @@ export default function TenantForm() {
                   <button
                     type="button"
                     onClick={() => removeContractPhoto(index)}
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-100 transition-opacity group-hover:opacity-100"
                     aria-label="Remover foto"
                   >
                     <X className="h-4 w-4" />
@@ -567,7 +557,7 @@ export default function TenantForm() {
 
         {/* Actions */}
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Link href="/dashboard/imoveis">
+          <Link href="/dashboard/inquilinos">
             <Button type="button" variant="outline" className="w-full sm:w-auto">
               Cancelar
             </Button>

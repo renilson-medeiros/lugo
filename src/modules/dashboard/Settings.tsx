@@ -1,17 +1,18 @@
 "use client";
 
+// src/modules/dashboard/Settings.tsx
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { User, Phone, Mail, CreditCard, Calendar, Bell, Loader2, AlertCircle, Info } from "lucide-react";
+import { User, CreditCard, Bell, Loader2, AlertCircle, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { validarTelefone, formatarTelefone, formatarCPF } from "@/lib/validators";
+import { validarTelefone } from "@/lib/validators";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import {
   AlertDialog,
@@ -24,7 +25,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
+import { MaskedInput } from "@/components/dashboard/MaskedInput";
+import { useFormFormatting } from "@/lib/hooks/useFormFormatting";
 
 interface SettingsProps {
   initialProfile?: any;
@@ -33,6 +35,7 @@ interface SettingsProps {
 export default function Settings({ initialProfile }: SettingsProps) {
   const { user, profile: contextProfile } = useAuth();
   const profile = contextProfile || initialProfile;
+  const { formatarTelefone, formatarCPF } = useFormFormatting();
   const [userData, setUserData] = useState({
     nome_completo: "",
     email: "",
@@ -42,7 +45,6 @@ export default function Settings({ initialProfile }: SettingsProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     if (profile) {
@@ -59,7 +61,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
       setIsLoading(false);
       setError("Usuário não autenticado");
     }
-  }, [profile, user, initialProfile]);
+  }, [profile, user, initialProfile, formatarTelefone]);
 
   const handleSave = async () => {
     if (!user || !profile) {
@@ -125,7 +127,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando configurações...</p>
@@ -161,7 +163,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-display">
-              <User className="h-5 w-5 text-primary" aria-hidden="true" />
+              <User className="h-5 w-5 text-tertiary" aria-hidden="true" />
               Dados pessoais
             </CardTitle>
             <CardDescription>
@@ -197,7 +199,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
                   <Popover>
                     <PopoverTrigger asChild>
                       <button type="button" className="inline-flex cursor-pointer items-center">
-                        <Info className="h-3.5 w-3.5 text-primary" />
+                        <Info className="h-3.5 w-3.5 text-tertiary" />
                       </button>
                     </PopoverTrigger>
                     <PopoverContent side="top" className="w-60 mb-2 bg-popover shadow-md rounded-lg p-3 text-xs leading-relaxed">
@@ -208,12 +210,12 @@ export default function Settings({ initialProfile }: SettingsProps) {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <Input
+                <MaskedInput
                   id="phone"
+                  mask="phone"
                   value={userData.telefone}
-                  onChange={(e) => setUserData({ ...userData, telefone: formatarTelefone(e.target.value) })}
+                  onValueChange={(val) => setUserData({ ...userData, telefone: val })}
                   placeholder="(11) 99999-9999"
-                  maxLength={15}
                   disabled={isSaving}
                 />
               </div>
@@ -250,7 +252,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-display">
-              <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" />
+              <CreditCard className="h-5 w-5 text-tertiary" aria-hidden="true" />
               Informações da conta
             </CardTitle>
             <CardDescription>
@@ -294,7 +296,7 @@ export default function Settings({ initialProfile }: SettingsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-display">
-              <Bell className="h-5 w-5 text-primary" aria-hidden="true" />
+              <Bell className="h-5 w-5 text-tertiary" aria-hidden="true" />
               Notificações
             </CardTitle>
             <CardDescription>

@@ -1,10 +1,12 @@
+"use client";
+
+// src/modules/dashboard/ReceiptForm.tsx
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -26,12 +28,13 @@ import {
   User,
   Building2,
   DollarSign,
-  Loader2,
-  Search
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { CurrencyInput } from "@/components/dashboard/CurrencyInput";
+import { useFormFormatting } from "@/lib/hooks/useFormFormatting";
 
 interface ReceiptFormData {
   tenantId: string;
@@ -104,6 +107,7 @@ export default function ReceiptForm() {
   const params = useParams();
   const id = params?.id as string;
   const isEditing = !!id && id !== 'novo';
+  const { formatarCPF, formatarMoeda, parseMoeda } = useFormFormatting();
 
   const loadTenants = useCallback(async () => {
     if (!user) return;
@@ -208,9 +212,9 @@ export default function ReceiptForm() {
         propertyId: receipt.imovel_id,
         propertyName: property?.titulo || `${property?.endereco_rua}, ${property?.endereco_numero}`,
         propertyAddress: `${property?.endereco_rua}, ${property?.endereco_numero} - ${property?.endereco_bairro}, ${property?.endereco_cidade}`,
-        rentValue: formatCurrency(((receipt.valor || 0) * 100).toString()),
-        condoValue: formatCurrency(((property?.valor_condominio || 0) * 100).toString()),
-        iptuValue: formatCurrency(((property?.valor_iptu || 0) * 100).toString()),
+        rentValue: formatarMoeda(((receipt.valor || 0) * 100).toString()),
+        condoValue: formatarMoeda(((property?.valor_condominio || 0) * 100).toString()),
+        iptuValue: formatarMoeda(((property?.valor_iptu || 0) * 100).toString()),
         otherValue: "R$ 0,00",
         paymentDate: receipt.created_at ? new Date(receipt.created_at) : new Date(),
         referenceMonth: parseInt(month).toString(),
@@ -225,7 +229,7 @@ export default function ReceiptForm() {
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, formatarMoeda]);
 
   useEffect(() => {
     if (isEditing) {
@@ -242,9 +246,9 @@ export default function ReceiptForm() {
       propertyId: tenant.imoveis.id,
       propertyName: tenant.imoveis.titulo || `${tenant.imoveis.endereco_rua}, ${tenant.imoveis.endereco_numero}`,
       propertyAddress: `${tenant.imoveis.endereco_rua}, ${tenant.imoveis.endereco_numero} - ${tenant.imoveis.endereco_bairro}, ${tenant.imoveis.endereco_cidade}`,
-      rentValue: formatCurrency((tenant.valor_aluguel * 100).toString()),
-      condoValue: formatCurrency((tenant.imoveis.valor_condominio * 100 || 0).toString()),
-      iptuValue: formatCurrency((tenant.imoveis.valor_iptu * 100 || 0).toString()),
+      rentValue: formatarMoeda((tenant.valor_aluguel * 100).toString()),
+      condoValue: formatarMoeda((tenant.imoveis.valor_condominio * 100 || 0).toString()),
+      iptuValue: formatarMoeda((tenant.imoveis.valor_iptu * 100 || 0).toString()),
       otherValue: "",
     }));
   };
@@ -261,30 +265,11 @@ export default function ReceiptForm() {
   };
 
   const calculateTotal = () => {
-    const rent = parseFloat(formData.rentValue.replace(/\D/g, "")) / 100 || 0;
-    const condo = parseFloat(formData.condoValue.replace(/\D/g, "")) / 100 || 0;
-    const iptu = parseFloat(formData.iptuValue.replace(/\D/g, "")) / 100 || 0;
-    const other = parseFloat(formData.otherValue.replace(/\D/g, "")) / 100 || 0;
+    const rent = parseMoeda(formData.rentValue);
+    const condo = parseMoeda(formData.condoValue);
+    const iptu = parseMoeda(formData.iptuValue);
+    const other = parseMoeda(formData.otherValue);
     return rent + condo + iptu + other;
-  };
-
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    return numbers
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
-      .slice(0, 14);
-  };
-
-  const formatCurrency = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (!numbers) return "";
-    const formatted = (parseInt(numbers) / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-    return formatted;
   };
 
   const handleDownload = async () => {
@@ -466,6 +451,17 @@ export default function ReceiptForm() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando dados...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="space-y-6">
@@ -498,7 +494,7 @@ export default function ReceiptForm() {
             <Card className="animate-fade-in">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <User className="h-5 w-5 text-tertiary" aria-hidden="true" />
                   <CardTitle>Inquilino</CardTitle>
                 </div>
               </CardHeader>
@@ -508,17 +504,12 @@ export default function ReceiptForm() {
                   <Select
                     value={formData.tenantId}
                     onValueChange={handleTenantSelect}
-                    disabled={isLoading}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={isLoading ? "Carregando inquilinos..." : "Selecione um inquilino"} />
+                      <SelectValue placeholder="Selecione um inquilino" />
                     </SelectTrigger>
                     <SelectContent>
-                      {isLoading ? (
-                        <div className="flex items-center justify-center p-4">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        </div>
-                      ) : tenants.length === 0 ? (
+                      {tenants.length === 0 ? (
                         <div className="p-4 text-sm text-center text-muted-foreground">
                           Nenhum inquilino ativo encontrado.
                         </div>
@@ -543,7 +534,7 @@ export default function ReceiptForm() {
                       <span>{formData.tenantName}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <span>CPF: {formData.tenantCpf ? formatCPF(formData.tenantCpf) : "—"}</span>
+                      <span>CPF: {formData.tenantCpf ? formatarCPF(formData.tenantCpf) : "—"}</span>
                     </div>
                   </div>
                 )}
@@ -554,7 +545,7 @@ export default function ReceiptForm() {
             <Card className="animate-fade-in" style={{ animationDelay: "100ms" }}>
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <Calendar className="h-5 w-5 text-tertiary" aria-hidden="true" />
                   <CardTitle>Referência</CardTitle>
                 </div>
               </CardHeader>
@@ -601,7 +592,7 @@ export default function ReceiptForm() {
             <Card className="animate-fade-in" style={{ animationDelay: "200ms" }}>
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <DollarSign className="h-5 w-5 text-tertiary" aria-hidden="true" />
                   <CardTitle>Valores</CardTitle>
                 </div>
               </CardHeader>
@@ -609,46 +600,42 @@ export default function ReceiptForm() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="rentValue">Aluguel</Label>
-                    <Input
+                    <CurrencyInput
                       id="rentValue"
-                      placeholder="R$ 0,00"
                       value={formData.rentValue}
-                      onChange={(e) => handleInputChange("rentValue", formatCurrency(e.target.value))}
+                      onValueChange={(val) => handleInputChange("rentValue", val)}
                       required
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="condoValue">Condomínio</Label>
-                    <Input
+                    <CurrencyInput
                       id="condoValue"
-                      placeholder="R$ 0,00"
                       value={formData.condoValue}
-                      onChange={(e) => handleInputChange("condoValue", formatCurrency(e.target.value))}
+                      onValueChange={(val) => handleInputChange("condoValue", val)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="iptuValue">IPTU</Label>
-                    <Input
+                    <CurrencyInput
                       id="iptuValue"
-                      placeholder="R$ 0,00"
                       value={formData.iptuValue}
-                      onChange={(e) => handleInputChange("iptuValue", formatCurrency(e.target.value))}
+                      onValueChange={(val) => handleInputChange("iptuValue", val)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="otherValue">Outros</Label>
-                    <Input
+                    <CurrencyInput
                       id="otherValue"
-                      placeholder="R$ 0,00"
                       value={formData.otherValue}
-                      onChange={(e) => handleInputChange("otherValue", formatCurrency(e.target.value))}
+                      onValueChange={(val) => handleInputChange("otherValue", val)}
                     />
                   </div>
                 </div>
                 <Separator />
                 <div className="flex items-center justify-between rounded-lg bg-accent/50 p-4">
                   <span className="font-medium">Total</span>
-                  <span className="font-display text-xl font-bold text-primary">
+                  <span className="font-display text-xl font-bold text-tertiary">
                     R$ {calculateTotal().toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -663,7 +650,7 @@ export default function ReceiptForm() {
                 className="gap-2"
                 onClick={() => setShowPreview(!showPreview)}
               >
-                <Eye className="h-4 w-4 text-primary" />
+                <Eye className="h-4 w-4 text-tertiary" />
                 {showPreview ? "Ocultar preview" : "Ver preview"}
               </Button>
               <div className="flex flex-1 flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -685,15 +672,15 @@ export default function ReceiptForm() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Receipt className="h-5 w-5 text-primary" aria-hidden="true" />
+                    <Receipt className="h-5 w-5 text-tertiary" aria-hidden="true" />
                     <CardTitle>Preview</CardTitle>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" size="icon" onClick={handleDownload} aria-label="Baixar comprovante">
-                      <Download className="h-4 w-4 text-primary" />
+                      <Download className="h-4 w-4 text-tertiary" />
                     </Button>
                     <Button variant="outline" size="icon" onClick={handleShare} aria-label="Compartilhar comprovante">
-                      <Share2 className="h-4 w-4 text-primary" />
+                      <Share2 className="h-4 w-4 text-tertiary" />
                     </Button>
                   </div>
                 </div>
@@ -719,7 +706,7 @@ export default function ReceiptForm() {
                     </p>
                     <p className="text-sm">
                       <span className="text-muted-foreground">CPF: </span>
-                      <span>{formData.tenantCpf ? formatCPF(formData.tenantCpf) : "—"}</span>
+                      <span>{formData.tenantCpf ? formatarCPF(formData.tenantCpf) : "—"}</span>
                     </p>
                     <p className="text-sm">
                       <span className="text-muted-foreground">Imóvel: </span>
@@ -760,7 +747,7 @@ export default function ReceiptForm() {
                     <Separator />
                     <div className="flex justify-between font-medium">
                       <span>Total</span>
-                      <span className="text-primary">
+                      <span className="text-tertiary">
                         R$ {calculateTotal().toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                       </span>
                     </div>

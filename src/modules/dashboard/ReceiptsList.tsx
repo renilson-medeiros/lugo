@@ -2,24 +2,19 @@
 
 import Link from "next/link";
 import { useEffect, useState, useMemo, useCallback } from "react";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Receipt,
-  Plus,
-  Search,
   Download,
   Eye,
   Calendar,
-  User,
   Building2,
-  Loader2,
   AlertCircle,
   Filter,
-  XCircle
+  Plus,
+  DownloadCloud
 } from "lucide-react";
 import {
   Select,
@@ -31,6 +26,11 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { FilterBar } from "@/components/dashboard/FilterBar";
+import { EmptyState } from "@/components/dashboard/EmptyState";
+import { PageLoader } from "@/components/dashboard/PageLoader";
+import { useFormFormatting } from "@/lib/hooks/useFormFormatting";
 
 interface ReceiptData {
   id: string;
@@ -58,6 +58,7 @@ interface ReceiptsListProps {
 
 export default function ReceiptsList({ initialData = [], initialLoading = true }: ReceiptsListProps) {
   const { user } = useAuth();
+  const { formatarMoeda } = useFormFormatting();
   const [searchQuery, setSearchQuery] = useState("");
   const [receipts, setReceipts] = useState<ReceiptData[]>(initialData);
   const [isLoading, setIsLoading] = useState(initialLoading);
@@ -66,13 +67,8 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
   const [mesFilter, setMesFilter] = useState("todos");
   const [anoFilter, setAnoFilter] = useState("todos");
 
-  useEffect(() => {
-    if (user && initialLoading) {
-      loadReceipts();
-    }
-  }, [user]);
-
   const loadReceipts = useCallback(async () => {
+    if (!user) return;
     try {
       setIsLoading(true);
       setError(null);
@@ -97,7 +93,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
             proprietario_id
           )
         `)
-        .eq('imoveis.proprietario_id', user?.id)
+        .eq('imoveis.proprietario_id', user.id)
         .order('mes_referencia', { ascending: false })
         .limit(50);
 
@@ -122,7 +118,13 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]);
+  }, [user]);
+
+  useEffect(() => {
+    if (user && initialLoading) {
+      loadReceipts();
+    }
+  }, [user, initialLoading, loadReceipts]);
 
   const filteredReceipts = useMemo(() => {
     return receipts.filter(
@@ -180,14 +182,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
-          <p className="text-muted-foreground">Carregando comprovantes...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader message="Carregando comprovantes..." />;
   }
 
   if (error) {
@@ -210,108 +205,80 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
   return (
     <>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold sm:text-3xl">Comprovantes</h1>
-            <p className="text-muted-foreground">
-              {receipts.length === 0
-                ? 'Nenhum comprovante gerado'
-                : `${receipts.length} comprovante${receipts.length !== 1 ? 's' : ''} gerado${receipts.length !== 1 ? 's' : ''}`
-              }
-            </p>
-          </div>
-          <Link href="/dashboard/comprovantes/novo">
-            <Button className="gap-2 w-full md:w-fit bg-tertiary hover:bg-tertiary/90">
-              <Plus className="h-4 w-4 " aria-hidden="true" />
-              Novo comprovante
-            </Button>
-          </Link>
-        </div>
+        <DashboardHeader 
+          title="Comprovantes" 
+          subtitle={
+            receipts.length === 0
+              ? 'Nenhum comprovante gerado'
+              : `${receipts.length} comprovante${receipts.length !== 1 ? 's' : ''} gerado${receipts.length !== 1 ? 's' : ''}`
+          }
+          action={{
+            label: "Novo comprovante",
+            href: "/dashboard/comprovantes/novo"
+          }}
+        />
 
-        {/* Search and Filters */}
-        <div className="flex bg-tertiary py-5 px-4 rounded-lg flex-col gap-4 lg:flex-row lg:items-center">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-            <Input
-              type="search"
-              placeholder="Buscar comprovante..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-              aria-label="Buscar comprovante"
-            />
-          </div>
+        <FilterBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Buscar comprovante..."
+          showClear={tipoFilter !== "todos" || mesFilter !== "todos" || anoFilter !== "todos" || searchQuery !== ""}
+          onClear={() => {
+            setTipoFilter("todos");
+            setMesFilter("todos");
+            setAnoFilter("todos");
+            setSearchQuery("");
+          }}
+        >
+          <Select value={tipoFilter} onValueChange={setTipoFilter}>
+            <SelectTrigger className="w-full lg:w-[140px]">
+              <div className="flex items-center gap-2">
+                <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Tipo" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Tipos</SelectItem>
+              <SelectItem value="pagamento">Pagamento</SelectItem>
+              <SelectItem value="residencia">Residência</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
-            <Select value={tipoFilter} onValueChange={setTipoFilter}>
-              <SelectTrigger className="w-full lg:w-[140px]">
-                <div className="flex items-center gap-2">
-                  <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Tipo" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Tipos</SelectItem>
-                <SelectItem value="pagamento">Pagamento</SelectItem>
-                <SelectItem value="residencia">Residência</SelectItem>
-              </SelectContent>
-            </Select>
+          <Select value={mesFilter} onValueChange={setMesFilter}>
+            <SelectTrigger className="w-full lg:w-[140px]">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Mês" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Meses</SelectItem>
+              {months.map(month => (
+                <SelectItem key={month.value} value={month.value}>
+                  {month.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-            <Select value={mesFilter} onValueChange={setMesFilter}>
-              <SelectTrigger className="w-full lg:w-[140px]">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Mês" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Meses</SelectItem>
-                {months.map(month => (
-                  <SelectItem key={month.value} value={month.value}>
-                    {month.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Select value={anoFilter} onValueChange={setAnoFilter}>
+            <SelectTrigger className="w-full lg:w-[100px] col-span-1 lg:col-span-1">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground lg:hidden" />
+                <SelectValue placeholder="Ano" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Anos</SelectItem>
+              {years.map(year => (
+                <SelectItem key={year} value={year}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FilterBar>
 
-            <Select value={anoFilter} onValueChange={setAnoFilter}>
-              <SelectTrigger className="w-full lg:w-[100px] col-span-1 lg:col-span-1">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-muted-foreground lg:hidden" />
-                  <SelectValue placeholder="Ano" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Anos</SelectItem>
-                {years.map(year => (
-                  <SelectItem key={year} value={year}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {(tipoFilter !== "todos" || mesFilter !== "todos" || anoFilter !== "todos" || searchQuery !== "") && (
-              <Button
-                variant="ghost"
-                size="default"
-                onClick={() => {
-                  setTipoFilter("todos");
-                  setMesFilter("todos");
-                  setAnoFilter("todos");
-                  setSearchQuery("");
-                }}
-                className="text-white py-6 bg-red-600 hover:bg-red-500 hover:text-white border border-red-500 w-full lg:w-auto col-span-1 lg:col-span-1"
-              >
-                <XCircle className="h-4 w-4 mr-1" />
-                Limpar
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Receipts List */}
         {filteredReceipts.length > 0 ? (
           <div className="grid gap-4">
             {filteredReceipts.map((receipt, index) => (
@@ -365,7 +332,7 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
                     <div className="flex items-center gap-4 w-full md:w-auto">
                       {receipt.valor && (
                         <p className="font-display text-xl font-bold text-success w-full md:w-auto">
-                          R$ {receipt.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          {formatarMoeda((receipt.valor * 100).toString())}
                         </p>
                       )}
                       <div className="flex items-center gap-1">
@@ -394,27 +361,17 @@ export default function ReceiptsList({ initialData = [], initialLoading = true }
             ))}
           </div>
         ) : (
-          <Card className="py-12">
-            <CardContent className="flex flex-col items-center justify-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent">
-                <Receipt className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-              </div>
-              <h3 className="mt-4 font-display text-lg font-semibold">Nenhum comprovante encontrado</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {searchQuery
-                  ? "Tente buscar com outros termos"
-                  : "Você ainda não gerou nenhum comprovante. Gere comprovantes de pagamento ou residência para seus inquilinos."}
-              </p>
-              {!searchQuery && (
-                <Link href="/dashboard/comprovantes/novo" className="mt-4">
-                  <Button className="gap-2 bg-tertiary hover:bg-tertiary/90">
-                    <Plus className="h-4 w-4" aria-hidden="true" />
-                    Gerar comprovante
-                  </Button>
-                </Link>
-              )}
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={<Receipt className="h-8 w-8 text-muted-foreground" aria-hidden="true" />}
+            title="Nenhum comprovante encontrado"
+            description={searchQuery
+              ? "Tente buscar com outros termos"
+              : "Você ainda não gerou nenhum comprovante. Gere comprovantes de pagamento ou residência para seus inquilinos."}
+            action={!searchQuery ? {
+              label: "Gerar comprovante",
+              href: "/dashboard/comprovantes/novo"
+            } : undefined}
+          />
         )}
       </div>
     </>

@@ -1,5 +1,6 @@
 "use client";
 
+// src/modules/dashboard/TenantDetails.tsx
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
@@ -33,6 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useFormFormatting } from "@/lib/hooks/useFormFormatting";
 
 interface TenantData {
   id: string;
@@ -67,6 +69,7 @@ export default function TenantDetails() {
   const router = useRouter();
   const params = useParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
+  const { formatarCPF, formatarTelefone, formatarMoeda } = useFormFormatting();
 
   const [tenant, setTenant] = useState<TenantData | null>(null);
   const [comprovantes, setComprovantes] = useState<Comprovante[]>([]);
@@ -132,7 +135,7 @@ export default function TenantDetails() {
 
       if (comprovantesError) {
         console.error('Erro ao carregar comprovantes:', comprovantesError);
-        // N\u00e3o lan\u00e7ar erro, apenas deixar vazio
+        // Não lançar erro, apenas deixar vazio
         setComprovantes([]);
       } else {
         // Transformar os dados para o formato esperado
@@ -249,29 +252,6 @@ export default function TenantDetails() {
       setIsTerminating(false);
       setShowTerminateDialog(false);
     }
-  };
-
-  const formatCPF = (cpf: string) => {
-    const numbers = cpf.replace(/\D/g, '');
-    if (numbers.length !== 11) return cpf;
-    return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-  };
-
-  const formatPhone = (phone: string) => {
-    const numbers = phone.replace(/\D/g, '');
-    if (numbers.length === 11) {
-      return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    } else if (numbers.length === 10) {
-      return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    }
-    return phone;
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
   };
 
   const formatDate = (dateString: string) => {
@@ -398,13 +378,13 @@ export default function TenantDetails() {
               </div>
               <div>
                 <p className="text-sm font-medium text-secondary">CPF</p>
-                <p className="text-sm text-muted-foreground">{formatCPF(tenant.cpf)}</p>
+                <p className="text-sm text-muted-foreground">{formatarCPF(tenant.cpf)}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-secondary">Telefone</p>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <Phone className="h-4 w-4 text-tertiary" />
-                  {formatPhone(tenant.telefone)}
+                  {formatarTelefone(tenant.telefone)}
                 </p>
               </div>
               {tenant.email && (
@@ -511,7 +491,7 @@ export default function TenantDetails() {
                       </p>
                     </div>
                     <p className="font-semibold text-green-600">
-                      {formatCurrency(comp.valor_pago)}
+                      {formatarMoeda((comp.valor_pago * 100).toString())}
                     </p>
                   </div>
                 ))}

@@ -1,36 +1,17 @@
-// src/pages/dashboard/PropertyForm.tsx
+"use client";
+
+// src/modules/dashboard/PropertyForm.tsx
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  ArrowLeft,
-  Upload,
-  X,
-  Plus,
-  Home,
-  MapPin,
-  DollarSign,
-  Settings2,
   FileText,
-  HousePlusIcon,
-  Check,
-  Minus,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -45,6 +26,13 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { createPropertyAction, updatePropertyAction, generateSignedUploadUrlAction } from "@/app/dashboard/imoveis/actions";
+import { formatarMoeda, parseMoeda } from "@/lib/validators";
+
+// Modular Components
+import { PropertyAddressFields } from "./PropertyForm/PropertyAddressFields";
+import { PropertyBasicInfoFields } from "./PropertyForm/PropertyBasicInfoFields";
+import { PropertyFinancialFields } from "./PropertyForm/PropertyFinancialFields";
+import { PropertyPhotoManager } from "./PropertyForm/PropertyPhotoManager";
 
 interface PropertyFormData {
   // Endereço
@@ -107,15 +95,6 @@ const initialFormData: PropertyFormData = {
   observations: "",
 };
 
-const propertyTypes = [
-  { value: "apartamento", label: "Apartamento" },
-  { value: "casa", label: "Casa" },
-  { value: "kitnet", label: "Kitnet" },
-  { value: "studio", label: "Studio" },
-  { value: "cobertura", label: "Cobertura" },
-  { value: "comercial", label: "Comercial" },
-];
-
 export default function PropertyForm() {
   const router = useRouter();
   const params = useParams();
@@ -127,11 +106,8 @@ export default function PropertyForm() {
   const [photos, setPhotos] = useState<File[]>([]);
   const [photosPreviews, setPhotosPreviews] = useState<string[]>([]);
   const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
-  const [newRoom, setNewRoom] = useState("");
-  const [roomQuantity, setRoomQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingCep, setIsLoadingCep] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'optimizing' | 'preparing' | 'storing' | 'finalizing' | 'error'>('idle');
   const [progressValue, setProgressValue] = useState(0);
 
@@ -165,7 +141,7 @@ export default function PropertyForm() {
         }
       }
     } catch (error) {
-      // Falha silenciosa ou log de erro real
+      // Falha silenciosa
     }
   };
 
@@ -195,10 +171,10 @@ export default function PropertyForm() {
         acceptsPets: data.aceita_pets || false,
         hasGarage: data.tem_garagem || false,
         acceptsChildren: data.aceita_criancas !== false,
-        rentValue: data.valor_aluguel ? formatCurrency(Math.round(data.valor_aluguel * 100).toString()) : "",
-        condoValue: data.valor_condominio ? formatCurrency(Math.round(data.valor_condominio * 100).toString()) : "",
-        iptuValue: data.valor_iptu ? formatCurrency(Math.round(data.valor_iptu * 100).toString()) : "",
-        serviceValue: data.valor_taxa_servico ? formatCurrency(Math.round(data.valor_taxa_servico * 100).toString()) : "",
+        rentValue: data.valor_aluguel ? formatarMoeda(Math.round(data.valor_aluguel * 100).toString()) : "",
+        condoValue: data.valor_condominio ? formatarMoeda(Math.round(data.valor_condominio * 100).toString()) : "",
+        iptuValue: data.valor_iptu ? formatarMoeda(Math.round(data.valor_iptu * 100).toString()) : "",
+        serviceValue: data.valor_taxa_servico ? formatarMoeda(Math.round(data.valor_taxa_servico * 100).toString()) : "",
         includesWater: data.inclui_agua || false,
         includesElectricity: data.inclui_luz || false,
         includesInternet: data.inclui_internet || false,
@@ -218,88 +194,8 @@ export default function PropertyForm() {
     }
   };
 
-  // Buscar endereço por CEP
-  const fetchAddressByCep = async (cep: string) => {
-    const cleanCep = cep.replace(/\D/g, '');
-
-    if (cleanCep.length !== 8) return;
-
-    setIsLoadingCep(true);
-    try {
-      const response = await fetch(`/api/cep?cep=${cleanCep}`);
-      const data = await response.json();
-
-      if (data.erro) {
-        toast.error('CEP não encontrado');
-        return;
-      }
-
-      setFormData(prev => ({
-        ...prev,
-        street: data.logradouro || prev.street,
-        neighborhood: data.bairro || prev.neighborhood,
-        city: data.localidade || prev.city,
-        state: data.uf || prev.state,
-      }));
-
-      toast.success('Endereço encontrado!');
-    } catch (error) {
-      toast.error('Erro ao buscar CEP');
-    } finally {
-      setIsLoadingCep(false);
-    }
-  };
-
-  const handleInputChange = (field: keyof PropertyFormData, value: string | boolean | string[]) => {
+  const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const newPhotos = Array.from(files);
-
-      // Limitar a 8 fotos
-      const totalPhotos = photos.length + newPhotos.length + existingPhotos.length;
-      if (totalPhotos > 8) {
-        toast.error('Máximo de 8 fotos permitidas');
-        return;
-      }
-
-      setPhotos(prev => [...prev, ...newPhotos]);
-
-      newPhotos.forEach(file => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPhotosPreviews(prev => [...prev, reader.result as string]);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  };
-
-  const removePhoto = (index: number) => {
-    setPhotos(prev => prev.filter((_, i) => i !== index));
-    setPhotosPreviews(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const removeExistingPhoto = (index: number) => {
-    setExistingPhotos(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const addRoom = () => {
-    if (newRoom.trim()) {
-      const roomText = roomQuantity > 1 ? `${roomQuantity} ${newRoom.trim()}` : newRoom.trim();
-      if (!formData.rooms.includes(roomText)) {
-        handleInputChange("rooms", [...formData.rooms, roomText]);
-        setNewRoom("");
-        setRoomQuantity(1);
-      }
-    }
-  };
-
-  const removeRoom = (room: string) => {
-    handleInputChange("rooms", formData.rooms.filter(r => r !== room));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -349,10 +245,10 @@ export default function PropertyForm() {
         setProgressValue(45);
 
         if (!isEditing) {
-          let rentVal = parseCurrencyToNumber(formData.rentValue);
-          let condoVal = formData.condoValue ? parseCurrencyToNumber(formData.condoValue) : null;
-          let iptuVal = formData.iptuValue ? parseCurrencyToNumber(formData.iptuValue) : null;
-          let serviceVal = formData.serviceValue ? parseCurrencyToNumber(formData.serviceValue) : null;
+          let rentVal = parseMoeda(formData.rentValue);
+          let condoVal = formData.condoValue ? parseMoeda(formData.condoValue) : null;
+          let iptuVal = formData.iptuValue ? parseMoeda(formData.iptuValue) : null;
+          let serviceVal = formData.serviceValue ? parseMoeda(formData.serviceValue) : null;
 
           // Sanitizar NaNs
           if (isNaN(rentVal)) rentVal = 0;
@@ -459,10 +355,10 @@ export default function PropertyForm() {
           aceita_pets: formData.acceptsPets,
           tem_garagem: formData.hasGarage,
           aceita_criancas: formData.acceptsChildren,
-          valor_aluguel: parseCurrencyToNumber(formData.rentValue),
-          valor_condominio: formData.condoValue ? parseCurrencyToNumber(formData.condoValue) : null,
-          valor_iptu: formData.iptuValue ? parseCurrencyToNumber(formData.iptuValue) : null,
-          valor_taxa_servico: formData.serviceValue ? parseCurrencyToNumber(formData.serviceValue) : null,
+          valor_aluguel: parseMoeda(formData.rentValue),
+          valor_condominio: formData.condoValue ? parseMoeda(formData.condoValue) : null,
+          valor_iptu: formData.iptuValue ? parseMoeda(formData.iptuValue) : null,
+          valor_taxa_servico: formData.serviceValue ? parseMoeda(formData.serviceValue) : null,
           inclui_agua: formData.includesWater,
           inclui_luz: formData.includesElectricity,
           inclui_internet: formData.includesInternet,
@@ -516,37 +412,14 @@ export default function PropertyForm() {
     }
   };
 
-  // Funções de formatação (máscaras)
-  const formatCep = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 5) return numbers;
-    return `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
-  };
-
-  const formatCurrency = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    const formatted = (parseInt(numbers) / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-    return numbers ? formatted : "";
-  };
-
-  const parseCurrencyToNumber = (value: string): number => {
-    const numbers = value.replace(/[^\d]/g, "");
-    return parseInt(numbers) / 100;
-  };
-
   if (isLoading) {
     return (
-      <>
-        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-          <div className="text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
-            <p className="text-muted-foreground">Carregando dados...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-tertiary mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando dados...</p>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -573,9 +446,6 @@ export default function PropertyForm() {
           {uploadStatus !== 'error' && (
             <div className="space-y-6 py-4">
               <Progress value={progressValue} className="h-2.5" />
-              {/* <div className="flex justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-tertiary" />
-              </div> */}
             </div>
           )}
 
@@ -610,461 +480,39 @@ export default function PropertyForm() {
           </div>
         </div>
 
-        {/* Endereço */}
-        <Card className="animate-fade-in">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-primary" aria-hidden="true" />
-              <CardTitle>Endereço</CardTitle>
-            </div>
-            <CardDescription>Localização completa do imóvel</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <Label htmlFor="cep">CEP</Label>
-                <div className="relative">
-                  <Input
-                    id="cep"
-                    placeholder="00000-000"
-                    value={formData.cep}
-                    onChange={(e) => {
-                      const formatted = formatCep(e.target.value);
-                      handleInputChange("cep", formatted);
-                      if (formatted.replace(/\D/g, '').length === 8) {
-                        fetchAddressByCep(formatted);
-                      }
-                    }}
-                    maxLength={9}
-                    disabled={isLoadingCep}
-                  />
-                  {isLoadingCep && (
-                    <Loader2 className="absolute right-3 top-2.5 h-5 w-5 animate-spin text-tertiary" />
-                  )}
-                </div>
-              </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="street">Rua</Label>
-                <Input
-                  id="street"
-                  placeholder="Nome da rua"
-                  value={formData.street}
-                  onChange={(e) => handleInputChange("street", e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="number">Número</Label>
-                <Input
-                  id="number"
-                  placeholder="123"
-                  value={formData.number}
-                  onChange={(e) => handleInputChange("number", e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <Label htmlFor="complement">Complemento</Label>
-                <Input
-                  id="complement"
-                  placeholder="Apto 101"
-                  value={formData.complement}
-                  onChange={(e) => handleInputChange("complement", e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="neighborhood">Bairro</Label>
-                <Input
-                  id="neighborhood"
-                  placeholder="Centro"
-                  value={formData.neighborhood}
-                  onChange={(e) => handleInputChange("neighborhood", e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="city">Cidade</Label>
-                <Input
-                  id="city"
-                  placeholder="São Paulo"
-                  value={formData.city}
-                  onChange={(e) => handleInputChange("city", e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="state">Estado</Label>
-                <Input
-                  id="state"
-                  placeholder="SP"
-                  value={formData.state}
-                  onChange={(e) => handleInputChange("state", e.target.value.toUpperCase())}
-                  maxLength={2}
-                  required
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <PropertyAddressFields 
+          formData={formData} 
+          onChange={handleInputChange} 
+        />
 
-        {/* Informações do Imóvel */}
-        <Card className="animate-fade-in" style={{ animationDelay: "100ms" }}>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Home className="h-5 w-5 text-primary" aria-hidden="true" />
-              <CardTitle>Informações do Imóvel</CardTitle>
-            </div>
-            <CardDescription>Detalhes e características</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-                <Label htmlFor="title">Título do anúncio</Label>
-                <Input
-                  id="title"
-                  placeholder="Ex: Apartamento Centro"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="type">Tipo do imóvel</Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => handleInputChange("type", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {propertyTypes.map(type => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="maxPeople">Máximo de pessoas</Label>
-                <Input
-                  id="maxPeople"
-                  type="number"
-                  placeholder="4"
-                  min="1"
-                  value={formData.maxPeople}
-                  onChange={(e) => handleInputChange("maxPeople", e.target.value)}
-                />
-              </div>
-            </div>
+        <PropertyBasicInfoFields 
+          formData={formData} 
+          onChange={handleInputChange} 
+        />
+        
+        <div className="animate-fade-in" style={{ animationDelay: "150ms" }}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Fotos do Imóvel</CardTitle>
+              <CardDescription>Carregue pelo menos 3 fotos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PropertyPhotoManager
+                photos={photos}
+                photosPreviews={photosPreviews}
+                existingPhotos={existingPhotos}
+                onPhotosChange={setPhotos}
+                onPreviewsChange={setPhotosPreviews}
+                onExistingPhotosChange={setExistingPhotos}
+              />
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Fotos */}
-            <div className="space-y-3">
-              <div className="flex flex-col gap-2 md:flex-row items-start md:items-center justify-start md:justify-between">
-                <Label>
-                  Fotos do imóvel
-                  <span className="ml-2 text-xs text-muted-foreground">
-                    ({existingPhotos.length + photos.length}/8 fotos)
-                  </span>
-                </Label>
-                {(existingPhotos.length + photos.length) < 3 && (
-                  <span className="text-xs text-red-500">
-                    Mínimo 3 fotos necessárias
-                  </span>
-                )}
-                {(existingPhotos.length + photos.length) >= 3 && (existingPhotos.length + photos.length) <= 8 && (
-                  <div className="text-xs text-green-600 flex gap-1 items-center">
-                    <Check className="h-4 w-4" />
-                    <span>Quantidade válida</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-3">
-                {/* Fotos existentes */}
-                {existingPhotos.map((photo, index) => (
-                  <div key={`existing-${index}`} className="relative group">
-                    <img
-                      src={photo}
-                      alt={`Foto existente ${index + 1}`}
-                      className="h-24 w-24 rounded-lg object-cover border border-border"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeExistingPhoto(index)}
-                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-destructive-foreground opacity-100 transition-opacity group-hover:opacity-100"
-                      aria-label="Remover foto"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-
-                {/* Novas fotos */}
-                {photosPreviews.map((preview, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={preview}
-                      alt={`Foto ${index + 1}`}
-                      className="h-24 w-24 rounded-lg object-cover border border-border"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(index)}
-                      className="cursor-pointer absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-destructive-foreground opacity-100 md:opacity-0 transition-opacity group-hover:opacity-100"
-                      aria-label="Remover foto"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-
-                {/* Botão upload */}
-                <label
-                  htmlFor="photos"
-                  className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-accent/50 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-                >
-                  <Upload className="h-6 w-6" aria-hidden="true" />
-                  <span className="mt-1 text-xs">Adicionar</span>
-                  <input
-                    id="photos"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handlePhotoUpload}
-                    className="sr-only"
-                  />
-                </label>
-              </div>
-            </div>
-
-            {/* Cômodos */}
-            <div className="space-y-3">
-              <Label>Cômodos</Label>
-              <div className="flex flex-wrap gap-2">
-                {formData.rooms.map((room) => (
-                  <span
-                    key={room}
-                    className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-sm"
-                  >
-                    {room}
-                    <button
-                      type="button"
-                      onClick={() => removeRoom(room)}
-                      className="ml-1 rounded-full p-0.5"
-                      aria-label={`Remover ${room}`}
-                    >
-                      <X className="h-3 w-3 hover:text-red-400" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <div className="flex flex-col md:flex-row gap-2">
-                {/* Contador de quantidade */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center border rounded-md">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10 rounded-r-none py-6"
-                      onClick={() => setRoomQuantity(Math.max(1, roomQuantity - 1))}
-                      aria-label="Diminuir quantidade"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <div className="flex h-12 w-12 items-center justify-center border-x text-sm font-medium">
-                      {roomQuantity}
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10 rounded-l-none"
-                      onClick={() => setRoomQuantity(Math.min(99, roomQuantity + 1))}
-                      aria-label="Aumentar quantidade"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {/* Input de texto */}
-                  <Input
-                    placeholder="Ex: Quartos, Salas..."
-                    value={newRoom}
-                    onChange={(e) => setNewRoom(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addRoom())}
-                    className="max-w-xs"
-                  />
-                </div>
-
-                <Button type="button" className="w-full md:w-fit px-4 bg-tertiary hover:bg-tertiary/90" variant="default" size="lg" onClick={addRoom} aria-label="Adicionar cômodo">
-                  {/* <HousePlusIcon className="h-4 w-4" /> */}
-                  <span>Adicionar</span>
-                </Button>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Regras */}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <label 
-                htmlFor="acceptsPets" 
-                className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
-              >
-                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Aceita animais
-                </span>
-                <Switch
-                  id="acceptsPets"
-                  checked={formData.acceptsPets}
-                  onCheckedChange={(checked) => handleInputChange("acceptsPets", checked)}
-                />
-              </label>
-              <label 
-                htmlFor="hasGarage" 
-                className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
-              >
-                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Possui garagem
-                </span>
-                <Switch
-                  id="hasGarage"
-                  checked={formData.hasGarage}
-                  onCheckedChange={(checked) => handleInputChange("hasGarage", checked)}
-                />
-              </label>
-              <label 
-                htmlFor="acceptsChildren" 
-                className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
-              >
-                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Aceita crianças
-                </span>
-                <Switch
-                  id="acceptsChildren"
-                  checked={formData.acceptsChildren}
-                  onCheckedChange={(checked) => handleInputChange("acceptsChildren", checked)}
-                />
-              </label>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Valores */}
-        <Card className="animate-fade-in" style={{ animationDelay: "200ms" }}>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" aria-hidden="true" />
-              <CardTitle>Valores</CardTitle>
-            </div>
-            <CardDescription>Custos mensais do imóvel</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <Label htmlFor="rentValue">Aluguel</Label>
-                <Input
-                  id="rentValue"
-                  placeholder="R$ 0,00"
-                  value={formData.rentValue}
-                  onChange={(e) => handleInputChange("rentValue", formatCurrency(e.target.value))}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="condoValue">Condomínio</Label>
-                <Input
-                  id="condoValue"
-                  placeholder="R$ 0,00"
-                  value={formData.condoValue}
-                  onChange={(e) => handleInputChange("condoValue", formatCurrency(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="iptuValue">IPTU</Label>
-                <Input
-                  id="iptuValue"
-                  placeholder="R$ 0,00"
-                  value={formData.iptuValue}
-                  onChange={(e) => handleInputChange("iptuValue", formatCurrency(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="serviceValue">Taxa de serviço</Label>
-                <Input
-                  id="serviceValue"
-                  placeholder="R$ 0,00"
-                  value={formData.serviceValue}
-                  onChange={(e) => handleInputChange("serviceValue", formatCurrency(e.target.value))}
-                />
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Inclusões */}
-            <div>
-              <Label className="mb-3 block">Incluso no valor</Label>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <label 
-                  htmlFor="includesWater" 
-                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
-                >
-                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Água
-                  </span>
-                  <Switch
-                    id="includesWater"
-                    checked={formData.includesWater}
-                    onCheckedChange={(checked) => handleInputChange("includesWater", checked)}
-                  />
-                </label>
-                <label 
-                  htmlFor="includesElectricity" 
-                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
-                >
-                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Luz
-                  </span>
-                  <Switch
-                    id="includesElectricity"
-                    checked={formData.includesElectricity}
-                    onCheckedChange={(checked) => handleInputChange("includesElectricity", checked)}
-                  />
-                </label>
-                <label 
-                  htmlFor="includesInternet" 
-                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
-                >
-                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Internet
-                  </span>
-                  <Switch
-                    id="includesInternet"
-                    checked={formData.includesInternet}
-                    onCheckedChange={(checked) => handleInputChange("includesInternet", checked)}
-                  />
-                </label>
-                <label 
-                  htmlFor="includesGas" 
-                  className="flex items-center justify-between rounded-lg border border-border p-4 cursor-pointer hover:bg-accent/20 transition-colors select-none"
-                >
-                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Gás
-                  </span>
-                  <Switch
-                    id="includesGas"
-                    checked={formData.includesGas}
-                    onCheckedChange={(checked) => handleInputChange("includesGas", checked)}
-                  />
-                </label>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <PropertyFinancialFields 
+          formData={formData} 
+          onChange={handleInputChange} 
+        />
 
         {/* Observações */}
         <Card className="animate-fade-in" style={{ animationDelay: "300ms" }}>
