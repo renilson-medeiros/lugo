@@ -150,7 +150,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .eq('id', user.id);
 
     if (error) throw error;
-    await loadProfile(user.id);
+    
+    // Update local state directly instead of reloading from DB
+    if (profile) {
+      setProfile({ ...profile, ...data });
+    }
   };
 
 
