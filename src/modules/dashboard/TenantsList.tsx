@@ -325,8 +325,8 @@ const TenantCard = memo(({ tenant, index, onTerminate, formatarCPF, formatarTele
 
             <div className="flex flex-1 w-full gap-4">
               {/* avatar */}
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <Users className="h-6 w-6 text-primary" />
+              <div className="flex h-12 w-12 items-center justify-center text-tertiary text-xl font-bold rounded-lg bg-primary/10">
+                {tenant.nome_completo.charAt(0).toUpperCase()}
               </div>
 
               {/* name and status */}
