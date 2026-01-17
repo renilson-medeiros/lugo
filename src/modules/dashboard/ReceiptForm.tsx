@@ -8,7 +8,9 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { FileText } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { YearPicker } from "@/components/ui/year-picker";
 import {
@@ -642,6 +644,26 @@ export default function ReceiptForm() {
               </CardContent>
             </Card>
 
+            {/* Observações */}
+            <Card className="animate-fade-in" style={{ animationDelay: "300ms" }}>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-tertiary" aria-hidden="true" />
+                  <CardTitle>Observações</CardTitle>
+                </div>
+                <CardDescription>Informações adicionais para o comprovante</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  id="observations"
+                  placeholder="Ex: Referente à parcela 1 de 12. Incluso taxa de limpeza."
+                  value={formData.observations}
+                  onChange={(e) => handleInputChange("observations", e.target.value)}
+                  rows={3}
+                />
+              </CardContent>
+            </Card>
+
             {/* Actions */}
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
@@ -759,6 +781,12 @@ export default function ReceiptForm() {
                   <div className="text-center text-sm text-muted-foreground">
                     <p>Data do pagamento: {formData.paymentDate ? formData.paymentDate.toLocaleDateString("pt-BR") : "—"}</p>
                   </div>
+
+                  {formData.observations && (
+                    <div className="rounded bg-accent/30 p-3 italic text-xs text-muted-foreground">
+                      <p className="whitespace-pre-line">{formData.observations}</p>
+                    </div>
+                  )}
 
                   {/* Footer */}
                   <div className="border-t border-dashed border-border pt-4 text-center">

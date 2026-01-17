@@ -47,6 +47,7 @@ interface TenantData {
   data_inicio: string;
   data_fim: string | null;
   status: 'ativo' | 'inativo';
+  observacoes: string | null;
   imoveis: {
     titulo: string;
     endereco_rua: string;
@@ -103,6 +104,7 @@ export default function TenantDetails() {
           data_inicio,
           data_fim,
           status,
+          observacoes,
           imoveis (
             titulo,
             endereco_rua,
@@ -455,6 +457,23 @@ export default function TenantDetails() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Observações */}
+        {tenant.observacoes && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-tertiary" />
+                Observações
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
+                {tenant.observacoes}
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Comprovantes */}
         <Card>
