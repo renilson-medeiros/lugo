@@ -12,13 +12,6 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       console.log('[Auth Callback] Session created successfully, redirecting to:', next);
-      
-      // Prefetch profile to warm up the cache and reduce loading time
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from('profiles').select('*').eq('id', user.id).single();
-      }
-      
       const forwardedHost = request.headers.get('x-forwarded-host');
       const isLocalEnv = process.env.NODE_ENV === 'development';
       
