@@ -8,6 +8,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import CombinedDashboardClient from "./CombinedDashboardClient";
 import StatsCards from "./StatsCards";
+import OccupancyRateCard from "./OccupancyRateCard";
 
 // --- Stats Section ---
 export async function StatsSection({ userId }: { userId: string }) {
@@ -156,28 +157,7 @@ export async function OccupancyRateSection({ userId }: { userId: string }) {
     const inquilinosAtivos = tenantsRes.count || 0;
     const occupancyRate = totalImoveis > 0 ? Math.round((inquilinosAtivos / totalImoveis) * 100) : 0;
 
-    return (
-        <Card>
-            <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                    <ChartPie className="h-4 w-4 text-tertiary" />
-                    Taxa de Ocupação
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="flex items-end gap-2">
-                    <span className="text-3xl font-bold">{occupancyRate}%</span>
-                    <span className="text-sm text-muted-foreground mb-1">dos imóveis alugados</span>
-                </div>
-                <div className="mt-4 h-2 w-full bg-accent rounded-full overflow-hidden">
-                    <div
-                        className="h-full bg-tertiary rounded-full transition-all duration-500"
-                        style={{ width: `${occupancyRate}%` }}
-                    />
-                </div>
-            </CardContent>
-        </Card>
-    );
+    return <OccupancyRateCard rate={occupancyRate} />;
 }
 
 // --- Alerts Section ---
