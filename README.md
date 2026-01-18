@@ -85,7 +85,7 @@ Este projeto foi construído focando em padrões de **Enterprise SaaS**, demonst
 
 **Renilson Medeiros** - Desenvolvedor Front-end
 
-- **LinkedIn**: [Renilson Medeiros](https://linkedin.com/in/renilson-medeiros)
+- **LinkedIn**: [Renilson Medeiros](https://www.linkedin.com/in/renilsonmedeiros/)
 - **GitHub**: [@renilson-medeiros](https://github.com/renilson-medeiros)
 
 ---
