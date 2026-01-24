@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Preços | Lugo",
+    description: "Conheça nossos planos e descubra como o Lugo pode ajudar você a economizar mensalmente na gestão de seus imóveis.",
+};
+
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";

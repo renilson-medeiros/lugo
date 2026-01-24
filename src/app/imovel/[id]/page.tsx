@@ -152,5 +152,41 @@ export default async function PropertyDetailPage({ params }: Props) {
         return notFound();
     }
 
-    return <PropertyDetailClient initialData={initialData} />;
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "RealEstateListing",
+        "name": initialData.title,
+        "description": initialData.observations,
+        "url": `https://lugogestaodeimoveis.com.br/imovel/${id}`,
+        "image": initialData.images[0],
+        "datePosted": new Date().toISOString(),
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": `${initialData.address.street}, ${initialData.address.number}`,
+            "addressLocality": initialData.address.neighborhood,
+            "addressRegion": initialData.address.city,
+            "addressCountry": "BR"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": initialData.pricing.rent,
+            "priceCurrency": "BRL",
+            "availability": "https://schema.org/InStock"
+        },
+        "amenityFeature": [
+            { "@type": "LocationFeatureSpecification", "name": "Bedrooms", "value": initialData.details.bedrooms },
+            { "@type": "LocationFeatureSpecification", "name": "Bathrooms", "value": initialData.details.bathrooms },
+            { "@type": "LocationFeatureSpecification", "name": "Garage", "value": initialData.details.garage }
+        ]
+    };
+
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <PropertyDetailClient initialData={initialData} />
+        </>
+    );
 }

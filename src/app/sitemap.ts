@@ -11,22 +11,40 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 1,
         },
         {
-            url: `${BASE_URL}/login`,
+            url: `${BASE_URL}/como-funciona`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.9,
+        },
+        {
+            url: `${BASE_URL}/precos`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.9,
+        },
+        {
+            url: `${BASE_URL}/faq`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/contato`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${BASE_URL}/login`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.6,
         },
         {
             url: `${BASE_URL}/registro`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
-            priority: 0.8,
-        },
-        {
-            url: `${BASE_URL}/esqueci-senha`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly',
-            priority: 0.5,
+            priority: 0.7,
         },
     ];
 }

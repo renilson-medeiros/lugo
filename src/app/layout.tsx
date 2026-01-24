@@ -91,7 +91,41 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="pt-BR">
-<body className={`${plusJakartaSans.variable} font-sans antialiased`}>
+            <head>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "Organization",
+                            "name": "Lugo",
+                            "url": "https://lugogestaodeimoveis.com.br",
+                            "logo": "https://lugogestaodeimoveis.com.br/logo.png",
+                            "sameAs": [
+                                "https://www.instagram.com/lugogestaodeimoveis",
+                            ],
+                            "description": "Plataforma completa para gestão inteligente de aluguéis e imóveis.",
+                        }),
+                    }}
+                />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "WebSite",
+                            "name": "Lugo",
+                            "url": "https://lugogestaodeimoveis.com.br",
+                            "potentialAction": {
+                                "@type": "SearchAction",
+                                "target": "https://lugogestaodeimoveis.com.br/catalogo/search?q={search_term_string}",
+                                "query-input": "required name=search_term_string",
+                            },
+                        }),
+                    }}
+                />
+            </head>
+            <body className={`${plusJakartaSans.variable} font-sans antialiased`}>
                 <GoogleAnalytics />
                 <Providers>{children}</Providers>
             </body>
